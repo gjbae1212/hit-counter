@@ -3,9 +3,13 @@ package main // import "github.com/gjbae1212/hit-counter"
 import (
 	"flag"
 	"log"
-
 	"runtime"
-	echo "github.com/labstack/echo/v4"
+
+	"path/filepath"
+
+	"github.com/gjbae1212/go-module/logger"
+	"github.com/gjbae1212/hit-counter/env"
+	"github.com/labstack/echo/v4"
 )
 
 var (
@@ -18,8 +22,29 @@ func main() {
 
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
+	// If the sentry is possibly loaded
+	LoadSentry(env.GetSentryDSN())
+
 	e := echo.New()
-	
+
+	// options
+	var opts []Option
+	opts = append(opts, WithDebugOption(env.GetDebug()))
+
+	dir := ""
+	file := ""
+	if env.GetLogPath() != "" {
+		dir, file = filepath.Split(env.GetLogPath())
+	}
+	customLogger, err := logger.NewLogger(dir, file)
+	if err != nil {
+		log.Panic(err)
+	}
+	opts = append(opts, WithLoggerOption(customLogger))
+
+	if err := AddMiddleware(e); err != nil {
+		log.Panic(err)
+	}
 	if *tls {
 		// If it use to `let's encrypt`
 		e.StartAutoTLS(*address)
