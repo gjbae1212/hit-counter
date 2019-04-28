@@ -42,9 +42,16 @@ func main() {
 	}
 	opts = append(opts, WithLoggerOption(customLogger))
 
-	if err := AddMiddleware(e); err != nil {
+	// add middleware
+	if err := AddMiddleware(e, opts...); err != nil {
 		log.Panic(err)
 	}
+
+	// add route
+	if err := AddRoute(e, env.GetRedisAddrs(), env.GetCacheSize()); err != nil {
+		log.Panic(err)
+	}
+
 	if *tls {
 		// If it use to `let's encrypt`
 		e.StartAutoTLS(*address)

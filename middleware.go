@@ -71,8 +71,14 @@ func AddMiddleware(e *echo.Echo, opts ...Option) error {
 		return err
 	}
 	e.Use(mainchain...)
-	// route
-	return AddRoute(e)
+	// group api
+	groupApi, err := middlewareGroupApi()
+	if err != nil {
+		return err
+	}
+	e.Group("/api", groupApi...)
+
+	return nil
 }
 
 func middlewarePreChain() ([]echo.MiddlewareFunc, error) {
@@ -162,5 +168,11 @@ func middlewareChain() ([]echo.MiddlewareFunc, error) {
 		}
 	}
 	chain = append(chain, m)
+	return chain, nil
+}
+
+func middlewareGroupApi() ([]echo.MiddlewareFunc, error) {
+	// TODO: cookie 를 심자
+	var chain []echo.MiddlewareFunc
 	return chain, nil
 }

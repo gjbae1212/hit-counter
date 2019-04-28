@@ -15,7 +15,7 @@ type Handler struct {
 
 func NewHandler(redisAddrs []string, cacheSize int) (*Handler, error) {
 	if len(redisAddrs) == 0 || cacheSize <= 0 {
-		return nil, fmt.Errorf("[err]")
+		return nil, fmt.Errorf("[err] empty params \n")
 	}
 
 	localCache := freecache.NewCache(cacheSize)

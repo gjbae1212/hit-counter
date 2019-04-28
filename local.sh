@@ -5,6 +5,12 @@ trap '[ "$?" -eq 0 ] || echo "Error Line:<$LINENO> Error Function:<${FUNCNAME}>"
 cd `dirname $0`
 CURRENT=`pwd`
 
+function start
+{
+   set_env
+   go build && ./hit-counter -tls=0  -addr=:8080
+}
+
 function test
 {
    set_env

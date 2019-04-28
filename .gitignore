@@ -1,4 +1,4 @@
 .idea
-./hit-counter
+hit-counter
 local_env.sh
 coverage.txt

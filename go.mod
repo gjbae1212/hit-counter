@@ -13,4 +13,5 @@ require (
 	github.com/pkg/errors v0.8.1
 	github.com/stretchr/testify v1.3.0
 	github.com/yuin/gopher-lua v0.0.0-20190206043414-8bfc7677f583 // indirect
+	gopkg.in/errgo.v2 v2.1.0
 )
