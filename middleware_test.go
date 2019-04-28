@@ -56,5 +56,3 @@ func TestAddMiddleware(t *testing.T) {
 	assert.True(e.Debug)
 	assert.Equal(clogger, e.Logger)
 }
-
-

@@ -10,5 +10,6 @@ func AddRoute(e *echo.Echo) error {
 	if e == nil {
 		return fmt.Errorf("[Err] AddRoute empty params")
 	}
+
 	return nil
 }
