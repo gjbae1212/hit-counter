@@ -7,16 +7,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestWithCacheOption(t *testing.T) {
-	assert := assert.New(t)
-
-	d := &db{}
-	opt := WithCacheOption(10)
-	err := opt.apply(d)
-	assert.NoError(err)
-	assert.NotNil(d.local)
-}
-
 func TestWithRedisOption(t *testing.T) {
 	assert := assert.New(t)
 
@@ -38,13 +28,7 @@ func TestNewCounter(t *testing.T) {
 	assert.NoError(err)
 	defer s.Close()
 
-	counter, err := NewCounter(WithCacheOption(10))
+	counter, err := NewCounter(WithRedisOption([]string{s.Addr()}))
 	assert.NoError(err)
-	assert.NotNil(counter.(*db).local)
-	assert.NotNil(counter.(*db).redis)
-
-	counter, err = NewCounter(WithRedisOption([]string{s.Addr()}))
-	assert.NoError(err)
-	assert.NotNil(counter.(*db).local)
 	assert.NotNil(counter.(*db).redis)
 }

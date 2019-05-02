@@ -62,23 +62,12 @@ func WithRedisOption(addrs []string) OptionFunc {
 	}
 }
 
-// It is passed a local cache size.
-func WithCacheOption(cacheSize int) OptionFunc {
-	return func(d *db) error {
-		d.local = freecache.NewCache(cacheSize)
-		return nil
-	}
-}
-
 func NewCounter(opts ...Option) (Counter, error) {
 	c := &db{}
 	for _, opt := range opts {
 		if err := opt.apply(c); err != nil {
 			return nil, errors.Wrap(err, "[err] NewCounter")
 		}
-	}
-	if c.local == nil {
-		c.local = freecache.NewCache(512 * 1024)
 	}
 	// If a redis do not exist and a default redis will be set up to have `localhost:6379`.
 	if c.redis == nil {

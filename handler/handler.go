@@ -4,13 +4,13 @@ import (
 	"fmt"
 
 	"github.com/coocood/freecache"
-	"github.com/gjbae1212/go-module/redis"
+	"github.com/gjbae1212/hit-counter/counter"
 	"github.com/pkg/errors"
 )
 
 type Handler struct {
+	counter    counter.Counter
 	localCache *freecache.Cache
-	redis      redis.Manager
 }
 
 func NewHandler(redisAddrs []string, cacheSize int) (*Handler, error) {
@@ -19,13 +19,13 @@ func NewHandler(redisAddrs []string, cacheSize int) (*Handler, error) {
 	}
 
 	localCache := freecache.NewCache(cacheSize)
-	redis, err := redis.NewManager(redisAddrs)
+	ctr, err := counter.NewCounter(counter.WithRedisOption(redisAddrs))
 	if err != nil {
-		return nil, errors.Wrap(err, "[err] initialize redis \n")
+		return nil, errors.Wrap(err, "[err] initialize counter \n")
 	}
 
 	return &Handler{
 		localCache: localCache,
-		redis:      redis,
+		counter:    ctr,
 	}, nil
 }
