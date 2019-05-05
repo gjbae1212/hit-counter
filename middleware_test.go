@@ -6,8 +6,11 @@ import (
 	"testing"
 
 	"github.com/gjbae1212/go-module/logger"
-	"github.com/labstack/echo/v4"
+	echo "github.com/labstack/echo/v4"
 
+	"net/http/httptest"
+
+	"github.com/gjbae1212/hit-counter/handler"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -55,4 +58,30 @@ func TestAddMiddleware(t *testing.T) {
 	assert.NoError(err)
 	assert.True(e.Debug)
 	assert.Equal(clogger, e.Logger)
+}
+
+func TestMiddleWare(t *testing.T) {
+	assert := assert.New(t)
+	e := echo.New()
+
+	mockHandler := func(c echo.Context) error {
+		log.Println("call????")
+		return nil
+	}
+
+	r := httptest.NewRequest("GET", "http://localhost", nil)
+	r.Header.Set(echo.HeaderXForwardedFor, "127.0.0.1")
+	w := httptest.NewRecorder()
+	hctx := &handler.HitCounterContext{Context: e.NewContext(r, w)}
+
+	// group api
+	funcs, err := middlewareGroupApi()
+	assert.NoError(err)
+	f := funcs[0]
+	err = f(mockHandler)(hctx)
+	assert.NoError(err)
+	assert.NotNil(hctx.Get("uid"))
+	assert.NoError(err)
+	assert.NotEmpty(w.Header().Get("Set-Cookie"))
+	log.Println(w.Header().Get("Set-Cookie"))
 }
