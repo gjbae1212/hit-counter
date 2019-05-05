@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"net/http"
 	"github.com/labstack/echo/v4"
+	"net/http"
 )
 
 func (h *Handler) HealthCheck(c echo.Context) error {
