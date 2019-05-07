@@ -67,8 +67,13 @@ func (d *db) GetRankDailyByLimit(group string, limit int) ([]*Score, error) {
 		return nil, errors.Wrap(err, "[err] GetRankDailyByLimit")
 	}
 
-	list := scores.([]interface{})
 	var rt []*Score
+	// empty
+	if scores == nil {
+		return rt, nil
+	}
+
+	list := scores.([]interface{})
 	for i := 0; i < len(list); i += 2 {
 		name := string(list[i].([]byte))
 		value := string(list[i+1].([]byte))
@@ -92,8 +97,13 @@ func (d *db) GetRankTotalByLimit(group string, limit int) ([]*Score, error) {
 		return nil, errors.Wrap(err, "[err] GetRankTotalByLimit")
 	}
 
-	list := scores.([]interface{})
 	var rt []*Score
+	// empty
+	if scores == nil {
+		return rt, nil
+	}
+
+	list := scores.([]interface{})
 	for i := 0; i < len(list); i += 2 {
 		name := string(list[i].([]byte))
 		value := string(list[i+1].([]byte))

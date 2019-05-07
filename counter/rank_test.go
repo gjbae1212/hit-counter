@@ -90,7 +90,11 @@ func TestDb_GetRankDailyByLimit(t *testing.T) {
 	_, err = counter.GetRankDailyByLimit("", 0)
 	assert.Error(err)
 
-	scores, err := counter.GetRankDailyByLimit(group, 2)
+	scores, err := counter.GetRankDailyByLimit("empty", 10)
+	assert.NoError(err)
+	assert.Len(scores, 0)
+
+	scores, err = counter.GetRankDailyByLimit(group, 2)
 	assert.NoError(err)
 	assert.Len(scores, 2)
 	for _, s := range scores {
@@ -140,7 +144,11 @@ func TestDb_GetRankTotalByLimit(t *testing.T) {
 	_, err = counter.GetRankTotalByLimit("", 0)
 	assert.Error(err)
 
-	scores, err := counter.GetRankTotalByLimit(group, 2)
+	scores, err := counter.GetRankTotalByLimit("empty", 10)
+	assert.NoError(err)
+	assert.Len(scores, 0)
+
+	scores, err = counter.GetRankTotalByLimit(group, 2)
 	assert.NoError(err)
 	assert.Len(scores, 2)
 	for _, s := range scores {

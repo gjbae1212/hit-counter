@@ -56,6 +56,11 @@ func (d *db) GetHitOfDaily(id string) (*Score, error) {
 		return nil, errors.Wrap(err, "[err] GetHitOfDaily")
 	}
 
+	// empty
+	if v == nil {
+		return nil, nil
+	}
+
 	rt, err := strconv.ParseInt(string(v.([]byte)), 10, 64)
 	if err != nil {
 		return nil, errors.Wrap(err, "[err] GetHitOfDaily")
@@ -73,6 +78,11 @@ func (d *db) GetHitOfTotal(id string) (*Score, error) {
 	v, err := d.redis.DoWithTimeout(timeout, "GET", key)
 	if err != nil {
 		return nil, errors.Wrap(err, "[err] GetHitOfTotal")
+	}
+
+	// empty
+	if v == nil {
+		return nil, nil
 	}
 
 	rt, err := strconv.ParseInt(string(v.([]byte)), 10, 64)

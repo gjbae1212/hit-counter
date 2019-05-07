@@ -75,13 +75,17 @@ func TestDb_GetHitOfDaily(t *testing.T) {
 	_, err = counter.GetHitOfDaily("")
 	assert.Error(err)
 
+	v, err := counter.GetHitOfDaily("empty")
+	assert.NoError(err)
+	assert.Nil(v)
+
 	for i := 0; i < 1000; i++ {
 		count, err := counter.IncreaseHitOfDaily("test")
 		assert.NoError(err)
 		assert.Equal(i+1, int(count.Value))
 	}
 
-	v, err := counter.GetHitOfDaily("test")
+	v, err = counter.GetHitOfDaily("test")
 	assert.NoError(err)
 	assert.Equal(1000, int(v.Value))
 }
@@ -99,13 +103,17 @@ func TestDb_GetHitOfTotal(t *testing.T) {
 	_, err = counter.GetHitOfTotal("")
 	assert.Error(err)
 
+	v, err := counter.GetHitOfTotal("empty")
+	assert.NoError(err)
+	assert.Nil(v)
+
 	for i := 0; i < 1000; i++ {
 		count, err := counter.IncreaseHitOfTotal("test")
 		assert.NoError(err)
 		assert.Equal(i+1, int(count.Value))
 	}
 
-	v, err := counter.GetHitOfTotal("test")
+	v, err = counter.GetHitOfTotal("test")
 	assert.NoError(err)
 	assert.Equal(1000, int(v.Value))
 }
