@@ -28,13 +28,14 @@ func (f OptionFunc) apply(d *db) error {
 // It is the counter interface wrapped a db object
 type (
 	Counter interface {
-		IncreaseHitOfDaily(id string) (*Score, error)
+		IncreaseHitOfDaily(id string, t time.Time) (*Score, error)
 		IncreaseHitOfTotal(id string) (*Score, error)
-		GetHitOfDaily(id string) (*Score, error)
+		GetHitOfDaily(id string, t time.Time) (*Score, error)
 		GetHitOfTotal(id string) (*Score, error)
-		IncreaseRankOfDaily(group, id string) (*Score, error)
+		GetHitAll(id string, t time.Time) (daily *Score, total *Score, err error)
+		IncreaseRankOfDaily(group, id string, t time.Time) (*Score, error)
 		IncreaseRankOfTotal(group, id string) (*Score, error)
-		GetRankDailyByLimit(group string, limit int) ([]*Score, error)
+		GetRankDailyByLimit(group string, limit int, t time.Time) ([]*Score, error)
 		GetRankTotalByLimit(group string, limit int) ([]*Score, error)
 	}
 

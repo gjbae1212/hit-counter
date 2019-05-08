@@ -15,12 +15,12 @@ var (
 	hitTotalFormat = "hit:total:%s"
 )
 
-func (d *db) IncreaseHitOfDaily(id string) (*Score, error) {
-	if id == "" {
+func (d *db) IncreaseHitOfDaily(id string, t time.Time) (*Score, error) {
+	if id == "" || t.IsZero() {
 		return nil, fmt.Errorf("[err] IncreaseHitOfDaily empty param")
 	}
 
-	daily := allan_util.TimeToDailyStringFormat(time.Now())
+	daily := allan_util.TimeToDailyStringFormat(t)
 	key := fmt.Sprintf(hitDailyFormat, daily, id)
 	v, err := d.redis.DoWithTimeout(timeout, "INCR", key)
 	if err != nil {
@@ -43,12 +43,12 @@ func (d *db) IncreaseHitOfTotal(id string) (*Score, error) {
 	return &Score{Name: id, Value: v.(int64)}, nil
 }
 
-func (d *db) GetHitOfDaily(id string) (*Score, error) {
-	if id == "" {
+func (d *db) GetHitOfDaily(id string, t time.Time) (*Score, error) {
+	if id == "" || t.IsZero() {
 		return nil, fmt.Errorf("[err] GetHitOfDaily empty param")
 	}
 
-	daily := allan_util.TimeToDailyStringFormat(time.Now())
+	daily := allan_util.TimeToDailyStringFormat(t)
 	key := fmt.Sprintf(hitDailyFormat, daily, id)
 
 	v, err := d.redis.DoWithTimeout(timeout, "GET", key)
@@ -91,4 +91,45 @@ func (d *db) GetHitOfTotal(id string) (*Score, error) {
 	}
 
 	return &Score{Name: id, Value: rt}, nil
+}
+
+func (d *db) GetHitAll(id string, t time.Time) (daily *Score, total *Score, err error) {
+	if id == "" || t.IsZero() {
+		err = fmt.Errorf("[err] GetHitAll empty param")
+		return
+	}
+
+	key1 := fmt.Sprintf(hitDailyFormat, allan_util.TimeToDailyStringFormat(t), id)
+	key2 := fmt.Sprintf(hitTotalFormat, id)
+
+	v, suberr := d.redis.DoWithTimeout(timeout, "MGET", key1, key2)
+	if suberr != nil {
+		err = errors.Wrap(suberr, "[err] GetHitAll")
+		return
+	}
+
+	// empty
+	if v == nil {
+		return
+	}
+
+	list := v.([]interface{})[0].([]interface{})
+	if list[0] != nil {
+		dailyValue, suberr := strconv.ParseInt(string(list[0].([]byte)), 10, 64)
+		if suberr != nil {
+			err = errors.Wrap(suberr, "[err] GetHitAll")
+			return
+		}
+		daily = &Score{Name: id, Value: dailyValue}
+	}
+
+	if list[1] != nil {
+		totalValue, suberr := strconv.ParseInt(string(list[1].([]byte)), 10, 64)
+		if suberr != nil {
+			err = errors.Wrap(suberr, "[err] GetHitAll")
+			return
+		}
+		total = &Score{Name: id, Value: totalValue}
+	}
+	return
 }

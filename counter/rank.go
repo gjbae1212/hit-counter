@@ -15,12 +15,12 @@ var (
 	rankTotalFormat = "rank:total:%s"
 )
 
-func (d *db) IncreaseRankOfDaily(group, id string) (*Score, error) {
-	if group == "" || id == "" {
+func (d *db) IncreaseRankOfDaily(group, id string, t time.Time) (*Score, error) {
+	if group == "" || id == "" || t.IsZero() {
 		return nil, fmt.Errorf("[err] IncreaseRankOfDaily empty param")
 	}
 
-	daily := allan_util.TimeToDailyStringFormat(time.Now())
+	daily := allan_util.TimeToDailyStringFormat(t)
 	key := fmt.Sprintf(rankDailyFormat, daily, group)
 	v, err := d.redis.DoWithTimeout(timeout, "ZINCRBY", key, 1, id)
 	if err != nil {
@@ -54,12 +54,12 @@ func (d *db) IncreaseRankOfTotal(group, id string) (*Score, error) {
 	return &Score{Name: id, Value: rt}, nil
 }
 
-func (d *db) GetRankDailyByLimit(group string, limit int) ([]*Score, error) {
+func (d *db) GetRankDailyByLimit(group string, limit int, t time.Time) ([]*Score, error) {
 	if group == "" || limit <= 0 {
 		return nil, fmt.Errorf("[err] GetRankDailyByLimit invalid param")
 	}
 
-	daily := allan_util.TimeToDailyStringFormat(time.Now())
+	daily := allan_util.TimeToDailyStringFormat(t)
 	key := fmt.Sprintf(rankDailyFormat, daily, group)
 
 	scores, err := d.redis.DoWithTimeout(timeout, "ZREVRANGE", key, 0, limit-1, "WITHSCORES")

@@ -8,6 +8,7 @@ import (
 	"github.com/alicebob/miniredis"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/stretchr/testify/assert"
+	"time"
 )
 
 func TestDb_IncreaseRankOfDaily(t *testing.T) {
@@ -20,7 +21,8 @@ func TestDb_IncreaseRankOfDaily(t *testing.T) {
 	counter, err := NewCounter(WithRedisOption([]string{s.Addr()}))
 	assert.NoError(err)
 
-	_, err = counter.IncreaseRankOfDaily("", "")
+	now := time.Now()
+	_, err = counter.IncreaseRankOfDaily("", "", time.Time{})
 	assert.Error(err)
 
 	group := "github.com"
@@ -29,7 +31,7 @@ func TestDb_IncreaseRankOfDaily(t *testing.T) {
 
 	for i := 0; i < 1000; i++ {
 		rnd := rand.Int() % 4
-		v, err := counter.IncreaseRankOfDaily(group, ids[rnd])
+		v, err := counter.IncreaseRankOfDaily(group, ids[rnd], now)
 		assert.NoError(err)
 		assert.Equal(ids[rnd], v.Name)
 		assert.Equal(values[rnd]+1, v.Value)
@@ -77,24 +79,25 @@ func TestDb_GetRankDailyByLimit(t *testing.T) {
 	group := "github.com"
 	ids := []string{"allan", "gjbae1212", "dong", "jung"}
 	values := make([]int64, 4)
+	now := time.Now()
 
 	for i := 0; i < 1000; i++ {
 		rnd := rand.Int() % 4
-		v, err := counter.IncreaseRankOfDaily(group, ids[rnd])
+		v, err := counter.IncreaseRankOfDaily(group, ids[rnd], now)
 		assert.NoError(err)
 		assert.Equal(ids[rnd], v.Name)
 		assert.Equal(values[rnd]+1, v.Value)
 		values[rnd] = v.Value
 	}
 
-	_, err = counter.GetRankDailyByLimit("", 0)
+	_, err = counter.GetRankDailyByLimit("", 0, time.Time{})
 	assert.Error(err)
 
-	scores, err := counter.GetRankDailyByLimit("empty", 10)
+	scores, err := counter.GetRankDailyByLimit("empty", 10, now)
 	assert.NoError(err)
 	assert.Len(scores, 0)
 
-	scores, err = counter.GetRankDailyByLimit(group, 2)
+	scores, err = counter.GetRankDailyByLimit(group, 2, now)
 	assert.NoError(err)
 	assert.Len(scores, 2)
 	for _, s := range scores {
@@ -105,7 +108,7 @@ func TestDb_GetRankDailyByLimit(t *testing.T) {
 		}
 	}
 
-	scores, err = counter.GetRankDailyByLimit(group, 100)
+	scores, err = counter.GetRankDailyByLimit(group, 100, now)
 	assert.NoError(err)
 	assert.Len(scores, 4)
 	for _, s := range scores {
