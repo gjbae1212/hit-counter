@@ -7,10 +7,8 @@ import (
 	"strconv"
 	"time"
 
-	"encoding/base64"
-
 	"github.com/gjbae1212/hit-counter/handler"
-	echo "github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	glog "github.com/labstack/gommon/log"
 )
@@ -73,12 +71,6 @@ func AddMiddleware(e *echo.Echo, opts ...Option) error {
 		return err
 	}
 	e.Use(mainchain...)
-	// group api
-	groupApi, err := middlewareGroupApi()
-	if err != nil {
-		return err
-	}
-	e.Group("/api", groupApi...)
 
 	return nil
 }
@@ -170,31 +162,5 @@ func middlewareChain() ([]echo.MiddlewareFunc, error) {
 		}
 	}
 	chain = append(chain, m)
-	return chain, nil
-}
-
-func middlewareGroupApi() ([]echo.MiddlewareFunc, error) {
-	var chain []echo.MiddlewareFunc
-	// Add cookie duration 24 hour.
-	cookieFunc := func(h echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
-			hctx := c.(*handler.HitCounterContext)
-			var err error
-			cookie := &http.Cookie{}
-			if cookie, err = c.Cookie("uid"); err != nil {
-				v := fmt.Sprintf("%s-%d", c.RealIP(), time.Now().UnixNano())
-				b64 := base64.StdEncoding.EncodeToString([]byte(v))
-				cookie = &http.Cookie{
-					Name:    "uid",
-					Value:   b64,
-					Expires: time.Now().Add(24 * time.Hour),
-				}
-				hctx.SetCookie(cookie)
-			}
-			hctx.Set(cookie.Name, cookie.Value)
-			return h(hctx)
-		}
-	}
-	chain = append(chain, cookieFunc)
 	return chain, nil
 }

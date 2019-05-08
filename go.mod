@@ -8,6 +8,7 @@ require (
 	github.com/coocood/freecache v1.1.0
 	github.com/davecgh/go-spew v1.1.1
 	github.com/gjbae1212/datasize v1.0.0
+	github.com/gjbae1212/go-badge v1.0.0
 	github.com/gjbae1212/go-module v0.3.16
 	github.com/google/go-cmp v0.3.0
 	github.com/labstack/echo/v4 v4.0.0
