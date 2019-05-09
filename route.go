@@ -10,8 +10,8 @@ import (
 	allan_util "github.com/gjbae1212/go-module/util"
 	"github.com/gjbae1212/hit-counter/handler"
 	"github.com/gjbae1212/hit-counter/handler/api"
-	"github.com/pkg/errors"
 	"github.com/labstack/echo/v4"
+	"github.com/pkg/errors"
 )
 
 func AddRoute(e *echo.Echo, redisAddrs []string, cacheSize int) error {
@@ -61,9 +61,10 @@ func groupApiCount() ([]echo.MiddlewareFunc, error) {
 				v := fmt.Sprintf("%s-%d", c.RealIP(), time.Now().UnixNano())
 				b64 := base64.StdEncoding.EncodeToString([]byte(v))
 				cookie = &http.Cookie{
-					Name:    "aid",
-					Value:   b64,
-					Expires: time.Now().Add(24 * time.Hour),
+					Name:     "aid",
+					Value:    b64,
+					Expires:  time.Now().Add(24 * time.Hour),
+					HttpOnly: true,
 				}
 				hitctx.SetCookie(cookie)
 			}

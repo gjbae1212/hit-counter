@@ -1,6 +1,9 @@
 package main
 
 import (
+	"github.com/gjbae1212/hit-counter/handler"
+	"log"
+	"net/http/httptest"
 	"testing"
 
 	"github.com/alicebob/miniredis"
@@ -19,4 +22,35 @@ func TestAddRoute(t *testing.T) {
 
 	err = AddRoute(echo.New(), []string{s.Addr()}, 10)
 	assert.NoError(err)
+}
+
+func TestGroup(t *testing.T) {
+	assert := assert.New(t)
+	e := echo.New()
+
+	mockHandler := func(c echo.Context) error {
+		log.Println("call????")
+		return nil
+	}
+
+	r := httptest.NewRequest("GET", "http://localhost?url=github.com", nil)
+	r.Header.Set(echo.HeaderXForwardedFor, "127.0.0.1")
+	w := httptest.NewRecorder()
+	hctx := &handler.HitCounterContext{Context: e.NewContext(r, w)}
+
+	// group api
+	funcs, err := groupApiCount()
+	assert.NoError(err)
+	f := funcs[0]
+	err = f(mockHandler)(hctx)
+	assert.NoError(err)
+	assert.NotNil(hctx.Get("aid"))
+	assert.NoError(err)
+	assert.NotEmpty(w.Header().Get("Set-Cookie"))
+	log.Println(w.Header().Get("Set-Cookie"))
+
+	f = funcs[1]
+	err = f(mockHandler)(hctx)
+	assert.NoError(err)
+	assert.NotNil(hctx.Get("id"))
 }

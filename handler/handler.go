@@ -9,13 +9,13 @@ import (
 )
 
 type Handler struct {
-	counter    counter.Counter
-	localCache *freecache.Cache
+	Counter    counter.Counter
+	LocalCache *freecache.Cache
 }
 
 func NewHandler(redisAddrs []string, cacheSize int) (*Handler, error) {
 	if len(redisAddrs) == 0 || cacheSize <= 0 {
-		return nil, fmt.Errorf("[err] empty params \n")
+		return nil, fmt.Errorf("[err] handler empty params \n")
 	}
 
 	localCache := freecache.NewCache(cacheSize)
@@ -25,7 +25,7 @@ func NewHandler(redisAddrs []string, cacheSize int) (*Handler, error) {
 	}
 
 	return &Handler{
-		localCache: localCache,
-		counter:    ctr,
+		LocalCache: localCache,
+		Counter:    ctr,
 	}, nil
 }

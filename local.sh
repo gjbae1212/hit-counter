@@ -8,6 +8,11 @@ CURRENT=`pwd`
 function start
 {
    set_env
+   local redis=`docker ps | grep redis | wc -l`
+   if [ ${redis} -eq 0 ]
+   then
+     docker run --rm -d -p 6379:6379 --name redis redis:latest
+   fi
    go build && ./hit-counter -tls=0  -addr=:8080
 }
 
