@@ -8,9 +8,10 @@ import (
 	"time"
 
 	"github.com/gjbae1212/hit-counter/handler"
-	"github.com/labstack/echo/v4"
+	"github.com/gjbae1212/hit-counter/sentry"
 	"github.com/labstack/echo/v4/middleware"
 	glog "github.com/labstack/gommon/log"
+	"github.com/labstack/echo/v4"
 )
 
 // It used to apply option
@@ -117,7 +118,7 @@ func middlewareChain() ([]echo.MiddlewareFunc, error) {
 			defer func() {
 				if r := recover(); r != nil {
 					// send sentry
-					SendSentry(r.(error), c.Request())
+					sentry.SendSentry(r.(error), c.Request())
 
 					extraLog := c.(*handler.HitCounterContext).ValueContext("extra_log").(map[string]interface{})
 					extraLog["status"] = http.StatusInternalServerError
@@ -143,7 +144,7 @@ func middlewareChain() ([]echo.MiddlewareFunc, error) {
 				extraLog["status"] = code
 				extraLog["error"] = fmt.Sprintf("%v\n", err)
 				if code >= http.StatusInternalServerError {
-					SendSentry(err, c.Request())
+					sentry.SendSentry(err, c.Request())
 
 					rest := stop.Sub(start)
 					extraLog["latency"] = strconv.FormatInt(int64(rest), 10)

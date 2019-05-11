@@ -9,6 +9,7 @@ import (
 
 	"github.com/gjbae1212/go-module/logger"
 	"github.com/gjbae1212/hit-counter/env"
+	"github.com/gjbae1212/hit-counter/sentry"
 	"github.com/labstack/echo/v4"
 )
 
@@ -23,7 +24,7 @@ func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	// If the sentry is possibly loaded
-	LoadSentry(env.GetSentryDSN())
+	sentry.LoadSentry(env.GetSentryDSN())
 
 	e := echo.New()
 

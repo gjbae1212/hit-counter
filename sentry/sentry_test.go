@@ -1,4 +1,4 @@
-package main
+package sentry
 
 import (
 	"testing"
@@ -25,6 +25,7 @@ func TestSendSentry(t *testing.T) {
 	if env.GetSentryDSN() != "" {
 		LoadSentry(env.GetSentryDSN())
 		SendSentry(fmt.Errorf("test code error"), httptest.NewRequest("GET", "http://localhost", nil))
+		SendSentry(fmt.Errorf("test code error2"), nil)
 	}
 	_ = assert
 	time.Sleep(2 * time.Second)
