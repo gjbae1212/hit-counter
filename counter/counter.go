@@ -3,7 +3,6 @@ package counter
 import (
 	"time"
 
-	"github.com/coocood/freecache"
 	"github.com/gjbae1212/go-module/redis"
 	"github.com/pkg/errors"
 )
@@ -40,7 +39,6 @@ type (
 	}
 
 	db struct {
-		local *freecache.Cache
 		redis redis.Manager
 	}
 )
