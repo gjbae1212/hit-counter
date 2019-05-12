@@ -19,7 +19,7 @@ func TestHandler_Error(t *testing.T) {
 	assert.NoError(err)
 	defer s.Close()
 
-	h, err := NewHandler([]string{s.Addr()}, 10)
+	h, err := NewHandler([]string{s.Addr()})
 	assert.NoError(err)
 
 	request := httptest.NewRequest("GET", "http://localhost", nil)

@@ -3,29 +3,48 @@ package handler
 import (
 	"fmt"
 
-	"github.com/coocood/freecache"
+	"time"
+
+	"github.com/gjbae1212/go-module/async_task"
 	"github.com/gjbae1212/hit-counter/counter"
+	"github.com/gjbae1212/hit-counter/sentry"
+	cache "github.com/patrickmn/go-cache"
 	"github.com/pkg/errors"
 )
 
 type Handler struct {
 	Counter    counter.Counter
-	LocalCache *freecache.Cache
+	LocalCache *cache.Cache
+	AsyncTask  async_task.Keeper
 }
 
-func NewHandler(redisAddrs []string, cacheSize int) (*Handler, error) {
-	if len(redisAddrs) == 0 || cacheSize <= 0 {
+func NewHandler(redisAddrs []string) (*Handler, error) {
+	if len(redisAddrs) == 0 {
 		return nil, fmt.Errorf("[err] handler empty params \n")
 	}
 
-	localCache := freecache.NewCache(cacheSize)
+	localCache := cache.New(24*time.Hour, 10*time.Minute)
 	ctr, err := counter.NewCounter(counter.WithRedisOption(redisAddrs))
 	if err != nil {
 		return nil, errors.Wrap(err, "[err] initialize counter \n")
 	}
 
+	asyncTask, err := async_task.NewAsyncTask(
+		async_task.WithQueueSizeOption(1000),
+		async_task.WithWorkerSizeOption(5),
+		async_task.WithTimeoutOption(20*time.Second),
+		async_task.WithErrorHandlerOption(func(err error) {
+			sentry.SendSentry(err, nil)
+		}),
+	)
+
+	if err != nil {
+		return nil, errors.Wrap(err, "[err] async task initialize \n")
+	}
+
 	return &Handler{
 		LocalCache: localCache,
 		Counter:    ctr,
+		AsyncTask:  asyncTask,
 	}, nil
 }

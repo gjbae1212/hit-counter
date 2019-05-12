@@ -19,7 +19,7 @@ func TestHandler_HealthCheck(t *testing.T) {
 	assert.NoError(err)
 	defer s.Close()
 
-	h, err := NewHandler([]string{s.Addr()}, 10)
+	h, err := NewHandler([]string{s.Addr()})
 	assert.NoError(err)
 
 	r := httptest.NewRequest("GET", "http://localhost:8080", nil)

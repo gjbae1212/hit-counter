@@ -29,9 +29,3 @@ func TestGetRedisAddrs(t *testing.T) {
 	addrs := GetRedisAddrs()
 	assert.Equal(redisAddrs, addrs)
 }
-
-func TestGetCacheSize(t *testing.T) {
-	assert := assert.New(t)
-	size := GetCacheSize()
-	assert.Equal(cacheSize, size)
-}

@@ -14,12 +14,12 @@ import (
 	"github.com/pkg/errors"
 )
 
-func AddRoute(e *echo.Echo, redisAddrs []string, cacheSize int) error {
+func AddRoute(e *echo.Echo, redisAddrs []string) error {
 	if e == nil {
 		return fmt.Errorf("[Err] AddRoute empty params")
 	}
 
-	h, err := handler.NewHandler(redisAddrs, cacheSize)
+	h, err := handler.NewHandler(redisAddrs)
 	if err != nil {
 		return errors.Wrap(err, "[err] AddRoute")
 	}
@@ -34,7 +34,7 @@ func AddRoute(e *echo.Echo, redisAddrs []string, cacheSize int) error {
 	// static
 	e.Static("/", "public")
 	// HealthCheck
-	e.GET("/", h.HealthCheck)
+	e.GET("/healthcheck", h.HealthCheck)
 
 	// GROUP /count
 	g1, err := groupApiCount()
@@ -44,6 +44,7 @@ func AddRoute(e *echo.Echo, redisAddrs []string, cacheSize int) error {
 	count := e.Group("/api/count", g1...)
 	// badge
 	count.GET("/keep/badge.svg", api.KeepCount)
+	count.GET("/incr/badge.svg", api.IncrCount)
 
 	// GROUP /rank
 	return nil
@@ -57,11 +58,11 @@ func groupApiCount() ([]echo.MiddlewareFunc, error) {
 			hitctx := c.(*handler.HitCounterContext)
 			var err error
 			cookie := &http.Cookie{}
-			if cookie, err = c.Cookie("aid"); err != nil {
+			if cookie, err = c.Cookie("ckid"); err != nil {
 				v := fmt.Sprintf("%s-%d", c.RealIP(), time.Now().UnixNano())
 				b64 := base64.StdEncoding.EncodeToString([]byte(v))
 				cookie = &http.Cookie{
-					Name:     "aid",
+					Name:     "ckid",
 					Value:    b64,
 					Expires:  time.Now().Add(24 * time.Hour),
 					HttpOnly: true,
@@ -90,7 +91,8 @@ func groupApiCount() ([]echo.MiddlewareFunc, error) {
 			if !allan_util.StringInSlice(schema, []string{"http", "https"}) {
 				return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Not Support Schema %s", schema))
 			}
-			hitctx.Set("id", fmt.Sprintf("%s/%s", host, path))
+			hitctx.Set("host", host)
+			hitctx.Set("path", path)
 			return h(hitctx)
 		}
 	}

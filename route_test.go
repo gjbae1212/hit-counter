@@ -13,14 +13,14 @@ import (
 
 func TestAddRoute(t *testing.T) {
 	assert := assert.New(t)
-	err := AddRoute(nil, nil, 0)
+	err := AddRoute(nil, nil)
 	assert.Error(err)
 
 	s, err := miniredis.Run()
 	assert.NoError(err)
 	defer s.Close()
 
-	err = AddRoute(echo.New(), []string{s.Addr()}, 10)
+	err = AddRoute(echo.New(), []string{s.Addr()})
 	assert.NoError(err)
 }
 
@@ -44,7 +44,7 @@ func TestGroup(t *testing.T) {
 	f := funcs[0]
 	err = f(mockHandler)(hctx)
 	assert.NoError(err)
-	assert.NotNil(hctx.Get("aid"))
+	assert.NotNil(hctx.Get("ckid"))
 	assert.NoError(err)
 	assert.NotEmpty(w.Header().Get("Set-Cookie"))
 	log.Println(w.Header().Get("Set-Cookie"))
@@ -52,5 +52,6 @@ func TestGroup(t *testing.T) {
 	f = funcs[1]
 	err = f(mockHandler)(hctx)
 	assert.NoError(err)
-	assert.NotNil(hctx.Get("id"))
+	assert.NotNil(hctx.Get("host"))
+	assert.NotNil(hctx.Get("path"))
 }

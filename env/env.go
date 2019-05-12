@@ -1,7 +1,6 @@
 package env
 
 import (
-	"github.com/gjbae1212/datasize"
 	"log"
 	"os"
 	"strconv"
@@ -36,13 +35,6 @@ func init() {
 		}
 	}
 
-	if os.Getenv("CACHE_SIZE") != "" {
-		var size datasize.ByteSize
-		if err := size.UnmarshalText([]byte(os.Getenv("CACHE_SIZE"))); err != nil {
-			log.Panic(err)
-		}
-		cacheSize = int(size.Bytes())
-	}
 }
 
 func GetDebug() bool {
@@ -59,8 +51,4 @@ func GetSentryDSN() string {
 
 func GetRedisAddrs() []string {
 	return redisAddrs
-}
-
-func GetCacheSize() int {
-	return cacheSize
 }

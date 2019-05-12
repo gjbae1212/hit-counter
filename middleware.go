@@ -9,9 +9,9 @@ import (
 
 	"github.com/gjbae1212/hit-counter/handler"
 	"github.com/gjbae1212/hit-counter/sentry"
+	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	glog "github.com/labstack/gommon/log"
-	"github.com/labstack/echo/v4"
 )
 
 // It used to apply option

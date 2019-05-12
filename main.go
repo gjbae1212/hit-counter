@@ -49,7 +49,7 @@ func main() {
 	}
 
 	// add route
-	if err := AddRoute(e, env.GetRedisAddrs(), env.GetCacheSize()); err != nil {
+	if err := AddRoute(e, env.GetRedisAddrs()); err != nil {
 		log.Panic(err)
 	}
 

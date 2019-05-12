@@ -3,8 +3,8 @@ package sentry
 import (
 	"net/http"
 
-	allan_sentry "github.com/gjbae1212/go-module/sentry"
 	"github.com/getsentry/raven-go"
+	allan_sentry "github.com/gjbae1212/go-module/sentry"
 )
 
 var (
