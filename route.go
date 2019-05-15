@@ -10,8 +10,8 @@ import (
 	allan_util "github.com/gjbae1212/go-module/util"
 	"github.com/gjbae1212/hit-counter/handler"
 	"github.com/gjbae1212/hit-counter/handler/api"
-	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
+	"github.com/labstack/echo/v4"
 )
 
 func AddRoute(e *echo.Echo, redisAddrs []string) error {
@@ -33,10 +33,14 @@ func AddRoute(e *echo.Echo, redisAddrs []string) error {
 	e.HTTPErrorHandler = h.Error
 	// static
 	e.Static("/", "public")
-	// HealthCheck
+
+	// main
+	e.GET("/", h.Index)
+
+	// health check
 	e.GET("/healthcheck", h.HealthCheck)
 
-	// GROUP /count
+	// group /count
 	g1, err := groupApiCount()
 	if err != nil {
 		return errors.Wrap(err, "[err] AddRoute")

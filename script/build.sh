@@ -1,8 +1,7 @@
 #!/bin/bash
 set -e -o pipefail
 trap '[ "$?" -eq 0 ] || echo "Error Line:<$LINENO> Error Function:<${FUNCNAME}>"' EXIT
-
-cd `dirname $0`
+cd `dirname $0` && cd ..
 CURRENT=`pwd`
 
 function start
@@ -27,10 +26,17 @@ function codecov
    /bin/bash <(curl -s https://codecov.io/bash)
 }
 
+function upload_config
+{
+   set_env
+   gsutil cp $CURRENT/config/production.yaml $GCS_CONFIG_BUCKET/production.yaml
+}
+
+
 function set_env
 {
-   if [ -e $CURRENT/local_env.sh ]; then
-     source $CURRENT/local_env.sh
+   if [ -e $CURRENT/script/build_env.sh ]; then
+     source $CURRENT/script/build_env.sh
    fi
 }
 

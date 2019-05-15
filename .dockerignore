@@ -1,0 +1,12 @@
+.idea
+.git
+.DS_Store
+.iml
+.gitignore
+.dockerignore
+README.md
+hit-counter
+coverage.txt
+Dockerfile
+production.yaml
+/script/*

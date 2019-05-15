@@ -1,5 +1,8 @@
 .idea
+vendor
 hit-counter
-local_env.sh
 coverage.txt
 debug
+packrd
+script/build_env.sh
+config/production.yaml

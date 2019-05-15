@@ -1,0 +1,55 @@
+steps:
+- name: 'gcr.io/cloud-builders/gcloud'
+  args:
+  - kms
+  - decrypt
+  - --ciphertext-file=./config/encrypt_bucket_path
+  - --plaintext-file=/root/config/bucket_path
+  - --location=global
+  - --keyring=allan
+  - --key=cloud-build
+  volumes:
+    - name: 'config'
+      path: /root/config
+
+- name: 'gcr.io/cloud-builders/gsutil'
+  entrypoint: '/bin/bash'
+  args: ['./script/cloudbuild.sh', 'download_config']
+  volumes:
+    - name: 'config'
+      path: /root/config
+
+- name: 'gcr.io/cloud-builders/gcloud'
+  entrypoint: 'rm'
+  args: ['./cloudbuild.yaml']
+
+- name: 'gcr.io/cloud-builders/gcloud'
+  entrypoint: 'cp'
+  args: ['./config/Dockerfile', './Dockerfile']
+
+- name: 'gcr.io/cloud-builders/go:debian'
+  entrypoint: 'go'
+  args: ['mod', 'vendor']
+  env:
+  - 'GO111MODULE=on'
+  - 'PROJECT_ROOT=hit-counter'
+
+- name: 'gcr.io/cloud-builders/go:debian'
+  entrypoint: '/bin/bash'
+  args: ['./script/cloudbuild.sh', 'test']
+  env:
+  - 'GO111MODULE=on'
+  - 'PROJECT_ROOT=hit-counter'
+
+- name: 'gcr.io/cloud-builders/gcloud'
+  entrypoint: '/bin/bash'
+  args: ['./script/cloudbuild.sh', 'deploy']
+  env:
+  - 'GO111MODULE=on'
+  - 'PROJECT_ROOT=hit-counter'
+  timeout: 2000s
+  volumes:
+  - name: 'config'
+    path: /root/config
+
+timeout: 2500s
