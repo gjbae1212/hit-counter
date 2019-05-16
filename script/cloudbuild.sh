@@ -12,6 +12,7 @@ function deploy
 
 function test
 {
+  echo $SENTRY_DSN
   go test -v $(go list ./... | grep -v vendor) --count 1 -race
 }
 

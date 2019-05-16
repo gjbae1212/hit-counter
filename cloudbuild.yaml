@@ -40,6 +40,7 @@ steps:
   env:
   - 'GO111MODULE=on'
   - 'PROJECT_ROOT=hit-counter'
+  secretEnv: ['SENTRY_DSN']
 
 - name: 'gcr.io/cloud-builders/gcloud'
   entrypoint: '/bin/bash'
@@ -53,3 +54,8 @@ steps:
     path: /root/config
 
 timeout: 2500s
+
+secrets:
+- kmsKeyName: projects/allan-212102/locations/global/keyRings/allan/cryptoKeys/cloud-build
+  secretEnv:
+    SENTRY_DSN: CiQA7jhEYh6qOP8btVMd+e9mDKJ0iEaAsHeduNgegvblBubK9hESYwDsYGtfYgHO2+1eP8qGJcvIkiuO4kM2IPORYfg1gYeDVpEf3xiJYatvG05xewSMhcYRzgYQGTCrNN7E5zXQpkR3UGgFtzJqDzWBTOw6cmy2kPlyiZ4kdF3pVXz1+FP5jgnOfg==
