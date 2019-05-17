@@ -29,3 +29,9 @@ func TestGetRedisAddrs(t *testing.T) {
 	addrs := GetRedisAddrs()
 	assert.Equal(redisAddrs, addrs)
 }
+
+func TestGetForceHTTPS(t *testing.T) {
+	assert := assert.New(t)
+	forcehttps := GetForceHTTPS()
+	assert.Equal(forceHTTPS, forcehttps)
+}

@@ -7,11 +7,12 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/gjbae1212/hit-counter/env"
 	"github.com/gjbae1212/hit-counter/handler"
 	"github.com/gjbae1212/hit-counter/sentry"
-	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	glog "github.com/labstack/gommon/log"
+	"github.com/labstack/echo/v4"
 )
 
 // It used to apply option
@@ -72,13 +73,29 @@ func AddMiddleware(e *echo.Echo, opts ...Option) error {
 		return err
 	}
 	e.Use(mainchain...)
-
 	return nil
 }
 
 func middlewarePreChain() ([]echo.MiddlewareFunc, error) {
 	var chain []echo.MiddlewareFunc
 	// custom context
+	if env.GetForceHTTPS() {
+		// Apply HSTS
+		chain = append(chain, func(h echo.HandlerFunc) echo.HandlerFunc {
+			return func(c echo.Context) error {
+				c.Response().Header().Set("Strict-Transport-Security",
+					"max-age=2592000; includeSubdomains; preload")
+				return h(c)
+			}
+		})
+		// Redirect Https
+		chain = append(chain, middleware.HTTPSRedirect())
+	}
+	chain = append(chain, middleware.RemoveTrailingSlash())
+	chain = append(chain, middleware.NonWWWRedirect())
+	chain = append(chain, middleware.Rewrite(map[string]string{
+		"/static/*": "/public/$1",
+	}))
 	chain = append(chain, func(h echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			hitctx := &handler.HitCounterContext{c}
@@ -99,12 +116,6 @@ func middlewarePreChain() ([]echo.MiddlewareFunc, error) {
 			return h(hitctx)
 		}
 	})
-
-	chain = append(chain, middleware.NonWWWRedirect())
-	chain = append(chain, middleware.Rewrite(map[string]string{
-		"/static/*": "/public/$1",
-	}))
-	chain = append(chain, middleware.RemoveTrailingSlash())
 	return chain, nil
 }
 

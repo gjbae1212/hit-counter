@@ -14,6 +14,7 @@ var (
 
 var (
 	debug      bool
+	forceHTTPS bool
 	redisAddrs []string
 	cacheSize  int
 )
@@ -27,7 +28,13 @@ func init() {
 			log.Panic(err)
 		}
 	}
-
+	forceHTTPS = false
+	if os.Getenv("FORCE_HTTPS") != "" {
+		forceHTTPS, err = strconv.ParseBool(os.Getenv("FORCE_HTTPS"))
+		if err != nil {
+			log.Panic(err)
+		}
+	}
 	if os.Getenv("REDIS_ADDRS") != "" {
 		seps := strings.Split(os.Getenv("REDIS_ADDRS"), ",")
 		for _, sep := range seps {
@@ -51,4 +58,8 @@ func GetSentryDSN() string {
 
 func GetRedisAddrs() []string {
 	return redisAddrs
+}
+
+func GetForceHTTPS() bool {
+	return forceHTTPS
 }
