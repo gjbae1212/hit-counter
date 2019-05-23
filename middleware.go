@@ -7,6 +7,8 @@ import (
 	"strconv"
 	"time"
 
+	"encoding/base64"
+
 	"github.com/gjbae1212/hit-counter/env"
 	"github.com/gjbae1212/hit-counter/handler"
 	"github.com/gjbae1212/hit-counter/sentry"
@@ -96,6 +98,8 @@ func middlewarePreChain() ([]echo.MiddlewareFunc, error) {
 	chain = append(chain, middleware.Rewrite(map[string]string{
 		"/static/*": "/public/$1",
 	}))
+
+	// Add custom context
 	chain = append(chain, func(h echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			hitctx := &handler.HitCounterContext{c}
@@ -113,6 +117,29 @@ func middlewarePreChain() ([]echo.MiddlewareFunc, error) {
 			// set log
 			extraLog := hitctx.ExtraLog()
 			hitctx.WithContext("extra_log", extraLog)
+			return h(hitctx)
+		}
+	})
+
+	// Add cookie duration 24 hour.
+	chain = append(chain, func(h echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			hitctx := c.(*handler.HitCounterContext)
+			var err error
+			cookie := &http.Cookie{}
+			if cookie, err = c.Cookie("ckid"); err != nil {
+				v := fmt.Sprintf("%s-%d", c.RealIP(), time.Now().UnixNano())
+				b64 := base64.StdEncoding.EncodeToString([]byte(v))
+				cookie = &http.Cookie{
+					Name:     "ckid",
+					Value:    b64,
+					Expires:  time.Now().Add(24 * time.Hour),
+					Path:     "/",
+					HttpOnly: true,
+				}
+				hitctx.SetCookie(cookie)
+			}
+			hitctx.Set(cookie.Name, cookie.Value)
 			return h(hitctx)
 		}
 	})

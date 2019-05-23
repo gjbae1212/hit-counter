@@ -1,8 +1,9 @@
 package api_handler
 
 import (
-	"github.com/gjbae1212/go-badge"
 	"net/http"
+
+	"github.com/gjbae1212/go-badge"
 
 	"time"
 
@@ -19,7 +20,7 @@ import (
 
 var (
 	badgeFormat   = " %d / %d "
-	countIdFormat = "%s/%s"
+	countIdFormat = "%s%s"
 
 	domainGroup = "domain"
 )
@@ -131,7 +132,6 @@ func (h *Handler) KeepCount(c echo.Context) error {
 	cookie := hctx.Get("ckid").(string)
 	_ = cookie
 	id := fmt.Sprintf(countIdFormat, host, path)
-
 	daily, total, err := h.Counter.GetHitAll(id, time.Now())
 	if err != nil {
 		return err

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="This site could show a count visiting your sites or github projects when you will hang on a badge made whether by a html script or by a markdown.">
+    <meta name="author" content="gjbae1212@gmail.com">
+
+    <title>HITS</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="freelancer/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom fonts for this template -->
+    <link href="freelancer/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+
+    <!-- Plugin CSS -->
+    <link href="freelancer/vendor/magnific-popup/magnific-popup.css" rel="stylesheet" type="text/css">
+
+    <!-- Custom styles for this template -->
+    <link href="freelancer/css/freelancer.min.css" rel="stylesheet">
+
+</head>
+
+<body id="page-top">
+
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg bg-secondary fixed-top text-uppercase" id="mainNav">
+    <div class="container">
+        <a class="navbar-brand js-scroll-trigger" href="#page-top">HITS</a>
+        <button class="navbar-toggler navbar-toggler-right text-uppercase bg-primary text-white rounded" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            Menu
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item mx-0 mx-lg-1">
+                    <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#badge">GENERATE BADGE</a>
+                </li>
+                <li class="nav-item mx-0 mx-lg-1">
+                    <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#rank">SHOW RANK</a>
+                </li>
+                <li class="nav-item mx-0 mx-lg-1">
+                    <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#stream">SHOW STREAM</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Header -->
+<header class="masthead bg-primary text-white text-center">
+    <div class="container">
+        <!-- <img class="img-fluid mb-5 d-block mx-auto" src="freelancer/img/profile.png" alt=""> -->
+        <img class="img-fluid mb-5 d-block mx-auto" src="icon.png" alt="">
+        <h1 class="text-uppercase mb-0">START HITS!</h1>
+        <hr class="star-light">
+        <h2 class="font-weight-light mb-0">Hang on a badge of svg in your sites or github projects.</h2>
+        <h2 class="font-weight-light mb-0">Can be Counting a user visiting.</h2>
+    </div>
+</header>
+
+<!-- Badge Section -->
+<section id="badge">
+    <div class="container">
+        <h2 class="text-center text-uppercase text-secondary mb-0">GENERATE SVG BADGE</h2>
+        <hr class="star-dark mb-5">
+        <br/>
+        <h4 class="text-center text-uppercase text-secondary mb-0">Edit below url as your url.</h4>
+        <br/>
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <form name="sentMessage" id="contactForm" novalidate="novalidate" onsubmit="return false;">
+                    <div class="control-group">
+                        <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                            <label>URL</label>
+                            <input class="form-control" id="badge_url" type="text" placeholder="URL" required="required" data-validation-required-message="Please enter your sites or github" value="https://github.com/gjbae1212/hit-counter" onkeyup="generateBadge()">
+                        </div>
+                    </div>
+                    <br/>
+                    <div>
+                        <h7 class="text-center text-uppercase text-secondary mb-0">MARKDOWN</h7><br/>
+                        <p class="border border-success" style="background-color: #ced4da;" id="badge_markdown">
+                            <!-- mark down-->
+                            [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fgjbae1212%2Fhit-counter)](https://hits.seeyoufarm.com)
+                        </p>
+                        <button onclick="copyToClipboard('#badge_markdown')" class="btn btn-success">Copy</button><br/><br/>
+                    </div>
+                    <div>
+                        <h7 class="text-center text-uppercase text-secondary mb-0">HTML LINK</h7><br/>
+                        <p class="border border-success" style="background-color: #ced4da;" id="badge_link">
+                            <!-- badge link-->
+                            &lt;a href="https://hits.seeyoufarm.com"/&gt;&lt;img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fgjbae1212%2Fhit-counter"/&gt;&lt;/a&gt;
+                        </p>
+                        <button onclick="copyToClipboard('#badge_link');" class="btn btn-success">Copy</button>
+                    </div>
+                    <br/>
+                    <div class="text-center">
+                        <img src="https://hits.seeyoufarm.com/api/count/keep/badge.svg?url=https%3A%2F%2Fgithub.com%2Fgjbae1212%2Fhit-counter" id="badge_show">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Rank Section -->
+<section class="bg-primary text-white mb-0" id="rank">
+    <div class="container">
+        <h2 class="text-center text-uppercase text-white">SHOW RANK</h2>
+        <hr class="star-light mb-5">
+        <br/>
+        <h4 class="text-center text-uppercase text-white mb-0">It is top 10 github projects using the HITS.</h4>
+        <br/>
+        <div class="row">
+            <div class="col-lg-8 mx-auto border border-light text-center">
+                <p class="lead" id="rank1"></p>
+                <p class="lead" id="rank2"></p>
+                <p class="lead" id="rank3"></p>
+                <p class="lead" id="rank4"></p>
+                <p class="lead" id="rank5"></p>
+                <p class="lead" id="rank6"></p>
+                <p class="lead" id="rank7"></p>
+                <p class="lead" id="rank8"></p>
+                <p class="lead" id="rank9"></p>
+                <p class="lead" id="rank10"></p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!--Stream Section -->
+<section id="stream">
+    <div class="container">
+        <h2 class="text-center text-uppercase text-secondary mb-0">SHOW STREAM</h2>
+        <hr class="star-dark mb-5">
+        <br/>
+        <h4 class="text-center text-uppercase text-secondary mb-0">It is showing stream for visit counting at this time.</h4>
+        <br/>
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- Footer -->
+<footer class="footer text-center">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 mb-5 mb-lg-0">
+            </div>
+            <div class="col-md-4 mb-5 mb-lg-0">
+                <h4 class="text-uppercase mb-4">Powered BY</h4>
+                <p class="lead mb-0"><a href="https://github.com/gjbae1212">GJBAE1212</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+
+<!-- Bootstrap core JavaScript -->
+<script src="freelancer/vendor/jquery/jquery.min.js"></script>
+<script src="freelancer/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<!-- Plugin JavaScript -->
+<script src="freelancer/vendor/jquery-easing/jquery.easing.min.js"></script>
+<script src="freelancer/vendor/magnific-popup/jquery.magnific-popup.min.js"></script>
+
+
+<!-- Contact Form JavaScript -->
+<script src="freelancer/js/jqBootstrapValidation.js"></script>
+
+
+<!-- Custom scripts for this template -->
+<script src="freelancer/js/freelancer.min.js"></script>
+
+<!-- copy and paste -->
+<script type="text/javascript">
+    function copyToClipboard(element) {
+        var $temp = $("<input>");
+        $("body").append($temp);
+        $temp.val($(element).text()).select();
+        document.execCommand("copy");
+        $temp.remove();
+    }
+</script>
+
+<!-- golang wasm -->
+<script src="wasm_exec.js"></script>
+<script>
+    if (!WebAssembly.instantiateStreaming) { // polyfill
+        WebAssembly.instantiateStreaming = async (resp, importObject) => {
+            const source = await (await resp).arrayBuffer();
+            return await WebAssembly.instantiate(source, importObject);
+        };
+    }
+
+    const go = new Go();
+    let mod, inst;
+    WebAssembly.instantiateStreaming(fetch("hits.wasm"), go.importObject).then(
+        async (result) => {
+            mod = result.module;
+            inst = result.instance;
+            await go.run(inst);
+    }).catch((err) => {
+        console.error(err);
+    });
+</script>
+</body>
+
+</html>

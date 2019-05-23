@@ -31,3 +31,4 @@ func TestHandler_Error(t *testing.T) {
 	resp := w.Result()
 	assert.Equal(http.StatusInternalServerError, resp.StatusCode)
 }
+

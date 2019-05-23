@@ -1,5 +1,5 @@
 .idea
-vendor
+/vendor
 hit-counter
 coverage.txt
 debug

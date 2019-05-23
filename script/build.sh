@@ -18,7 +18,14 @@ function start
 function test
 {
    set_env
-   go test -v $(go list ./... | grep -v vendor) --count 1 -race -coverprofile=$CURRENT/coverage.txt -covermode=atomic
+   go test -v $(go list ./... | grep -v vendor | grep -v wasm) --count 1 -race -coverprofile=$CURRENT/coverage.txt -covermode=atomic
+}
+
+function wasm
+{
+  GOOS=js GOARCH=wasm go build -ldflags='-s -w' -o $CURRENT/view/hits.wasm $CURRENT/wasm/main.go
+  gzip $CURRENT/view/hits.wasm
+  mv $CURRENT/view/hits.wasm.gz $CURRENT/view/hits.wasm
 }
 
 function codecov

@@ -41,15 +41,8 @@ func TestGroup(t *testing.T) {
 	// group api
 	funcs, err := groupApiCount()
 	assert.NoError(err)
-	f := funcs[0]
-	err = f(mockHandler)(hctx)
-	assert.NoError(err)
-	assert.NotNil(hctx.Get("ckid"))
-	assert.NoError(err)
-	assert.NotEmpty(w.Header().Get("Set-Cookie"))
-	log.Println(w.Header().Get("Set-Cookie"))
 
-	f = funcs[1]
+	f := funcs[0]
 	err = f(mockHandler)(hctx)
 	assert.NoError(err)
 	assert.NotNil(hctx.Get("host"))

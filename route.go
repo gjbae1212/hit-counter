@@ -3,10 +3,7 @@ package main
 import (
 	"fmt"
 
-	"encoding/base64"
 	"net/http"
-	"time"
-
 	allan_util "github.com/gjbae1212/go-module/util"
 	"github.com/gjbae1212/hit-counter/handler"
 	"github.com/gjbae1212/hit-counter/handler/api"
@@ -34,6 +31,9 @@ func AddRoute(e *echo.Echo, redisAddrs []string) error {
 	// static
 	e.Static("/", "public")
 
+	// wasm
+	e.GET("/hits.wasm", h.Wasm)
+
 	// main
 	e.GET("/", h.Index)
 
@@ -56,27 +56,6 @@ func AddRoute(e *echo.Echo, redisAddrs []string) error {
 
 func groupApiCount() ([]echo.MiddlewareFunc, error) {
 	var chain []echo.MiddlewareFunc
-	// Add cookie duration 24 hour.
-	cookieFunc := func(h echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
-			hitctx := c.(*handler.HitCounterContext)
-			var err error
-			cookie := &http.Cookie{}
-			if cookie, err = c.Cookie("ckid"); err != nil {
-				v := fmt.Sprintf("%s-%d", c.RealIP(), time.Now().UnixNano())
-				b64 := base64.StdEncoding.EncodeToString([]byte(v))
-				cookie = &http.Cookie{
-					Name:     "ckid",
-					Value:    b64,
-					Expires:  time.Now().Add(24 * time.Hour),
-					HttpOnly: true,
-				}
-				hitctx.SetCookie(cookie)
-			}
-			hitctx.Set(cookie.Name, cookie.Value)
-			return h(hitctx)
-		}
-	}
 	// Add param
 	paramFunc := func(h echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
@@ -100,6 +79,6 @@ func groupApiCount() ([]echo.MiddlewareFunc, error) {
 			return h(hitctx)
 		}
 	}
-	chain = append(chain, cookieFunc, paramFunc)
+	chain = append(chain, paramFunc)
 	return chain, nil
 }

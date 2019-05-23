@@ -13,9 +13,12 @@ COPY . /go/src/github.com/gjbae1212/hit-counter
 RUN /usr/local/go/bin/go build -o /go/bin/hit-counter -tags appenginevm
 
 # Minimize a docker image
-
 FROM gcr.io/distroless/base:latest
 
 COPY --from=builder /go/bin/hit-counter /go/bin/hit-counter
+
+COPY --from=builder /go/src/github.com/gjbae1212/hit-counter/public /public
+
+COPY --from=builder /go/src/github.com/gjbae1212/hit-counter/view /go/src/github.com/gjbae1212/hit-counter/view
 
 CMD ["/go/bin/hit-counter"]
