@@ -9,6 +9,8 @@ import (
 
 	"strings"
 
+	"time"
+
 	"github.com/goware/urlx"
 )
 
@@ -92,13 +94,28 @@ func registerCallbacks() {
 	}))
 
 	// connect websocket
+	connectWebsocket()
+}
+
+func connectWebsocket() {
 	ws := js.Global().Get("WebSocket").New(defaultWS)
 	ws.Call("addEventListener", "open", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		println("websocket connection")
 		return nil
 	}))
 	ws.Call("addEventListener", "close", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		println("websocket close")
+		code := args[0].Get("code").Int()
+		println(fmt.Sprintf("websocket close %d\n", code))
+		if code == 1000 {
+			println("websocket bye!")
+		} else {
+			go func() {
+				select {
+				case <-time.After(time.Second * 10):
+					connectWebsocket()
+				}
+			}()
+		}
 		return nil
 	}))
 	ws.Call("addEventListener", "message", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
@@ -108,7 +125,18 @@ func registerCallbacks() {
 		return nil
 	}))
 	ws.Call("addEventListener", "error", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		println("websocket error")
+		code := args[0].Get("code").String()
+		println(fmt.Sprintf("websocket error %s\n", code))
+		if "ECONNREFUSED" == code {
+			go func() {
+				select {
+				case <-time.After(time.Second * 10):
+					connectWebsocket()
+				}
+			}()
+		} else {
+			println("websocket bye!")
+		}
 		return nil
 	}))
 }
