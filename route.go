@@ -34,6 +34,9 @@ func AddRoute(e *echo.Echo, redisAddrs []string) error {
 	// wasm
 	e.GET("/hits.wasm", h.Wasm)
 
+	// websocket
+	e.GET("/ws", h.WebSocket)
+
 	// main
 	e.GET("/", h.Index)
 

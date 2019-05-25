@@ -12,6 +12,7 @@ import (
 	"context"
 
 	"github.com/cespare/xxhash"
+	allan_util "github.com/gjbae1212/go-module/util"
 	"github.com/gjbae1212/hit-counter/counter"
 	"github.com/gjbae1212/hit-counter/handler"
 	"github.com/gjbae1212/hit-counter/sentry"
@@ -52,6 +53,14 @@ func (task *RankTask) Process(ctx context.Context) error {
 	}
 
 	return nil
+}
+
+type WebSocketMessage struct {
+	Payload []byte
+}
+
+func (wsm *WebSocketMessage) GetMessage() []byte {
+	return wsm.Payload
 }
 
 func (h *Handler) IncrCount(c echo.Context) error {
@@ -119,6 +128,10 @@ func (h *Handler) IncrCount(c echo.Context) error {
 		sentry.SendSentry(err, nil)
 	}
 
+	// Broadcast message to users to which connected
+	h.WebSocketBreaker.BroadCast(&WebSocketMessage{
+		Payload: []byte(fmt.Sprintf("[%s] %s", allan_util.TimeToString(time.Now()), id))},
+	)
 	return h.returnCount(hctx, daily, total)
 }
 

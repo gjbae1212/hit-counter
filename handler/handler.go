@@ -3,6 +3,8 @@ package handler
 import (
 	"fmt"
 
+	websocket "github.com/gjbae1212/go-module/websocket"
+
 	"time"
 
 	"github.com/gjbae1212/go-module/async_task"
@@ -13,9 +15,10 @@ import (
 )
 
 type Handler struct {
-	Counter    counter.Counter
-	LocalCache *cache.Cache
-	AsyncTask  async_task.Keeper
+	Counter          counter.Counter
+	LocalCache       *cache.Cache
+	AsyncTask        async_task.Keeper
+	WebSocketBreaker websocket.Breaker
 }
 
 func NewHandler(redisAddrs []string) (*Handler, error) {
@@ -23,12 +26,14 @@ func NewHandler(redisAddrs []string) (*Handler, error) {
 		return nil, fmt.Errorf("[err] handler empty params \n")
 	}
 
+	// create local cache
 	localCache := cache.New(24*time.Hour, 10*time.Minute)
 	ctr, err := counter.NewCounter(counter.WithRedisOption(redisAddrs))
 	if err != nil {
 		return nil, errors.Wrap(err, "[err] initialize counter \n")
 	}
 
+	// create async task
 	asyncTask, err := async_task.NewAsyncTask(
 		async_task.WithQueueSizeOption(1000),
 		async_task.WithWorkerSizeOption(5),
@@ -37,14 +42,24 @@ func NewHandler(redisAddrs []string) (*Handler, error) {
 			sentry.SendSentry(err, nil)
 		}),
 	)
-
 	if err != nil {
 		return nil, errors.Wrap(err, "[err] async task initialize \n")
 	}
 
+	// create websocket breaker
+	breaker, err := websocket.NewBreaker(websocket.WithMaxReadLimit(1024),
+		websocket.WithMaxMessagePoolLength(500),
+		websocket.WithErrorHandlerOption(func(err error) {
+			sentry.SendSentry(err, nil)
+		}))
+	if err != nil {
+		return nil, errors.Wrap(err, "[err] websocket breaker initialize")
+	}
+
 	return &Handler{
-		LocalCache: localCache,
-		Counter:    ctr,
-		AsyncTask:  asyncTask,
+		LocalCache:       localCache,
+		Counter:          ctr,
+		AsyncTask:        asyncTask,
+		WebSocketBreaker: breaker,
 	}, nil
 }

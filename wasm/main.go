@@ -16,9 +16,10 @@ var (
 	markdownFormat = "[![Hits](%s)](%s)"
 	showFormat     = "<a href=\"%s\"/><img src=\"%s\"/></a>"
 	linkFormat     = "&lt;a href=\"%s\"/&gt;&lt;img src=\"%s\"/&gt;&lt;/a&gt;"
-	defaultURL     = "https://hits.seeyoufarm.com"
 	incrPath       = "api/count/incr/badge.svg"
 	keepPath       = "api/count/keep/badge.svg"
+	defaultDomain  = ""
+	defaultURL     = ""
 )
 
 func parseURL(s string) (schema, host, port, path, query, fragment string, err error) {
@@ -66,7 +67,7 @@ func generateBadge(value string) {
 		link = "INVALID URL"
 	} else {
 		normalizeURL := ""
-		if path == "" {
+		if path == "" || path == "/" {
 			normalizeURL = fmt.Sprintf("%s://%s", schema, host)
 		} else {
 			normalizeURL = fmt.Sprintf("%s://%s%s", schema, host, path)
@@ -89,12 +90,39 @@ func registerCallbacks() {
 		return nil
 	}))
 
-	// TODO: github project rank rendering
-	// TODO: websocket
+	// TODO: RANKING
+
+	// connect websocket
+	ws := js.Global().Get("WebSocket").New(fmt.Sprintf("ws://%s/ws", defaultDomain))
+	ws.Call("addEventListener", "open", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		println("websocket connection")
+		return nil
+	}))
+	ws.Call("addEventListener", "close", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		println("websocket close")
+		return nil
+	}))
+	ws.Call("addEventListener", "message", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		p := js.Global().Get("document").Call("createElement", "p")
+		//p.Set("class", "lead")
+		p.Set("innerHTML", args[0].Get("data"))
+		js.Global().Get("document").Call("getElementById", "stream_view").Call("prepend", p)
+		return nil
+	}))
+	ws.Call("addEventListener", "error", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		println("websocket error")
+		return nil
+	}))
 }
 
 func main() {
 	println("START GO WASM")
+	// LOCAL MODE
+	//defaultDomain = "localhost:8080"
+	//defaultURL = fmt.Sprintf("http://%s", defaultDomain)
+	// PRODUCTION MODE
+	defaultDomain = "hits.seeyoufarm.com"
+	defaultURL = fmt.Sprintf("https://%s", defaultDomain)
 	registerCallbacks()
 	c := make(chan struct{}, 0)
 	<-c

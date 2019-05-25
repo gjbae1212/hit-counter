@@ -1,10 +1,11 @@
 package api_handler
 
 import (
-	"github.com/gjbae1212/go-badge"
 	"net/http/httptest"
 	"testing"
 	"time"
+
+	"github.com/gjbae1212/go-badge"
 
 	"github.com/labstack/echo/v4"
 
@@ -19,6 +20,20 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/stretchr/testify/assert"
 )
+
+func TestWebSocketMessage_GetMessage(t *testing.T) {
+	assert := assert.New(t)
+
+	tests := map[string]struct {
+		input string
+		want  string
+	}{"step1": {input: "hi", want: "hi"}}
+
+	for _, v := range tests {
+		wsm := &WebSocketMessage{Payload: []byte(v.input)}
+		assert.Equal(wsm.Payload, wsm.GetMessage())
+	}
+}
 
 func TestRankTask_Process(t *testing.T) {
 	assert := assert.New(t)
