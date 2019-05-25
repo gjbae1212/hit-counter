@@ -119,6 +119,9 @@
         <br/>
         <div class="row">
             <div class="col-lg-8 mx-auto alert alert-secondary" id="rank_view">
+            {{range .Ranks}}
+                <p>{{.}}</p>
+            {{end}}
             </div>
         </div>
     </div>

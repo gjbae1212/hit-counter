@@ -9,9 +9,6 @@ import (
 
 	"strings"
 
-	"encoding/json"
-	"io/ioutil"
-	"net/http"
 	"github.com/goware/urlx"
 )
 
@@ -114,29 +111,6 @@ func registerCallbacks() {
 		println("websocket error")
 		return nil
 	}))
-
-	// get github total rank
-	resp, err := http.Get(fmt.Sprintf("%s/api/rank/github/total.json", defaultURL))
-	if err != nil {
-		println(err)
-		return
-	}
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		println(err)
-		return
-	}
-	var ranks []string
-	if err := json.Unmarshal(body, &ranks); err != nil {
-		println(err)
-		return
-	}
-	for _, rank := range ranks {
-		p := js.Global().Get("document").Call("createElement", "p")
-		p.Set("innerHTML", rank)
-		js.Global().Get("document").Call("getElementById", "rank_view").Call("append", p)
-	}
 }
 
 func main() {

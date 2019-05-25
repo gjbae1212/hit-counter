@@ -60,7 +60,7 @@ func AddRoute(e *echo.Echo, redisAddrs []string) error {
 		return errors.Wrap(err, "[err] AddRoute")
 	}
 	rank := e.Group("/api/rank", g2...)
-	rank.GET("/github/total.json", api.GithubRankOfTotal)
+	_ = rank
 
 	return nil
 }

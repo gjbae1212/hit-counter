@@ -1,18 +1,28 @@
 package handler
 
 import (
-	"io/ioutil"
 	"net/http"
-	"path/filepath"
+
+	"bytes"
+	"fmt"
 
 	"github.com/labstack/echo/v4"
-	"github.com/gjbae1212/hit-counter/util"
 )
 
 func (h *Handler) Index(c echo.Context) error {
-	buf, err := ioutil.ReadFile(filepath.Join(util.GetRoot(), "view", "index.html"))
+	group := "github.com"
+	scores, err := h.Counter.GetRankTotalByLimit(group, 10)
 	if err != nil {
 		return err
 	}
-	return c.HTMLBlob(http.StatusOK, buf)
+	var ranks []string
+	for i, score := range scores {
+		ranks = append(ranks, fmt.Sprintf("(%d) %s%s : (%d count)", i+1, group, score.Name, score.Value))
+	}
+
+	buf := new(bytes.Buffer)
+	h.IndexTemplate.Execute(buf, struct {
+		Ranks []string
+	}{Ranks: ranks})
+	return c.HTMLBlob(http.StatusOK, buf.Bytes())
 }

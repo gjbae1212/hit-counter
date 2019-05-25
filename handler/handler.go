@@ -2,14 +2,18 @@ package handler
 
 import (
 	"fmt"
+	"html/template"
 
 	websocket "github.com/gjbae1212/go-module/websocket"
 
 	"time"
 
+	"path/filepath"
+
 	"github.com/gjbae1212/go-module/async_task"
 	"github.com/gjbae1212/hit-counter/counter"
 	"github.com/gjbae1212/hit-counter/sentry"
+	"github.com/gjbae1212/hit-counter/util"
 	cache "github.com/patrickmn/go-cache"
 	"github.com/pkg/errors"
 )
@@ -19,6 +23,8 @@ type Handler struct {
 	LocalCache       *cache.Cache
 	AsyncTask        async_task.Keeper
 	WebSocketBreaker websocket.Breaker
+
+	IndexTemplate *template.Template
 }
 
 func NewHandler(redisAddrs []string) (*Handler, error) {
@@ -56,10 +62,17 @@ func NewHandler(redisAddrs []string) (*Handler, error) {
 		return nil, errors.Wrap(err, "[err] websocket breaker initialize")
 	}
 
+	// template
+	indexTemplate, err := template.ParseFiles(filepath.Join(util.GetRoot(), "view", "index.html"))
+	if err != nil {
+		return nil, errors.Wrap(err, "[err] template initialize")
+	}
+
 	return &Handler{
 		LocalCache:       localCache,
 		Counter:          ctr,
 		AsyncTask:        asyncTask,
 		WebSocketBreaker: breaker,
+		IndexTemplate:    indexTemplate,
 	}, nil
 }
