@@ -20,6 +20,7 @@ var (
 	keepPath       = "api/count/keep/badge.svg"
 	defaultDomain  = ""
 	defaultURL     = ""
+	defaultWS      = ""
 )
 
 func parseURL(s string) (schema, host, port, path, query, fragment string, err error) {
@@ -93,7 +94,7 @@ func registerCallbacks() {
 	// TODO: RANKING
 
 	// connect websocket
-	ws := js.Global().Get("WebSocket").New(fmt.Sprintf("ws://%s/ws", defaultDomain))
+	ws := js.Global().Get("WebSocket").New(defaultWS)
 	ws.Call("addEventListener", "open", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		println("websocket connection")
 		return nil
@@ -120,9 +121,11 @@ func main() {
 	// LOCAL MODE
 	//defaultDomain = "localhost:8080"
 	//defaultURL = fmt.Sprintf("http://%s", defaultDomain)
+	//defaultWS = fmt.Sprintf("ws://%s/ws", defaultDomain)
 	// PRODUCTION MODE
 	defaultDomain = "hits.seeyoufarm.com"
 	defaultURL = fmt.Sprintf("https://%s", defaultDomain)
+	defaultWS = fmt.Sprintf("wss://%s/ws", defaultDomain)
 	registerCallbacks()
 	c := make(chan struct{}, 0)
 	<-c
