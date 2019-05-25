@@ -9,6 +9,9 @@ import (
 
 	"strings"
 
+	"encoding/json"
+	"io/ioutil"
+	"net/http"
 	"github.com/goware/urlx"
 )
 
@@ -91,8 +94,6 @@ func registerCallbacks() {
 		return nil
 	}))
 
-	// TODO: RANKING
-
 	// connect websocket
 	ws := js.Global().Get("WebSocket").New(defaultWS)
 	ws.Call("addEventListener", "open", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
@@ -105,7 +106,6 @@ func registerCallbacks() {
 	}))
 	ws.Call("addEventListener", "message", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		p := js.Global().Get("document").Call("createElement", "p")
-		//p.Set("class", "lead")
 		p.Set("innerHTML", args[0].Get("data"))
 		js.Global().Get("document").Call("getElementById", "stream_view").Call("prepend", p)
 		return nil
@@ -114,6 +114,29 @@ func registerCallbacks() {
 		println("websocket error")
 		return nil
 	}))
+
+	// get github total rank
+	resp, err := http.Get(fmt.Sprintf("%s/api/rank/github/total.json", defaultURL))
+	if err != nil {
+		println(err)
+		return
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		println(err)
+		return
+	}
+	var ranks []string
+	if err := json.Unmarshal(body, &ranks); err != nil {
+		println(err)
+		return
+	}
+	for _, rank := range ranks {
+		p := js.Global().Get("document").Call("createElement", "p")
+		p.Set("innerHTML", rank)
+		js.Global().Get("document").Call("getElementById", "rank_view").Call("append", p)
+	}
 }
 
 func main() {
@@ -122,6 +145,7 @@ func main() {
 	//defaultDomain = "localhost:8080"
 	//defaultURL = fmt.Sprintf("http://%s", defaultDomain)
 	//defaultWS = fmt.Sprintf("ws://%s/ws", defaultDomain)
+
 	// PRODUCTION MODE
 	defaultDomain = "hits.seeyoufarm.com"
 	defaultURL = fmt.Sprintf("https://%s", defaultDomain)

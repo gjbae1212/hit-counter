@@ -4,11 +4,12 @@ import (
 	"fmt"
 
 	"net/http"
+
 	allan_util "github.com/gjbae1212/go-module/util"
 	"github.com/gjbae1212/hit-counter/handler"
 	"github.com/gjbae1212/hit-counter/handler/api"
-	"github.com/pkg/errors"
 	"github.com/labstack/echo/v4"
+	"github.com/pkg/errors"
 )
 
 func AddRoute(e *echo.Echo, redisAddrs []string) error {
@@ -43,7 +44,7 @@ func AddRoute(e *echo.Echo, redisAddrs []string) error {
 	// health check
 	e.GET("/healthcheck", h.HealthCheck)
 
-	// group /count
+	// group /api/count
 	g1, err := groupApiCount()
 	if err != nil {
 		return errors.Wrap(err, "[err] AddRoute")
@@ -53,7 +54,14 @@ func AddRoute(e *echo.Echo, redisAddrs []string) error {
 	count.GET("/keep/badge.svg", api.KeepCount)
 	count.GET("/incr/badge.svg", api.IncrCount)
 
-	// GROUP /rank
+	// group /api/rank
+	g2, err := groupApiRank()
+	if err != nil {
+		return errors.Wrap(err, "[err] AddRoute")
+	}
+	rank := e.Group("/api/rank", g2...)
+	rank.GET("/github/total.json", api.GithubRankOfTotal)
+
 	return nil
 }
 
@@ -83,5 +91,10 @@ func groupApiCount() ([]echo.MiddlewareFunc, error) {
 		}
 	}
 	chain = append(chain, paramFunc)
+	return chain, nil
+}
+
+func groupApiRank() ([]echo.MiddlewareFunc, error) {
+	var chain []echo.MiddlewareFunc
 	return chain, nil
 }
