@@ -12,9 +12,9 @@ import (
 	"github.com/gjbae1212/hit-counter/env"
 	"github.com/gjbae1212/hit-counter/handler"
 	"github.com/gjbae1212/hit-counter/sentry"
+	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	glog "github.com/labstack/gommon/log"
-	"github.com/labstack/echo/v4"
 )
 
 // It used to apply option
@@ -192,11 +192,13 @@ func middlewareChain() ([]echo.MiddlewareFunc, error) {
 				return err
 			}
 			extraLog := hitctx.ValueContext("extra_log").(map[string]interface{})
-			extraLog["status"] = hitctx.Response().Status
-			rest := stop.Sub(start)
-			extraLog["latency"] = strconv.FormatInt(int64(rest), 10)
-			extraLog["latency_human"] = rest.String()
-			hitctx.Logger().Infoj(extraLog)
+			if extraLog["uri"] != "/healthcheck" {
+				extraLog["status"] = hitctx.Response().Status
+				rest := stop.Sub(start)
+				extraLog["latency"] = strconv.FormatInt(int64(rest), 10)
+				extraLog["latency_human"] = rest.String()
+				hitctx.Logger().Infoj(extraLog)
+			}
 			return nil
 		}
 	}
