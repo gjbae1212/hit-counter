@@ -51,7 +51,7 @@ https://hits.seeyoufarm.com/api/count/keep/badge.svg?url={your-website or github
 ##### Of course you should modify a little codes associated URL(as hits.seeyoufarm.com) in view/index.html and wasm/main.go 
       
 ## ETC
-[HITS](https://hits.seeyoufarm.com) will increase paging count when getting a bdage api is requested.
+[HITS](https://hits.seeyoufarm.com) will increase paging count when getting a badge api is requested.
 
 It will only be to increase paging count in DB(redis), but something as request information(ip, header, ... and so on) don't store in DB(redis).
 
