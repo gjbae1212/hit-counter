@@ -108,14 +108,8 @@ func (d *db) GetHitAll(id string, t time.Time) (daily *Score, total *Score, err 
 		return
 	}
 
-	// empty
-	if v == nil {
-		return
-	}
-
-	list := v.([]interface{})[0].([]interface{})
-	if list[0] != nil {
-		dailyValue, suberr := strconv.ParseInt(string(list[0].([]byte)), 10, 64)
+	if v.([]interface{})[0] != nil {
+		dailyValue, suberr := strconv.ParseInt(string(v.([]interface{})[0].([]byte)), 10, 64)
 		if suberr != nil {
 			err = errors.Wrap(suberr, "[err] GetHitAll")
 			return
@@ -123,8 +117,8 @@ func (d *db) GetHitAll(id string, t time.Time) (daily *Score, total *Score, err 
 		daily = &Score{Name: id, Value: dailyValue}
 	}
 
-	if list[1] != nil {
-		totalValue, suberr := strconv.ParseInt(string(list[1].([]byte)), 10, 64)
+	if v.([]interface{})[1] != nil {
+		totalValue, suberr := strconv.ParseInt(string(v.([]interface{})[1].([]byte)), 10, 64)
 		if suberr != nil {
 			err = errors.Wrap(suberr, "[err] GetHitAll")
 			return
