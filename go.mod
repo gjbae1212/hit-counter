@@ -8,7 +8,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1
 	github.com/getsentry/raven-go v0.2.0
 	github.com/gjbae1212/go-badge v1.0.0
-	github.com/gjbae1212/go-module v0.4.5
+	github.com/gjbae1212/go-module v0.4.6
 	github.com/gomodule/redigo v2.0.0+incompatible // indirect
 	github.com/google/go-cmp v0.3.0
 	github.com/labstack/echo/v4 v4.0.0
