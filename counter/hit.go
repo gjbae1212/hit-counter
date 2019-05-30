@@ -27,7 +27,7 @@ func (d *db) IncreaseHitOfDaily(id string, t time.Time) (*Score, error) {
 		return nil, errors.Wrap(err, "[err] IncreaseHitOfDaily")
 	}
 
-	return &Score{Name: id, Value: v.(int64)}, nil
+	return &Score{Name: key, Value: v.(int64)}, nil
 }
 
 func (d *db) IncreaseHitOfTotal(id string) (*Score, error) {
@@ -40,7 +40,7 @@ func (d *db) IncreaseHitOfTotal(id string) (*Score, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "[err] IncreaseHitOfTotal")
 	}
-	return &Score{Name: id, Value: v.(int64)}, nil
+	return &Score{Name: key, Value: v.(int64)}, nil
 }
 
 func (d *db) GetHitOfDaily(id string, t time.Time) (*Score, error) {
@@ -66,7 +66,7 @@ func (d *db) GetHitOfDaily(id string, t time.Time) (*Score, error) {
 		return nil, errors.Wrap(err, "[err] GetHitOfDaily")
 	}
 
-	return &Score{Name: id, Value: rt}, nil
+	return &Score{Name: key, Value: rt}, nil
 }
 
 func (d *db) GetHitOfTotal(id string) (*Score, error) {
@@ -90,7 +90,7 @@ func (d *db) GetHitOfTotal(id string) (*Score, error) {
 		return nil, errors.Wrap(err, "[err] GetHitOfTotal")
 	}
 
-	return &Score{Name: id, Value: rt}, nil
+	return &Score{Name: key, Value: rt}, nil
 }
 
 func (d *db) GetHitOfDailyAndTotal(id string, t time.Time) (daily *Score, total *Score, err error) {
@@ -114,7 +114,7 @@ func (d *db) GetHitOfDailyAndTotal(id string, t time.Time) (daily *Score, total 
 			err = errors.Wrap(suberr, "[err] GetHitAll")
 			return
 		}
-		daily = &Score{Name: id, Value: dailyValue}
+		daily = &Score{Name: key1, Value: dailyValue}
 	}
 
 	if v.([]interface{})[1] != nil {
@@ -123,7 +123,36 @@ func (d *db) GetHitOfDailyAndTotal(id string, t time.Time) (daily *Score, total 
 			err = errors.Wrap(suberr, "[err] GetHitAll")
 			return
 		}
-		total = &Score{Name: id, Value: totalValue}
+		total = &Score{Name: key2, Value: totalValue}
+	}
+	return
+}
+
+func (d *db) GetHitOfDailyByRange(id string, timeRange []time.Time) (scores []*Score, err error) {
+	if id == "" || len(timeRange) == 0 {
+		err = fmt.Errorf("[err] GetHitOfDailyByRange")
+		return
+	}
+
+	var keys []interface{}
+	for _, t := range timeRange {
+		keys = append(keys, fmt.Sprintf(hitDailyFormat, allan_util.TimeToDailyStringFormat(t), id))
+	}
+
+	v, suberr := d.redis.DoWithTimeout(timeout, "MGET", keys...)
+	if suberr != nil {
+		err = errors.Wrap(suberr, "[err] GetHitOfDailyByRange")
+		return
+	}
+
+	for i, key := range keys {
+		if v.([]interface{})[i] != nil {
+			dailyValue, suberr := strconv.ParseInt(string(v.([]interface{})[i].([]byte)), 10, 64)
+			if suberr != nil {
+				err = errors.Wrap(suberr, "[err] GetHitOfDailyByRange")
+			}
+			scores = append(scores, &Score{Name: key.(string), Value:  dailyValue})
+		}
 	}
 	return
 }

@@ -36,6 +36,7 @@ type (
 		IncreaseRankOfTotal(group, id string) (*Score, error)
 		GetRankDailyByLimit(group string, limit int, t time.Time) ([]*Score, error)
 		GetRankTotalByLimit(group string, limit int) ([]*Score, error)
+		GetHitOfDailyByRange(id string, timeRange []time.Time) (scores []*Score, err error)
 	}
 
 	db struct {

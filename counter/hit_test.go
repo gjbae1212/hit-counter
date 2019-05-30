@@ -6,6 +6,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/davecgh/go-spew/spew"
+
 	"github.com/alicebob/miniredis"
 	allan_util "github.com/gjbae1212/go-module/util"
 	"github.com/google/go-cmp/cmp"
@@ -92,6 +94,7 @@ func TestDb_GetHitOfDaily(t *testing.T) {
 	v, err = counter.GetHitOfDaily("test", now)
 	assert.NoError(err)
 	assert.Equal(1000, int(v.Value))
+	assert.Equal(fmt.Sprintf(hitDailyFormat, allan_util.TimeToDailyStringFormat(now), "test"), v.Name)
 }
 
 func TestDb_GetHitOfTotal(t *testing.T) {
@@ -120,6 +123,7 @@ func TestDb_GetHitOfTotal(t *testing.T) {
 	v, err = counter.GetHitOfTotal("test")
 	assert.NoError(err)
 	assert.Equal(1000, int(v.Value))
+	assert.Equal(fmt.Sprintf(hitTotalFormat, "test"), v.Name)
 }
 
 func TestDb_GetHitOfDailyAndTotal(t *testing.T) {
@@ -142,9 +146,9 @@ func TestDb_GetHitOfDailyAndTotal(t *testing.T) {
 		"error1":    {inputs: []interface{}{"", time.Time{}}, wants: []*Score{nil, nil}, err: true},
 		"error2":    {inputs: []interface{}{id, time.Time{}}, wants: []*Score{nil, nil}, err: true},
 		"empty":     {inputs: []interface{}{id, now}, wants: []*Score{nil, nil}, err: false},
-		"onlytotal": {inputs: []interface{}{"onlytotal", now}, wants: []*Score{nil, &Score{Name: "onlytotal", Value: 10}}, err: false},
-		"onlydaily": {inputs: []interface{}{"onlydaily", now}, wants: []*Score{&Score{Name: "onlydaily", Value: 10}, nil}, err: false},
-		"both":      {inputs: []interface{}{"both", now}, wants: []*Score{&Score{Name: "both", Value: 10}, &Score{Name: "both", Value: 10}}, err: false},
+		"onlytotal": {inputs: []interface{}{"onlytotal", now}, wants: []*Score{nil, &Score{Name: fmt.Sprintf(hitTotalFormat, "onlytotal"), Value: 10}}, err: false},
+		"onlydaily": {inputs: []interface{}{"onlydaily", now}, wants: []*Score{&Score{Name: fmt.Sprintf(hitDailyFormat, allan_util.TimeToDailyStringFormat(now), "onlydaily"), Value: 10}, nil}, err: false},
+		"both":      {inputs: []interface{}{"both", now}, wants: []*Score{&Score{Name: fmt.Sprintf(hitDailyFormat, allan_util.TimeToDailyStringFormat(now), "both"), Value: 10}, &Score{Name: fmt.Sprintf(hitTotalFormat, "both"), Value: 10}}, err: false},
 	}
 
 	test := tests["error1"]
@@ -193,4 +197,40 @@ func TestDb_GetHitOfDailyAndTotal(t *testing.T) {
 	assert.NoError(err)
 	assert.True(cmp.Equal(test.wants[0], daily))
 	assert.True(cmp.Equal(test.wants[1], total))
+}
+
+func TestDb_GetHitOfDailyByRange(t *testing.T) {
+	assert := assert.New(t)
+
+	s, err := miniredis.Run()
+	assert.NoError(err)
+	defer s.Close()
+
+	counter, err := NewCounter(WithRedisOption([]string{s.Addr()}))
+	assert.NoError(err)
+
+	_, err = counter.GetHitOfDailyByRange("", []time.Time{})
+	assert.Error(err)
+
+	scores, err := counter.GetHitOfDailyByRange("test.com", []time.Time{time.Now(), time.Now().Add(-1 * 24 * time.Hour)})
+	assert.NoError(err)
+	assert.Len(scores, 0)
+
+	var timeRange []time.Time
+	prev := time.Now().Add(-30 * 24 * time.Hour)
+	now := time.Now()
+	for now.Unix() > prev.Unix() {
+		timeRange = append(timeRange, prev)
+		_, err := counter.IncreaseHitOfDaily("test.com", prev)
+		assert.NoError(err)
+		prev = prev.Add(24 * time.Hour)
+	}
+
+	scores, err = counter.GetHitOfDailyByRange("test.com", timeRange)
+	assert.NoError(err)
+	assert.Len(scores, 30)
+	spew.Dump(scores)
+	for _, score := range scores {
+		assert.Equal(1, int(score.Value))
+	}
 }
