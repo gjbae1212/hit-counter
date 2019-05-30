@@ -80,7 +80,7 @@ func (h *Handler) IncrCount(c echo.Context) error {
 	// so it must be limited.
 	v, ok := h.LocalCache.Get(ip)
 	if v != nil && v.(int64) > 20 {
-		daily, total, err := h.Counter.GetHitAll(id, time.Now())
+		daily, total, err := h.Counter.GetHitOfDailyAndTotal(id, time.Now())
 		if err != nil {
 			return err
 		}
@@ -97,7 +97,7 @@ func (h *Handler) IncrCount(c echo.Context) error {
 	// It would limit for count a hit when a user is accessing more than 1 per second.
 	temporaryId := fmt.Sprintf("%d", xxhash.Sum64String(fmt.Sprintf("%s-%s", ip, userAgent)))
 	if _, ok := h.LocalCache.Get(temporaryId); ok {
-		daily, total, err := h.Counter.GetHitAll(id, time.Now())
+		daily, total, err := h.Counter.GetHitOfDailyAndTotal(id, time.Now())
 		if err != nil {
 			return err
 		}
@@ -145,7 +145,7 @@ func (h *Handler) KeepCount(c echo.Context) error {
 	cookie := hctx.Get("ckid").(string)
 	_ = cookie
 	id := fmt.Sprintf(countIdFormat, host, path)
-	daily, total, err := h.Counter.GetHitAll(id, time.Now())
+	daily, total, err := h.Counter.GetHitOfDailyAndTotal(id, time.Now())
 	if err != nil {
 		return err
 	}

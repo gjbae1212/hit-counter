@@ -122,7 +122,7 @@ func TestDb_GetHitOfTotal(t *testing.T) {
 	assert.Equal(1000, int(v.Value))
 }
 
-func TestDb_GetHitAll(t *testing.T) {
+func TestDb_GetHitOfDailyAndTotal(t *testing.T) {
 	assert := assert.New(t)
 
 	s, err := miniredis.Run()
@@ -148,14 +148,14 @@ func TestDb_GetHitAll(t *testing.T) {
 	}
 
 	test := tests["error1"]
-	_, _, err = counter.GetHitAll(test.inputs[0].(string), test.inputs[1].(time.Time))
+	_, _, err = counter.GetHitOfDailyAndTotal(test.inputs[0].(string), test.inputs[1].(time.Time))
 	assert.Error(err)
 	test = tests["error2"]
-	_, _, err = counter.GetHitAll(test.inputs[0].(string), test.inputs[1].(time.Time))
+	_, _, err = counter.GetHitOfDailyAndTotal(test.inputs[0].(string), test.inputs[1].(time.Time))
 	assert.Error(err)
 
 	test = tests["empty"]
-	daily, total, err := counter.GetHitAll(test.inputs[0].(string), test.inputs[1].(time.Time))
+	daily, total, err := counter.GetHitOfDailyAndTotal(test.inputs[0].(string), test.inputs[1].(time.Time))
 	assert.NoError(err)
 	assert.Equal(test.wants[0], daily)
 	assert.Equal(test.wants[1], total)
@@ -165,7 +165,7 @@ func TestDb_GetHitAll(t *testing.T) {
 		assert.NoError(err)
 	}
 	test = tests["onlytotal"]
-	daily, total, err = counter.GetHitAll(test.inputs[0].(string), test.inputs[1].(time.Time))
+	daily, total, err = counter.GetHitOfDailyAndTotal(test.inputs[0].(string), test.inputs[1].(time.Time))
 	assert.NoError(err)
 	assert.True(cmp.Equal(test.wants[0], daily))
 	assert.True(cmp.Equal(test.wants[1], total))
@@ -176,7 +176,7 @@ func TestDb_GetHitAll(t *testing.T) {
 	}
 
 	test = tests["onlydaily"]
-	daily, total, err = counter.GetHitAll(test.inputs[0].(string), test.inputs[1].(time.Time))
+	daily, total, err = counter.GetHitOfDailyAndTotal(test.inputs[0].(string), test.inputs[1].(time.Time))
 	assert.NoError(err)
 	assert.True(cmp.Equal(test.wants[0], daily))
 	assert.True(cmp.Equal(test.wants[1], total))
@@ -189,7 +189,7 @@ func TestDb_GetHitAll(t *testing.T) {
 	}
 
 	test = tests["both"]
-	daily, total, err = counter.GetHitAll(test.inputs[0].(string), test.inputs[1].(time.Time))
+	daily, total, err = counter.GetHitOfDailyAndTotal(test.inputs[0].(string), test.inputs[1].(time.Time))
 	assert.NoError(err)
 	assert.True(cmp.Equal(test.wants[0], daily))
 	assert.True(cmp.Equal(test.wants[1], total))

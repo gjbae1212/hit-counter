@@ -31,7 +31,7 @@ type (
 		IncreaseHitOfTotal(id string) (*Score, error)
 		GetHitOfDaily(id string, t time.Time) (*Score, error)
 		GetHitOfTotal(id string) (*Score, error)
-		GetHitAll(id string, t time.Time) (daily *Score, total *Score, err error)
+		GetHitOfDailyAndTotal(id string, t time.Time) (daily *Score, total *Score, err error)
 		IncreaseRankOfDaily(group, id string, t time.Time) (*Score, error)
 		IncreaseRankOfTotal(group, id string) (*Score, error)
 		GetRankDailyByLimit(group string, limit int, t time.Time) ([]*Score, error)

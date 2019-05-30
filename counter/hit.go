@@ -93,7 +93,7 @@ func (d *db) GetHitOfTotal(id string) (*Score, error) {
 	return &Score{Name: id, Value: rt}, nil
 }
 
-func (d *db) GetHitAll(id string, t time.Time) (daily *Score, total *Score, err error) {
+func (d *db) GetHitOfDailyAndTotal(id string, t time.Time) (daily *Score, total *Score, err error) {
 	if id == "" || t.IsZero() {
 		err = fmt.Errorf("[err] GetHitAll empty param")
 		return
