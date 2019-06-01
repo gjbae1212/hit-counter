@@ -151,7 +151,9 @@ func (d *db) GetHitOfDailyByRange(id string, timeRange []time.Time) (scores []*S
 			if suberr != nil {
 				err = errors.Wrap(suberr, "[err] GetHitOfDailyByRange")
 			}
-			scores = append(scores, &Score{Name: key.(string), Value:  dailyValue})
+			scores = append(scores, &Score{Name: key.(string), Value: dailyValue})
+		} else {
+			scores = append(scores, nil)
 		}
 	}
 	return

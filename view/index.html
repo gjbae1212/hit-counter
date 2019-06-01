@@ -70,6 +70,9 @@
                     <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#rank">SHOW RANK</a>
                 </li>
                 <li class="nav-item mx-0 mx-lg-1">
+                    <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#history">SHOW HISTORY</a>
+                </li>
+                <li class="nav-item mx-0 mx-lg-1">
                     <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#stream">SHOW STREAM</a>
                 </li>
             </ul>
@@ -99,7 +102,7 @@
         <br/>
         <div class="row">
             <div class="col-lg-8 mx-auto">
-                <form name="sentMessage" id="contactForm" novalidate="novalidate" onsubmit="return false;">
+                <form novalidate="novalidate" onsubmit="return false;">
                     <div class="control-group">
                         <div class="form-group floating-label-form-group controls mb-0 pb-2">
                             <label>URL</label>
@@ -151,16 +154,48 @@
     </div>
 </section>
 
-<!--Stream Section -->
-<section id="stream">
+<!--History Section -->
+<section id="history">
     <div class="container">
-        <h2 class="text-center text-uppercase text-secondary mb-0">SHOW STREAM</h2>
+        <h2 class="text-center text-uppercase text-secondary mb-0">SHOW HISTORY</h2>
         <hr class="star-dark mb-5">
         <br/>
-        <h4 class="text-center text-uppercase text-secondary mb-0">It is showing projects tracked by the HITS at this time.</h4>
+        <h4 class="text-center text-uppercase text-secondary mb-0">It is showing history of daily hits in recently 6 monthly</h4>
+        <br/>
+        <h5 class="text-center text-uppercase text-secondary mb-0">Edit below url as your url.</h5>
         <br/>
         <div class="row">
-            <div class="col-lg-8 mx-auto alert alert-success" id="stream_view">
+            <div class="col-lg-8 mx-auto">
+                <form novalidate="novalidate" onsubmit="return false;">
+                    <div class="control-group">
+                        <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                            <label>URL</label>
+                            <input class="form-control" id="history_url" type="text" placeholder="URL" required="required" data-validation-required-message="Please enter your sites or github" value="https://github.com/gjbae1212/hit-counter">
+                        </div>
+                    </div>
+                    <br/><br/>
+                    <div class="text-center">
+                        <button id="history_button" class="btn btn-primary btn-xl" onclick="showGraph()">SHOW</button>
+                    </div>
+                    <br/><br/>
+                    <div id="history_view" class="mx-auto alert alert-secondary text-center">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!--Stream Section -->
+<section class="bg-primary text-white mb-0" id="stream">
+    <div class="container">
+        <h2 class="text-center text-uppercase text-white">SHOW STREAM</h2>
+        <hr class="star-light mb-5">
+        <br/>
+        <h4 class="text-center text-uppercase text-white">It is showing projects tracked by the HITS at this time.</h4>
+        <br/>
+        <div class="row">
+            <div class="col-lg-8 mx-auto alert alert-secondary" id="stream_view">
             </div>
         </div>
     </div>
@@ -190,7 +225,6 @@
 <!-- Plugin JavaScript -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"></script>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqBootstrapValidation/1.3.7/jqBootstrapValidation.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/startbootstrap-freelancer/5.0.4/js/freelancer.min.js"></script>
 

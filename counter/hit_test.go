@@ -214,7 +214,10 @@ func TestDb_GetHitOfDailyByRange(t *testing.T) {
 
 	scores, err := counter.GetHitOfDailyByRange("test.com", []time.Time{time.Now(), time.Now().Add(-1 * 24 * time.Hour)})
 	assert.NoError(err)
-	assert.Len(scores, 0)
+	assert.Len(scores, 2)
+	for _, s := range scores {
+		assert.Nil(s)
+	}
 
 	var timeRange []time.Time
 	prev := time.Now().Add(-30 * 24 * time.Hour)

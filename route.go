@@ -54,6 +54,9 @@ func AddRoute(e *echo.Echo, redisAddrs []string) error {
 	count.GET("/keep/badge.svg", api.KeepCount)
 	count.GET("/incr/badge.svg", api.IncrCount)
 
+	// graph
+	count.GET("/graph/dailyhits.svg", api.DailyHitsInRecently)
+
 	// group /api/rank
 	g2, err := groupApiRank()
 	if err != nil {

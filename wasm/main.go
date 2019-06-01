@@ -11,7 +11,10 @@ import (
 
 	"time"
 
+	"net/http"
+
 	"github.com/goware/urlx"
+	"io/ioutil"
 )
 
 var (
@@ -54,6 +57,12 @@ func parseURL(s string) (schema, host, port, path, query, fragment string, err e
 	return
 }
 
+func onClick() {
+	value := js.Global().Get("document").Call("getElementById", "history_url").Get("value").String()
+	value = strings.TrimSpace(value)
+	showGraph(value)
+}
+
 func onKeyUp() {
 	value := js.Global().Get("document").Call("getElementById", "badge_url").Get("value").String()
 	value = strings.TrimSpace(value)
@@ -86,10 +95,39 @@ func generateBadge(value string) {
 	js.Global().Get("document").Call("getElementById", "badge_show").Set("src", show)
 }
 
+func showGraph(value string) {
+	schema, _, _, _, _, _, err := parseURL(value)
+	if err != nil || (schema != "http" && schema != "https") {
+		js.Global().Get("document").Call("getElementById", "history_view").Set("innerHTML", "Not Found")
+	} else {
+		go func(v string) {
+			res, err := http.Get(fmt.Sprintf("%s/api/count/graph/dailyhits.svg?url=%s", defaultURL, v))
+			if err != nil {
+				js.Global().Get("document").Call("getElementById", "history_view").Set("innerHTML", "Error")
+				return
+			}
+			defer res.Body.Close()
+			body, err := ioutil.ReadAll(res.Body)
+			if err != nil {
+				js.Global().Get("document").Call("getElementById", "history_view").Set("innerHTML", "Error")
+				return
+			}
+			js.Global().Get("document").Call("getElementById", "history_view").Set("innerHTML", string(body))
+		}(value)
+	}
+}
+
 func registerCallbacks() {
 	// It will be processing when a url input field will be received a event of keyboard up.
 	js.Global().Set("generateBadge", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		onKeyUp()
+		return nil
+	}))
+
+	js.Global().Set("showGraph", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		js.Global().Get("document").Call("getElementById", "history_button").Set("disabled", true)
+		onClick()
+		js.Global().Get("document").Call("getElementById", "history_button").Set("disabled", false)
 		return nil
 	}))
 

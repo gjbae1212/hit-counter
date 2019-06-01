@@ -1,6 +1,7 @@
 package api_handler
 
 import (
+	"bytes"
 	"net/http"
 
 	"github.com/gjbae1212/go-badge"
@@ -17,6 +18,7 @@ import (
 	"github.com/gjbae1212/hit-counter/handler"
 	"github.com/gjbae1212/hit-counter/sentry"
 	"github.com/labstack/echo/v4"
+	"github.com/wcharczuk/go-chart"
 )
 
 var (
@@ -151,6 +153,70 @@ func (h *Handler) KeepCount(c echo.Context) error {
 	}
 
 	return h.returnCount(hctx, daily, total)
+}
+
+func (h *Handler) DailyHitsInRecently(c echo.Context) error {
+	hctx := c.(*handler.HitCounterContext)
+	if hctx.Get("ckid") == nil || hctx.Get("host") == nil || hctx.Get("path") == nil {
+		return fmt.Errorf("[err] KeepCount empty params")
+	}
+	host := hctx.Get("host").(string)
+	path := hctx.Get("path").(string)
+	cookie := hctx.Get("ckid").(string)
+	_ = cookie
+
+	var dateRange []time.Time
+	now := time.Now()
+	prev := time.Now().Add(-180 * 24 * time.Hour)
+	for now.Unix() >= prev.Unix() {
+		dateRange = append(dateRange, prev)
+		prev = prev.Add(24 * time.Hour)
+	}
+
+	id := fmt.Sprintf(countIdFormat, host, path)
+	scores, err := h.Counter.GetHitOfDailyByRange(id, dateRange)
+	if err != nil {
+		return err
+	}
+
+	var yValues []float64
+	for _, score := range scores {
+		if score == nil {
+			yValues = append(yValues, 0)
+		} else {
+			yValues = append(yValues, float64(score.Value))
+		}
+	}
+	graph := chart.Chart{
+		Width:      650,
+		Height:     300,
+		Title:      fmt.Sprintf("%s", id),
+		TitleStyle: chart.StyleShow(),
+		XAxis: chart.XAxis{
+			Name:  "date",
+			Style: chart.StyleShow(),
+		},
+		YAxis: chart.YAxis{
+			Name:  "count",
+			Style: chart.StyleShow(),
+		},
+		Series: []chart.Series{
+			chart.TimeSeries{
+				Style: chart.Style{
+					Show:        true,
+					StrokeColor: chart.GetDefaultColor(0).WithAlpha(64),
+					FillColor:   chart.GetDefaultColor(0).WithAlpha(64),
+				},
+				XValues: dateRange,
+				YValues: yValues,
+			},
+		},
+	}
+
+	buf := new(bytes.Buffer)
+	hctx.Response().Header().Set("Content-Type", chart.ContentTypeSVG)
+	graph.Render(chart.SVG, buf)
+	return hctx.String(http.StatusOK, string(buf.Bytes()))
 }
 
 func (h *Handler) returnCount(hctx *handler.HitCounterContext, daily, total *counter.Score) error {
