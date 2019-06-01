@@ -13,8 +13,9 @@ import (
 
 	"net/http"
 
-	"github.com/goware/urlx"
 	"io/ioutil"
+
+	"github.com/goware/urlx"
 )
 
 var (
@@ -126,6 +127,9 @@ func registerCallbacks() {
 
 	js.Global().Set("showGraph", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		js.Global().Get("document").Call("getElementById", "history_button").Set("disabled", true)
+		js.Global().Get("document").Call("getElementById", "history_view").Set("innerHTML", `<div class="spinner-border" role="status">
+		<span class="sr-only">Loading...</span>
+		</div>`)
 		onClick()
 		js.Global().Get("document").Call("getElementById", "history_button").Set("disabled", false)
 		return nil
