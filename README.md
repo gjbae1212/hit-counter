@@ -21,7 +21,7 @@ Its badge would involve page counting on both a day(from GMT) and a total(all).
 
 And then show projects that visited at real time using the websocket. 
 
-[HITS](https://hits.seeyoufarm.com) made by gjbae1212 using golang, currently serving from google cloud of flexible appengine.    
+[HITS](https://hits.seeyoufarm.com) made by gjbae1212 using golang, currently serving from google cloud of flexible appengine.
  
 ## How to use
 ### How to generate a svg of badge 
@@ -42,6 +42,12 @@ Or you could generate a badge by directly writing markdown or html.
 ```script
 https://hits.seeyoufarm.com/api/count/keep/badge.svg?url={your-website or github-project}
 ``` 
+
+## Features
+- Support daily and total badge  
+- Show a graph of your site about daily count of histories in recently 6 month
+- Show ranks about github projects.
+- Show stream which count of hits is counting in real time.
 
 ## How to run your machine
 #### If you'd like to run HITS to your machine
