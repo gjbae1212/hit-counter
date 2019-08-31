@@ -38,10 +38,14 @@ Or you could generate a badge by directly writing markdown or html.
 ```html
 <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url={your-website or github-project}" alt="Hits" />
 ```
-##### If you would like to only appear a badge not to increase paging count, Edit as below url.
+#### If you would like to only appear a badge, not to increase paging count, Edit as below url.
 ```script
 https://hits.seeyoufarm.com/api/count/keep/badge.svg?url={your-website or github-project}
 ``` 
+#### If you'd like to change badge title
+```script
+https://hits.seeyoufarm.com/api/count/keep/badge.svg?url={your-website or github-project}&title={badge-title}
+```
 
 ## Features
 - Support daily and total badge  
