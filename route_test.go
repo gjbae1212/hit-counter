@@ -47,4 +47,5 @@ func TestGroup(t *testing.T) {
 	assert.NoError(err)
 	assert.NotNil(hctx.Get("host"))
 	assert.NotNil(hctx.Get("path"))
+	assert.NotNil(hctx.Get("title"))
 }

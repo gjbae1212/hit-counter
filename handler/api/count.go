@@ -67,16 +67,20 @@ func (wsm *WebSocketMessage) GetMessage() []byte {
 
 func (h *Handler) IncrCount(c echo.Context) error {
 	hctx := c.(*handler.HitCounterContext)
-	if hctx.Get("ckid") == nil || hctx.Get("host") == nil || hctx.Get("path") == nil {
+	if hctx.Get("ckid") == nil || hctx.Get("host") == nil || hctx.Get("path") == nil ||
+		hctx.Get("title") == nil {
 		return fmt.Errorf("[err] IncrCount empty params")
 	}
 	cookie := hctx.Get("ckid").(string)
 	host := hctx.Get("host").(string)
 	path := hctx.Get("path").(string)
+	title := hctx.Get("title").(string)
+
 	_ = cookie
 	id := fmt.Sprintf(countIdFormat, host, path)
 	ip := c.RealIP()
 	userAgent := c.Request().UserAgent()
+
 
 	// If a ingress specified ip is exceeded more than 30 per 5 seconds, it might possibly abusing.
 	// so it must be limited.
@@ -86,7 +90,7 @@ func (h *Handler) IncrCount(c echo.Context) error {
 		if err != nil {
 			return err
 		}
-		return h.returnCount(hctx, daily, total)
+		return h.returnCount(hctx, daily, total, title)
 	}
 	if !ok {
 		h.LocalCache.Set(ip, int64(1), 5*time.Second)
@@ -103,7 +107,7 @@ func (h *Handler) IncrCount(c echo.Context) error {
 		if err != nil {
 			return err
 		}
-		return h.returnCount(hctx, daily, total)
+		return h.returnCount(hctx, daily, total, title)
 	}
 	h.LocalCache.Set(temporaryId, int64(1), 1*time.Second)
 
@@ -134,17 +138,20 @@ func (h *Handler) IncrCount(c echo.Context) error {
 	h.WebSocketBreaker.BroadCast(&WebSocketMessage{
 		Payload: []byte(fmt.Sprintf("[%s] %s", allan_util.TimeToString(time.Now()), id))},
 	)
-	return h.returnCount(hctx, daily, total)
+	return h.returnCount(hctx, daily, total, title)
 }
 
 func (h *Handler) KeepCount(c echo.Context) error {
 	hctx := c.(*handler.HitCounterContext)
-	if hctx.Get("ckid") == nil || hctx.Get("host") == nil || hctx.Get("path") == nil {
+	if hctx.Get("ckid") == nil || hctx.Get("host") == nil || hctx.Get("path") == nil ||
+		hctx.Get("title") == nil {
 		return fmt.Errorf("[err] KeepCount empty params")
 	}
 	host := hctx.Get("host").(string)
 	path := hctx.Get("path").(string)
 	cookie := hctx.Get("ckid").(string)
+	title := hctx.Get("title").(string)
+
 	_ = cookie
 	id := fmt.Sprintf(countIdFormat, host, path)
 	daily, total, err := h.Counter.GetHitOfDailyAndTotal(id, time.Now())
@@ -152,7 +159,7 @@ func (h *Handler) KeepCount(c echo.Context) error {
 		return err
 	}
 
-	return h.returnCount(hctx, daily, total)
+	return h.returnCount(hctx, daily, total, title)
 }
 
 func (h *Handler) DailyHitsInRecently(c echo.Context) error {
@@ -219,7 +226,7 @@ func (h *Handler) DailyHitsInRecently(c echo.Context) error {
 	return hctx.String(http.StatusOK, string(buf.Bytes()))
 }
 
-func (h *Handler) returnCount(hctx *handler.HitCounterContext, daily, total *counter.Score) error {
+func (h *Handler) returnCount(hctx *handler.HitCounterContext, daily, total *counter.Score, title string) error {
 	dailyCount := int64(0)
 	totalCount := int64(0)
 	if daily != nil {
@@ -228,9 +235,12 @@ func (h *Handler) returnCount(hctx *handler.HitCounterContext, daily, total *cou
 	if total != nil {
 		totalCount = total.Value
 	}
+	if title == "" {
+		title = "hits"
+	}
 
 	text := fmt.Sprintf(badgeFormat, dailyCount, totalCount)
-	badge, err := badge.RenderBytes("hits", text, "#79c83d")
+	badge, err := badge.RenderBytes(title, text, "#79c83d")
 	if err != nil {
 		return err
 	}

@@ -79,6 +79,7 @@ func groupApiCount() ([]echo.MiddlewareFunc, error) {
 			if url == "" {
 				return echo.NewHTTPError(http.StatusBadRequest, "Not Found URL Query String")
 			}
+			title := hitctx.QueryParam("title")
 
 			schema, host, _, path, _, _, err := allan_util.ParseURL(url)
 			if err != nil {
@@ -90,6 +91,7 @@ func groupApiCount() ([]echo.MiddlewareFunc, error) {
 			}
 			hitctx.Set("host", host)
 			hitctx.Set("path", path)
+			hitctx.Set("title", title)
 			return h(hitctx)
 		}
 	}
