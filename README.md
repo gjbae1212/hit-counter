@@ -12,39 +12,50 @@ A simple way to see how many people have visited your website or github project.
 
 ## Overview
 
-[HITS](https://hits.seeyoufarm.com) provides a badge of svg having a format on script or on markdown.
+[HITS](https://hits.seeyoufarm.com) provides Badge of SVG having format whether script or markdown.
 
-If you will put a badge on either your website or github project before people visit its site, paging count will be increased with itself reflected a number on badge.    
+If you will be put Badge on either your website or Github project, the paging count is increased Badge count when people do visit its site.    
 
-Its badge would involve page counting on both a day(from GMT) and a total(all).
-[HITS](https://hits.seeyoufarm.com) will show github projects of the highest top 10 that put on its badge.
+And Badge involves paging count on both a day(from GMT) and a total(all).
 
-And then show projects that visited at real time using the websocket. 
+[HITS](https://hits.seeyoufarm.com) will show Github projects of highest paging count.(TOP 10)
 
-[HITS](https://hits.seeyoufarm.com) made by gjbae1212 using golang, currently serving from google cloud of flexible appengine.
+And then [HITS](https://hits.seeyoufarm.com) show currently visiting projects by users, using Websocket. 
+
+[HITS](https://hits.seeyoufarm.com) made by gjbae1212 using golang, currently serving from google cloud.
  
 ## How to use
 ### How to generate a svg of badge 
-You will generate a badge from edit form of url input in [HITS](https://hits.seeyoufarm.com/#badge).
+You will generate Badge from edit form of url input in [HITS](https://hits.seeyoufarm.com/#badge).
 
 ![Hits](https://storage.googleapis.com/hit-counter/generate.png)
 
 Or you could generate a badge by directly writing markdown or html.
-#### markdown 
-```markdown
-![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url={your-website or github-project})]
 ```
-#### html
-```html
+# markdown
+![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url={your-website or github-project})]
+
+# html
 <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url={your-website or github-project}" alt="Hits" />
 ```
-#### If you would like to only appear a badge, not to increase paging count, Edit as below url.
-```script
-https://hits.seeyoufarm.com/api/count/keep/badge.svg?url={your-website or github-project}
-``` 
-#### If you'd like to change badge title
-```script
-https://hits.seeyoufarm.com/api/count/keep/badge.svg?url={your-website or github-project}&title={badge-title}
+
+#### If you would like to only represent Badge, not to increase paging count, Edit as below url.
+```
+# markdown
+![Hits](https://hits.seeyoufarm.com/api/count/keep/badge.svg?url={your-website or github-project})]
+
+# html
+<img src="https://hits.seeyoufarm.com/api/count/keep/badge.svg?url={your-website or github-project}" alt="Hits" />
+```
+ 
+#### If you'd like to change Badge title
+Additional query string *title={your-change-badge-name}*
+```
+# example (increase)
+![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url={your-website or github-project}&title={your-change-badge-name})]
+
+# example (not increase)
+![Hits](https://hits.seeyoufarm.com/api/count/keep/badge.svg?url={your-website or github-project}&title={your-change-badge-name})]
 ```
 
 ## Features
