@@ -1,4 +1,4 @@
-FROM gcr.io/gcp-runtimes/go1-builder:1.12 as builder
+FROM gcr.io/gcp-runtimes/go1-builder:1.13 as builder
 
 ENV GO111MODULE off
 
