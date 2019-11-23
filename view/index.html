@@ -33,17 +33,10 @@
                     await go.run(inst);
                 }).catch((err) => {
             console.error(err);
-            let badge = document.getElementById('badge');
-            badge.hidden = true;
             let history = document.getElementById('history');
             history.hidden = true;
-            let rank = document.getElementById('rank');
-            rank.hidden = true;
             let stream = document.getElementById('stream');
             stream.hidden = true;
-            let fallback = document.getElementById('fallback');
-            fallback.hidden = false;
-            alert("Sorry, This mobile browser don't work.");
         });
     </script>
 
@@ -117,7 +110,7 @@
                     <div class="control-group">
                         <div class="form-group floating-label-form-group controls mb-0 pb-2">
                             <label>URL</label>
-                            <input class="form-control" id="badge_url" type="text" placeholder="URL" required="required" data-validation-required-message="Please enter your sites or github" value="https://github.com/gjbae1212/hit-counter" onkeyup="generateBadge()">
+                            <input class="form-control" id="badge_url" type="text" placeholder="URL" required="required" data-validation-required-message="Please enter your sites or github" value="https://github.com/gjbae1212/hit-counter" onkeyup="refreshBadge()">
                         </div>
                     </div>
                     <br/>
@@ -212,16 +205,6 @@
     </div>
 </section>
 
-<!-- Fallback Section -->
-<section id="fallback" hidden>
-    <div class="container">
-        <h3 class="text-center text-uppercase text-secondary mb-0">
-            Sorry, This browser don't work.<br/><br/>
-            <a href="https://github.com/gjbae1212/hit-counter"> Click </a>
-        </h3>
-    </div>
-</section>
-
 <!-- Footer -->
 <footer class="footer text-center">
     <div class="container">
@@ -250,6 +233,20 @@
 
 <!-- copy and paste -->
 <script type="text/javascript">
+    let domain = "https://hits.seeyoufarm.com";
+    let incrFormat = "https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=";
+    let keepFormat       = "https://hits.seeyoufarm.com/api/count/keep/badge.svg?url=";
+    let markdownFormat = "[![Hits]({0})]({1})";
+    let showFormat     = "<a href=\"{0}\"/><img src=\"{1}\"/></a>";
+    let linkFormat     = "&lt;a href=\"{0}\"/&gt;&lt;img src=\"{1}\"/&gt;&lt;/a&gt;";
+    String.prototype.format = function () {
+        var a = this;
+        for (var k in arguments) {
+            a = a.replace(new RegExp("\\{" + k + "\\}", 'g'), arguments[k]);
+        }
+        return a
+    }
+
     function copyToClipboard(element) {
         var $temp = $("<input>");
         $("body").append($temp);
@@ -257,6 +254,34 @@
         document.execCommand("copy");
         $temp.remove();
     }
+
+    function refreshBadge() {
+        var data = document.getElementById("badge_url").value;
+        data = data.trim();
+        try {
+            var parser = new URL(data);
+            var normalizeURL = "";
+            if (parser.pathname == "" || parser.pathname == "/") {
+                normalizeURL  = parser.protocol + "//" + parser.host;
+            }else {
+                normalizeURL  = parser.protocol + "//" + parser.host + parser.pathname;
+            }
+            var escapeURL = encodeURIComponent(normalizeURL);
+            var incrURL = incrFormat +  escapeURL;
+            var keepURL = keepFormat +  escapeURL;
+            var markdownHTML = markdownFormat.format(incrURL, domain);
+            var linkHTML = linkFormat.format(domain, incrURL);
+            document.getElementById("badge_markdown").innerHTML = markdownHTML;
+            document.getElementById("badge_link").innerHTML =  linkHTML;
+            document.getElementById("badge_show").src = keepURL;
+        }catch(e) {
+            document.getElementById("badge_markdown").innerHTML = "Invalid URL";
+            document.getElementById("badge_link").innerHTML = "Invalid URL";
+            document.getElementById("badge_show").src = "";
+        }
+    }
+
+
 </script>
 </body>
 
