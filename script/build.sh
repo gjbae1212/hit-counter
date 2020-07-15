@@ -44,7 +44,7 @@ function test_run
 function test
 {
    set_env
-   go test -v $(go list ./... | grep -v vendor | grep -v wasm) --count 1 -race -coverprofile=$CURRENT/coverage.txt -covermode=atomic
+   go test -v $(go list ./... | grep -v vendor | grep -v wasm) --count 1 -race
 }
 
 function set_env

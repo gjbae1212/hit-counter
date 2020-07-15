@@ -16,6 +16,8 @@ jobs:
     steps:
     - checkout
 
+    - run: go mod download
+
     - run:
         name: RUN UNIT TEST
         environment:
