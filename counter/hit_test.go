@@ -6,10 +6,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/davecgh/go-spew/spew"
-
 	"github.com/alicebob/miniredis"
-	allan_util "github.com/gjbae1212/go-module/util"
+	"github.com/davecgh/go-spew/spew"
+	"github.com/gjbae1212/hit-counter/internal"
 	"github.com/google/go-cmp/cmp"
 	"github.com/stretchr/testify/assert"
 )
@@ -34,7 +33,7 @@ func TestDb_IncreaseHitOfDaily(t *testing.T) {
 		assert.Equal(i+1, int(count.Value))
 	}
 
-	daily := allan_util.TimeToDailyStringFormat(now)
+	daily := internal.TimeToDailyStringFormat(now)
 	key := fmt.Sprintf(hitDailyFormat, daily, "test")
 	log.Println(key)
 	v, err := counter.(*db).redis.Do("GET", key)
@@ -94,7 +93,7 @@ func TestDb_GetHitOfDaily(t *testing.T) {
 	v, err = counter.GetHitOfDaily("test", now)
 	assert.NoError(err)
 	assert.Equal(1000, int(v.Value))
-	assert.Equal(fmt.Sprintf(hitDailyFormat, allan_util.TimeToDailyStringFormat(now), "test"), v.Name)
+	assert.Equal(fmt.Sprintf(hitDailyFormat, internal.TimeToDailyStringFormat(now), "test"), v.Name)
 }
 
 func TestDb_GetHitOfTotal(t *testing.T) {
@@ -147,8 +146,8 @@ func TestDb_GetHitOfDailyAndTotal(t *testing.T) {
 		"error2":    {inputs: []interface{}{id, time.Time{}}, wants: []*Score{nil, nil}, err: true},
 		"empty":     {inputs: []interface{}{id, now}, wants: []*Score{nil, nil}, err: false},
 		"onlytotal": {inputs: []interface{}{"onlytotal", now}, wants: []*Score{nil, &Score{Name: fmt.Sprintf(hitTotalFormat, "onlytotal"), Value: 10}}, err: false},
-		"onlydaily": {inputs: []interface{}{"onlydaily", now}, wants: []*Score{&Score{Name: fmt.Sprintf(hitDailyFormat, allan_util.TimeToDailyStringFormat(now), "onlydaily"), Value: 10}, nil}, err: false},
-		"both":      {inputs: []interface{}{"both", now}, wants: []*Score{&Score{Name: fmt.Sprintf(hitDailyFormat, allan_util.TimeToDailyStringFormat(now), "both"), Value: 10}, &Score{Name: fmt.Sprintf(hitTotalFormat, "both"), Value: 10}}, err: false},
+		"onlydaily": {inputs: []interface{}{"onlydaily", now}, wants: []*Score{&Score{Name: fmt.Sprintf(hitDailyFormat, internal.TimeToDailyStringFormat(now), "onlydaily"), Value: 10}, nil}, err: false},
+		"both":      {inputs: []interface{}{"both", now}, wants: []*Score{&Score{Name: fmt.Sprintf(hitDailyFormat, internal.TimeToDailyStringFormat(now), "both"), Value: 10}, &Score{Name: fmt.Sprintf(hitTotalFormat, "both"), Value: 10}}, err: false},
 	}
 
 	test := tests["error1"]

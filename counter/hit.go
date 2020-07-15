@@ -5,9 +5,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/pkg/errors"
-
-	allan_util "github.com/gjbae1212/go-module/util"
+	"github.com/gjbae1212/hit-counter/internal"
 )
 
 var (
@@ -15,60 +13,64 @@ var (
 	hitTotalFormat = "hit:total:%s"
 )
 
+// IncreaseHitOfDaily increases daily count.
 func (d *db) IncreaseHitOfDaily(id string, t time.Time) (*Score, error) {
 	if id == "" || t.IsZero() {
-		return nil, fmt.Errorf("[err] IncreaseHitOfDaily empty param")
+		return nil, fmt.Errorf("[err] IncreaseHitOfDaily  %w", internal.ErrorEmptyParams)
 	}
 
-	daily := allan_util.TimeToDailyStringFormat(t)
+	daily := internal.TimeToDailyStringFormat(t)
 	key := fmt.Sprintf(hitDailyFormat, daily, id)
 	v, err := d.redis.DoWithTimeout(timeout, "INCR", key)
 	if err != nil {
-		return nil, errors.Wrap(err, "[err] IncreaseHitOfDaily")
+		return nil, fmt.Errorf("[err] IncreaseHitOfDaily %w", err)
 	}
 
 	return &Score{Name: key, Value: v.(int64)}, nil
 }
 
+// IncreaseHitOfTotal increases accumulate count.
 func (d *db) IncreaseHitOfTotal(id string) (*Score, error) {
 	if id == "" {
-		return nil, fmt.Errorf("[err] IncreaseHitOfTotal empty param")
+		return nil, fmt.Errorf("[err] IncreaseHitOfTotal %w", internal.ErrorEmptyParams)
 	}
 
 	key := fmt.Sprintf(hitTotalFormat, id)
 	v, err := d.redis.DoWithTimeout(timeout, "INCR", key)
 	if err != nil {
-		return nil, errors.Wrap(err, "[err] IncreaseHitOfTotal")
+		return nil, fmt.Errorf("[err] IncreaseHitOfTotal %w", err)
 	}
 	return &Score{Name: key, Value: v.(int64)}, nil
 }
 
+// GetHitOfDaily returns daily score.
 func (d *db) GetHitOfDaily(id string, t time.Time) (*Score, error) {
 	if id == "" || t.IsZero() {
 		return nil, fmt.Errorf("[err] GetHitOfDaily empty param")
 	}
 
-	daily := allan_util.TimeToDailyStringFormat(t)
+	daily := internal.TimeToDailyStringFormat(t)
 	key := fmt.Sprintf(hitDailyFormat, daily, id)
 
 	v, err := d.redis.DoWithTimeout(timeout, "GET", key)
 	if err != nil {
-		return nil, errors.Wrap(err, "[err] GetHitOfDaily")
+		return nil, fmt.Errorf("[err] GetHitOfDaily %w", err)
 	}
 
-	// empty
+	// if v is empty
 	if v == nil {
 		return nil, nil
 	}
 
 	rt, err := strconv.ParseInt(string(v.([]byte)), 10, 64)
 	if err != nil {
-		return nil, errors.Wrap(err, "[err] GetHitOfDaily")
+		return nil, fmt.Errorf("[err] GetHitOfDaily %w", err)
 	}
 
 	return &Score{Name: key, Value: rt}, nil
 }
 
+// GetHitOfDaily returns  accumulate score.
 func (d *db) GetHitOfTotal(id string) (*Score, error) {
 	if id == "" {
 		return nil, fmt.Errorf("[err] GetHitOfTotal empty param")
@@ -77,41 +79,42 @@ func (d *db) GetHitOfTotal(id string) (*Score, error) {
 	key := fmt.Sprintf(hitTotalFormat, id)
 	v, err := d.redis.DoWithTimeout(timeout, "GET", key)
 	if err != nil {
-		return nil, errors.Wrap(err, "[err] GetHitOfTotal")
+		return nil, fmt.Errorf("[err] GetHitOfTotal %w", err)
 	}
 
-	// empty
+	// if v is empty
 	if v == nil {
 		return nil, nil
 	}
 
 	rt, err := strconv.ParseInt(string(v.([]byte)), 10, 64)
 	if err != nil {
-		return nil, errors.Wrap(err, "[err] GetHitOfTotal")
+		return nil, fmt.Errorf("[err] GetHitOfTotal %w", err)
 	}
 
 	return &Score{Name: key, Value: rt}, nil
 }
 
+// GetHitOfDailyAndTotal returns daily score and  accumulate score.
 func (d *db) GetHitOfDailyAndTotal(id string, t time.Time) (daily *Score, total *Score, err error) {
 	if id == "" || t.IsZero() {
-		err = fmt.Errorf("[err] GetHitAll empty param")
+		err = fmt.Errorf("[err] GetHitOfDailyAndTotal %w", internal.ErrorEmptyParams)
 		return
 	}
 
-	key1 := fmt.Sprintf(hitDailyFormat, allan_util.TimeToDailyStringFormat(t), id)
+	key1 := fmt.Sprintf(hitDailyFormat, internal.TimeToDailyStringFormat(t), id)
 	key2 := fmt.Sprintf(hitTotalFormat, id)
 
 	v, suberr := d.redis.DoWithTimeout(timeout, "MGET", key1, key2)
 	if suberr != nil {
-		err = errors.Wrap(suberr, "[err] GetHitAll")
+		err = fmt.Errorf("[err] GetHitOfDailyAndTotal %w", suberr)
 		return
 	}
 
 	if v.([]interface{})[0] != nil {
 		dailyValue, suberr := strconv.ParseInt(string(v.([]interface{})[0].([]byte)), 10, 64)
 		if suberr != nil {
-			err = errors.Wrap(suberr, "[err] GetHitAll")
+			err = fmt.Errorf("[err] GetHitOfDailyAndTotal %w", suberr)
 			return
 		}
 		daily = &Score{Name: key1, Value: dailyValue}
@@ -120,7 +123,7 @@ func (d *db) GetHitOfDailyAndTotal(id string, t time.Time) (daily *Score, total 
 	if v.([]interface{})[1] != nil {
 		totalValue, suberr := strconv.ParseInt(string(v.([]interface{})[1].([]byte)), 10, 64)
 		if suberr != nil {
-			err = errors.Wrap(suberr, "[err] GetHitAll")
+			err = fmt.Errorf("[err] GetHitOfDailyAndTotal %w", suberr)
 			return
 		}
 		total = &Score{Name: key2, Value: totalValue}
@@ -128,20 +131,21 @@ func (d *db) GetHitOfDailyAndTotal(id string, t time.Time) (daily *Score, total 
 	return
 }
 
+// GetHitOfDailyByRange returns daily scores with range.
 func (d *db) GetHitOfDailyByRange(id string, timeRange []time.Time) (scores []*Score, err error) {
 	if id == "" || len(timeRange) == 0 {
-		err = fmt.Errorf("[err] GetHitOfDailyByRange")
+		err = fmt.Errorf("[err] GetHitOfDailyByRange %w", internal.ErrorEmptyParams)
 		return
 	}
 
 	var keys []interface{}
 	for _, t := range timeRange {
-		keys = append(keys, fmt.Sprintf(hitDailyFormat, allan_util.TimeToDailyStringFormat(t), id))
+		keys = append(keys, fmt.Sprintf(hitDailyFormat, internal.TimeToDailyStringFormat(t), id))
 	}
 
 	v, suberr := d.redis.DoWithTimeout(timeout, "MGET", keys...)
 	if suberr != nil {
-		err = errors.Wrap(suberr, "[err] GetHitOfDailyByRange")
+		err = fmt.Errorf("[err] GetHitOfDailyByRange %w", suberr)
 		return
 	}
 
@@ -149,7 +153,8 @@ func (d *db) GetHitOfDailyByRange(id string, timeRange []time.Time) (scores []*S
 		if v.([]interface{})[i] != nil {
 			dailyValue, suberr := strconv.ParseInt(string(v.([]interface{})[i].([]byte)), 10, 64)
 			if suberr != nil {
-				err = errors.Wrap(suberr, "[err] GetHitOfDailyByRange")
+				err = fmt.Errorf("[err] GetHitOfDailyByRange %w", suberr)
+				return
 			}
 			scores = append(scores, &Score{Name: key.(string), Value: dailyValue})
 		} else {

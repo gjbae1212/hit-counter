@@ -1,30 +1,16 @@
 package counter
 
 import (
+	"fmt"
 	"time"
 
-	"github.com/gjbae1212/go-module/redis"
-	"github.com/pkg/errors"
+	redis "github.com/gjbae1212/go-redis"
 )
 
 var (
 	timeout = 10 * time.Second
 )
 
-// It is a option for the counter interface
-type (
-	Option interface {
-		apply(d *db) error
-	}
-
-	OptionFunc func(d *db) error
-)
-
-func (f OptionFunc) apply(d *db) error {
-	return f(d)
-}
-
-// It is the counter interface wrapped a db object
 type (
 	Counter interface {
 		IncreaseHitOfDaily(id string, t time.Time) (*Score, error)
@@ -44,36 +30,27 @@ type (
 	}
 )
 
-// It is a wrapper struct which returned result for response.
+// Score presents result for response.
 type Score struct {
 	Name  string
 	Value int64
 }
 
-// It is passed redis addresses.
-func WithRedisOption(addrs []string) OptionFunc {
-	return func(d *db) error {
-		rs, err := redis.NewManager(addrs)
-		if err != nil {
-			return errors.Wrap(err, "[err] WithRedisAddrs")
-		}
-		d.redis = rs
-		return nil
-	}
-}
-
+// NewCounter returns an object implemented counter interface.
 func NewCounter(opts ...Option) (Counter, error) {
 	c := &db{}
+	// inject config
 	for _, opt := range opts {
 		if err := opt.apply(c); err != nil {
-			return nil, errors.Wrap(err, "[err] NewCounter")
+			return nil, fmt.Errorf("[err] NewCounter %w", err)
 		}
 	}
-	// If a redis do not exist and a default redis will be set up to have `localhost:6379`.
+
+	// if a redis doesn't exist, a default redis will be set up to have `localhost:6379`.
 	if c.redis == nil {
 		rs, err := redis.NewManager([]string{"localhost:6379"})
 		if err != nil {
-			return nil, errors.Wrap(err, "[err]  NewCounter")
+			return nil, fmt.Errorf("[err] NewCounter %w", err)
 		}
 		c.redis = rs
 	}

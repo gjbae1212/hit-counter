@@ -4,7 +4,33 @@ trap '[ "$?" -eq 0 ] || echo "Error Line:<$LINENO> Error Function:<${FUNCNAME}>"
 cd `dirname $0` && cd ..
 CURRENT=`pwd`
 
-function start
+function deploy
+{
+   test
+   make_wasm
+   upload_deployment_config
+   gsutil cp $GCS_CONFIG_BUCKET/production.yaml $CURRENT/production.yaml
+   rm $CURRENT/cloudbuild.yaml || true
+   echo "yes" | gcloud app deploy production.yaml --promote
+   git checkout cloudbuild.yaml
+   rm  $CURRENT/production.yaml || true
+}
+
+function make_wasm
+{
+  GOOS=js GOARCH=wasm go build -ldflags='-s -w' -o $CURRENT/view/hits.wasm $CURRENT/wasm/main.go
+  gzip $CURRENT/view/hits.wasm
+  mv $CURRENT/view/hits.wasm.gz $CURRENT/view/hits.wasm
+}
+
+
+function upload_deployment_config
+{
+   set_env
+   gsutil cp $CURRENT/script/production.yaml $GCS_CONFIG_BUCKET/production.yaml
+}
+
+function test_run
 {
    set_env
    local redis=`docker ps | grep redis | wc -l`
@@ -20,25 +46,6 @@ function test
    set_env
    go test -v $(go list ./... | grep -v vendor | grep -v wasm) --count 1 -race -coverprofile=$CURRENT/coverage.txt -covermode=atomic
 }
-
-function wasm
-{
-  GOOS=js GOARCH=wasm go build -ldflags='-s -w' -o $CURRENT/view/hits.wasm $CURRENT/wasm/main.go
-  gzip $CURRENT/view/hits.wasm
-  mv $CURRENT/view/hits.wasm.gz $CURRENT/view/hits.wasm
-}
-
-function codecov
-{
-   /bin/bash <(curl -s https://codecov.io/bash)
-}
-
-function upload_config
-{
-   set_env
-   gsutil cp $CURRENT/config/production.yaml $GCS_CONFIG_BUCKET/production.yaml
-}
-
 
 function set_env
 {

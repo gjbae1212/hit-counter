@@ -5,10 +5,11 @@ import (
 
 	"math/rand"
 
+	"time"
+
 	"github.com/alicebob/miniredis"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/stretchr/testify/assert"
-	"time"
 )
 
 func TestDb_IncreaseRankOfDaily(t *testing.T) {

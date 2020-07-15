@@ -3,7 +3,7 @@ steps:
   args:
   - kms
   - decrypt
-  - --ciphertext-file=./config/encrypt_bucket_path
+  - --ciphertext-file=./script/encrypt_bucket_path
   - --plaintext-file=/root/config/bucket_path
   - --location=global
   - --keyring=allan
@@ -22,10 +22,6 @@ steps:
 - name: 'gcr.io/cloud-builders/gcloud'
   entrypoint: 'rm'
   args: ['./cloudbuild.yaml']
-
-- name: 'gcr.io/cloud-builders/gcloud'
-  entrypoint: 'cp'
-  args: ['./config/Dockerfile', './Dockerfile']
 
 - name: 'gcr.io/cloud-builders/go:debian'
   entrypoint: 'go'

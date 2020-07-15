@@ -35,3 +35,9 @@ func TestGetForceHTTPS(t *testing.T) {
 	forcehttps := GetForceHTTPS()
 	assert.Equal(forceHTTPS, forcehttps)
 }
+
+func TestGetPhase(t *testing.T) {
+	assert := assert.New(t)
+	e := GetPhase()
+	assert.Equal(phase, e)
+}

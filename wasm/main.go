@@ -1,19 +1,13 @@
 package main
 
 import (
-	"syscall/js"
-
 	"fmt"
-
-	"net/url"
-
-	"strings"
-
-	"time"
-
-	"net/http"
-
 	"io/ioutil"
+	"net/http"
+	"net/url"
+	"strings"
+	"syscall/js"
+	"time"
 
 	"github.com/goware/urlx"
 )

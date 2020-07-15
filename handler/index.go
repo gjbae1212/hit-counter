@@ -9,6 +9,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// Index is API for main page.
 func (h *Handler) Index(c echo.Context) error {
 	group := "github.com"
 	scores, err := h.Counter.GetRankTotalByLimit(group, 10)

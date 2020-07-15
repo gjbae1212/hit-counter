@@ -2,21 +2,16 @@ package api_handler
 
 import (
 	"bytes"
+	"context"
+	"fmt"
 	"net/http"
-
-	"github.com/gjbae1212/go-badge"
-
 	"time"
 
-	"fmt"
-
-	"context"
-
 	"github.com/cespare/xxhash"
-	allan_util "github.com/gjbae1212/go-module/util"
+	"github.com/gjbae1212/go-badge"
 	"github.com/gjbae1212/hit-counter/counter"
 	"github.com/gjbae1212/hit-counter/handler"
-	"github.com/gjbae1212/hit-counter/sentry"
+	"github.com/gjbae1212/hit-counter/internal"
 	"github.com/labstack/echo/v4"
 	"github.com/wcharczuk/go-chart"
 )
@@ -35,6 +30,7 @@ type RankTask struct {
 	CreatedAt time.Time
 }
 
+// Process is a specific method implemented Task interface in async task.
 func (task *RankTask) Process(ctx context.Context) error {
 	// If a domain is 'github.com', it is calculating ranks.
 	if task.Domain == "github.com" && task.Path != "" {
@@ -61,10 +57,12 @@ type WebSocketMessage struct {
 	Payload []byte
 }
 
+// GetMessage is a specific method implemented Message interface in websocket.
 func (wsm *WebSocketMessage) GetMessage() []byte {
 	return wsm.Payload
 }
 
+// IncrCount is API, which it's to increase page count.
 func (h *Handler) IncrCount(c echo.Context) error {
 	hctx := c.(*handler.HitCounterContext)
 	if hctx.Get("ckid") == nil || hctx.Get("host") == nil || hctx.Get("path") == nil ||
@@ -80,7 +78,6 @@ func (h *Handler) IncrCount(c echo.Context) error {
 	id := fmt.Sprintf(countIdFormat, host, path)
 	ip := c.RealIP()
 	userAgent := c.Request().UserAgent()
-
 
 	// If a ingress specified ip is exceeded more than 30 per 5 seconds, it might possibly abusing.
 	// so it must be limited.
@@ -131,16 +128,17 @@ func (h *Handler) IncrCount(c echo.Context) error {
 		Path:      path,
 		CreatedAt: time.Now(),
 	}); err != nil { // Possibly send an error to the sentry. And it is not returned a error.
-		sentry.SendSentry(err, nil)
+		internal.SentryError(err)
 	}
 
 	// Broadcast message to users to which connected
 	h.WebSocketBreaker.BroadCast(&WebSocketMessage{
-		Payload: []byte(fmt.Sprintf("[%s] %s", allan_util.TimeToString(time.Now()), id))},
+		Payload: []byte(fmt.Sprintf("[%s] %s", internal.TimeToString(time.Now()), id))},
 	)
 	return h.returnCount(hctx, daily, total, title)
 }
 
+// KeepCount is API, which it is not to increase page count.
 func (h *Handler) KeepCount(c echo.Context) error {
 	hctx := c.(*handler.HitCounterContext)
 	if hctx.Get("ckid") == nil || hctx.Get("host") == nil || hctx.Get("path") == nil ||
@@ -162,6 +160,7 @@ func (h *Handler) KeepCount(c echo.Context) error {
 	return h.returnCount(hctx, daily, total, title)
 }
 
+// DailyHitsInRecently is API, which shows a graph related daily page count.
 func (h *Handler) DailyHitsInRecently(c echo.Context) error {
 	hctx := c.(*handler.HitCounterContext)
 	if hctx.Get("ckid") == nil || hctx.Get("host") == nil || hctx.Get("path") == nil {

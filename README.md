@@ -7,7 +7,6 @@ A simple way to see how many people have visited your website or github project.
 <a href="https://hits.seeyoufarm.com"/><img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fgjbae1212%2Fhit-counter"/></a>
 <a href="/LICENSE"><img src="https://img.shields.io/badge/license-GPL-blue.svg" alt="license" /></a>
 <a href="https://goreportcard.com/report/github.com/gjbae1212/hit-counter"><img src="https://goreportcard.com/badge/github.com/gjbae1212/hit-counter" alt="Go Report Card" /></a> 
-<a href="https://codecov.io/gh/gjbae1212/hit-counter"><img src="https://codecov.io/gh/gjbae1212/hit-counter/branch/master/graph/badge.svg" /></a>
 </p>
 
 ## Overview

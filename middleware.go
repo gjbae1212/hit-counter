@@ -2,56 +2,27 @@ package main
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
 	"net/http"
 	"strconv"
 	"time"
 
-	"encoding/base64"
-
+	sentryecho "github.com/getsentry/sentry-go/echo"
 	"github.com/gjbae1212/hit-counter/env"
 	"github.com/gjbae1212/hit-counter/handler"
-	"github.com/gjbae1212/hit-counter/sentry"
+	"github.com/gjbae1212/hit-counter/internal"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	glog "github.com/labstack/gommon/log"
 )
 
-// It used to apply option
-type Option interface {
-	apply(e *echo.Echo)
-}
-
-type OptionFunc func(e *echo.Echo)
-
-func (f OptionFunc) apply(e *echo.Echo) { f(e) }
-
-// debug option
-func WithDebugOption(debug bool) OptionFunc {
-	return func(e *echo.Echo) {
-		e.Debug = debug
-	}
-}
-
-// custom logger option
-func WithLoggerOption(customLogger *glog.Logger) OptionFunc {
-	return func(e *echo.Echo) {
-		if customLogger != nil {
-			e.Logger = customLogger
-		}
-	}
-}
-
-// It is something that apply middleware to `echo server`
+// AddMiddleware adds middlewares to echo server.
 func AddMiddleware(e *echo.Echo, opts ...Option) error {
 	if e == nil {
-		return fmt.Errorf("[err] echo object empty")
+		return fmt.Errorf("[err] AddMiddleware %w", internal.ErrorEmptyParams)
 	}
 
-	o := []Option{
-		WithDebugOption(true),
-		WithLoggerOption(nil),
-	}
+	o := []Option{WithDebugOption(true)}
 	o = append(o, opts...)
 	for _, opt := range o {
 		opt.apply(e)
@@ -59,16 +30,20 @@ func AddMiddleware(e *echo.Echo, opts ...Option) error {
 
 	e.HideBanner = true
 	e.HidePort = true
+
 	// read timeout will wait until read to request body
 	e.Server.ReadTimeout = 10 * time.Second
+
 	// write timeout will wait until from read request body to write response
 	e.Server.WriteTimeout = 10 * time.Second
+
 	// pre chain middleware
 	prechain, err := middlewarePreChain()
 	if err != nil {
 		return err
 	}
 	e.Use(prechain...)
+
 	// main chain middleware
 	mainchain, err := middlewareChain()
 	if err != nil {
@@ -80,6 +55,10 @@ func AddMiddleware(e *echo.Echo, opts ...Option) error {
 
 func middlewarePreChain() ([]echo.MiddlewareFunc, error) {
 	var chain []echo.MiddlewareFunc
+
+	// set sentry middleware. if this middleware will catch a panic error, delivering it to upper middleware.
+	chain = append(chain, sentryecho.New(sentryecho.Options{Repanic: true}))
+
 	// custom context
 	if env.GetForceHTTPS() {
 		// Apply HSTS
@@ -156,7 +135,7 @@ func middlewareChain() ([]echo.MiddlewareFunc, error) {
 			defer func() {
 				if r := recover(); r != nil {
 					// send sentry
-					sentry.SendSentry(r.(error), c.Request())
+					internal.SentryErrorWithContext(r.(error), c, nil)
 
 					extraLog := c.(*handler.HitCounterContext).ValueContext("extra_log").(map[string]interface{})
 					extraLog["status"] = http.StatusInternalServerError
@@ -182,7 +161,8 @@ func middlewareChain() ([]echo.MiddlewareFunc, error) {
 				extraLog["status"] = code
 				extraLog["error"] = fmt.Sprintf("%v\n", err)
 				if code >= http.StatusInternalServerError {
-					sentry.SendSentry(err, c.Request())
+					// send sentry
+					internal.SentryErrorWithContext(err, c, nil)
 
 					rest := stop.Sub(start)
 					extraLog["latency"] = strconv.FormatInt(int64(rest), 10)

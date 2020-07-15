@@ -9,4 +9,7 @@ hit-counter
 coverage.txt
 Dockerfile
 production.yaml
+script/production.yaml
 /script/*
+/logs
+/vendor

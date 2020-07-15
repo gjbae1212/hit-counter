@@ -3,13 +3,14 @@ package main // import "github.com/gjbae1212/hit-counter"
 import (
 	"flag"
 	"log"
+	"os"
 	"runtime"
+
+	"github.com/gjbae1212/hit-counter/internal"
 
 	"path/filepath"
 
-	"github.com/gjbae1212/go-module/logger"
 	"github.com/gjbae1212/hit-counter/env"
-	"github.com/gjbae1212/hit-counter/sentry"
 	"github.com/labstack/echo/v4"
 )
 
@@ -23,25 +24,30 @@ func main() {
 
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
-	// If the sentry is possibly loaded
-	sentry.LoadSentry(env.GetSentryDSN())
+	// initialize sentry
+	name, _ := os.Hostname()
+	internal.InitSentry(env.GetSentryDSN(), env.GetPhase(), env.GetPhase(), name, true, env.GetDebug())
 
 	e := echo.New()
 
-	// options
+	// make options for echo server.
 	var opts []Option
+
+	// debug option
 	opts = append(opts, WithDebugOption(env.GetDebug()))
 
-	dir := ""
-	file := ""
+	var dir string
+	var file string
 	if env.GetLogPath() != "" {
 		dir, file = filepath.Split(env.GetLogPath())
 	}
-	customLogger, err := logger.NewLogger(dir, file)
+
+	// logger option
+	logger, err := internal.NewLogger(dir, file)
 	if err != nil {
 		log.Panic(err)
 	}
-	opts = append(opts, WithLoggerOption(customLogger))
+	opts = append(opts, WithLogger(logger))
 
 	// add middleware
 	if err := AddMiddleware(e, opts...); err != nil {
@@ -54,7 +60,7 @@ func main() {
 	}
 
 	if *tls {
-		// If it use to `let's encrypt`
+		// start TLS server with let's encrypt certification.
 		e.StartAutoTLS(*address)
 	} else {
 		e.Start(*address)

@@ -8,7 +8,7 @@ jobs:
             - master
 
     docker:
-    - image: golang:1.12
+    - image: golang:1.14
 
     environment:
       GOPATH: /go
@@ -21,7 +21,3 @@ jobs:
         environment:
           GO111MODULE: "on"
         command: bash script/build.sh test
-
-    - run:
-        name: CODECOV
-        command: bash script/build.sh codecov

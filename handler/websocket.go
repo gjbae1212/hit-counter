@@ -1,20 +1,22 @@
 package handler
 
 import (
-	"github.com/pkg/errors"
+	"fmt"
 
-	websocket "github.com/gjbae1212/go-module/websocket"
+	websocket "github.com/gjbae1212/go-ws-broadcast"
 	"github.com/labstack/echo/v4"
 )
 
+// WebSocket is API for websocket.
 func (h *Handler) WebSocket(c echo.Context) error {
 	ws, err := websocket.Upgrader.Upgrade(c.Response(), c.Request(), nil)
 	if err != nil {
-		return errors.Wrap(err, "[err] websocket")
+		return fmt.Errorf("[err] WebSocket API %w", err)
 	}
 
-	if err := h.WebSocketBreaker.Register(ws); err != nil {
-		return errors.Wrap(err, "[err] websocket register")
+	// register websocket to breaker.
+	if _, err := h.WebSocketBreaker.Register(ws); err != nil {
+		return fmt.Errorf("[err] WebSocket API %w", err)
 	}
 	return nil
 }
