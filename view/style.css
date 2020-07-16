@@ -22,10 +22,11 @@
 
 .text-box{
   position: relative;
-  padding: 20px 20px 40px;
+  padding: 20px 40px 40px 20px;
   background-color: #222;
   color: #fff;
   box-shadow: 12px 12px 2px 1px rgba(0, 0, 0, .2);
+  word-break: break-all;
 }
 
 #stream_view{
