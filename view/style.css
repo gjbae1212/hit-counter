@@ -1,0 +1,34 @@
+.url-label{
+  color: var(--blue);
+  font-size: 1.2rem;
+}
+
+.url-input{
+  font-size: 1.5rem;
+}
+
+.url-small{
+  font-size: 100%;
+}
+
+.copy-button{
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  background-color: var(--blue);
+  color: #fff;
+  font-size: 0.7rem;
+}
+
+.text-box{
+  position: relative;
+  padding: 20px 20px 40px;
+  background-color: #222;
+  color: #fff;
+  box-shadow: 12px 12px 2px 1px rgba(0, 0, 0, .2);
+}
+
+#stream_view{
+  max-height: 500px;
+  overflow: auto;
+}
