@@ -18,6 +18,9 @@ function deploy
 
 function make_wasm
 {
+  # copy wasm_exec.js
+  cp $(go env GOROOT)/misc/wasm/wasm_exec.js $CURRENT/public/
+
   GOOS=js GOARCH=wasm go build -ldflags='-s -w' -o $CURRENT/view/hits.wasm $CURRENT/wasm/main.go
   gzip $CURRENT/view/hits.wasm
   mv $CURRENT/view/hits.wasm.gz $CURRENT/view/hits.wasm
