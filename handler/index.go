@@ -1,10 +1,10 @@
 package handler
 
 import (
-	"net/http"
-
 	"bytes"
 	"fmt"
+	"net/http"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 )
@@ -12,13 +12,29 @@ import (
 // Index is API for main page.
 func (h *Handler) Index(c echo.Context) error {
 	group := "github.com"
-	scores, err := h.Counter.GetRankTotalByLimit(group, 10)
+	scores, err := h.Counter.GetRankTotalByLimit(group, 20)
 	if err != nil {
 		return err
 	}
+
 	var ranks []string
+	ranksMap := make(map[string]bool, 20)
 	for i, score := range scores {
-		ranks = append(ranks, fmt.Sprintf("(%d) %s%s : (%d count)", i+1, group, score.Name, score.Value))
+		if len(ranks) == 10 {
+			break
+		}
+
+		path := strings.TrimSpace(score.Name)
+		if strings.HasSuffix(path, "/") {
+			path = path[:len(path)-1]
+		}
+
+		// add projects if score-name is /profile/project format
+		seps := strings.Split(path, "/")
+		if len(seps) == 3 && !ranksMap[path] {
+			ranksMap[path] = true
+			ranks = append(ranks, fmt.Sprintf("(%d) %s%s : (%d count)", i+1, group, path, score.Value))
+		}
 	}
 
 	buf := new(bytes.Buffer)
