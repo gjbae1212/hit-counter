@@ -1,3 +1,9 @@
+@media (max-width: 768px) {
+  .container.container-mobile-fill{
+      max-width: 100%;
+  }
+}
+
 .url-label{
   color: var(--blue);
   font-size: 1.2rem;
@@ -35,4 +41,15 @@
 #stream_view{
   max-height: 500px;
   overflow: auto;
+}
+
+#history_view{
+  min-height: 350px;
+  background: #dfdfdf;
+}
+
+.gradient-bg-primary{
+  background: rgb(24,154,188);
+  background: linear-gradient(124deg, rgba(24,154,188,1) 0%, rgba(24,188,156,1) 40%,rgba(24,188,156,1) 60%, rgba(24,188,104,1) 100%);
+  box-shadow: 0px 11px 25px 0px #bbb;
 }

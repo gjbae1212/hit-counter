@@ -60,7 +60,7 @@
     <div class="container">
         <a class="navbar-brand js-scroll-trigger" href="#page-top">HITS</a>
         <a href="https://hits.seeyoufarm.com"/><img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fhits.seeyoufarm.com"/></a>
-        <button class="navbar-toggler navbar-toggler-right text-uppercase bg-primary text-white rounded" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler navbar-toggler-right btn btn-primary text-uppercase text-white rounded" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
             Menu
             <i class="fas fa-bars"></i>
         </button>
@@ -84,7 +84,7 @@
 </nav>
 
 <!-- Header -->
-<header class="masthead bg-primary text-white text-center">
+<header class="masthead gradient-bg-primary text-white text-center">
     <div class="container">
         <!-- <img class="img-fluid mb-5 d-block mx-auto" src="freelancer/img/profile.png" alt=""> -->
         <img class="img-fluid mb-5 d-block mx-auto" src="icon.png" alt="">
@@ -145,18 +145,20 @@
 </section>
 
 <!-- Rank Section -->
-<section class="bg-primary text-white mb-0" id="rank">
+<section class="gradient-bg-primary text-white mb-0" id="rank">
     <div class="container">
         <h2 class="text-center text-uppercase text-white">SHOW RANK</h2>
         <hr class="star-light mb-5">
         <br/>
-        <h4 class="text-center text-uppercase text-white mb-0">It is top 10 github projects using the HITS.</h4>
-        <br/>
-        <div class="row">
-            <div class="col-lg-8 mx-auto alert alert-secondary" id="rank_view">
-            {{range .Ranks}}
-                <p>{{.}}</p>
-            {{end}}
+        <div class="show-rank-content">
+            <h4 class="text-center text-uppercase text-white mb-0">It is top 10 github projects using the HITS.</h4>
+            <br/>
+            <div class="row">
+                <div class="col-lg-8 mx-auto alert alert-secondary" id="rank_view">
+                {{range .Ranks}}
+                    <p>{{.}}</p>
+                {{end}}
+                </div>
             </div>
         </div>
     </div>
@@ -186,16 +188,19 @@
                         <button id="history_button" class="btn btn-primary btn-lg" onclick="showGraph()">SHOW GRAPH</button>
                     </div>
                     <br/><br/>
-                    <div id="history_view" class="mx-auto alert alert-secondary text-center">
-                    </div>
+
                 </form>
             </div>
+        </div>
+    </div>
+    <div class="container container-mobile-fill">
+        <div id="history_view">
         </div>
     </div>
 </section>
 
 <!--Stream Section -->
-<section class="bg-primary text-white mb-0" id="stream">
+<section class="gradient-bg-primary text-white mb-0" id="stream">
     <div class="container">
         <h2 class="text-center text-uppercase text-white">SHOW STREAM</h2>
         <hr class="star-light mb-5">
