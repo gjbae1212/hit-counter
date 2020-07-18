@@ -150,11 +150,11 @@
         <h2 class="text-center text-uppercase text-white">SHOW RANK</h2>
         <hr class="star-light mb-5">
         <br/>
-        <div class="show-rank-content">
-            <h4 class="text-center text-uppercase text-white mb-0">It is top 10 github projects using the HITS.</h4>
-            <br/>
-            <div class="row">
-                <div class="col-lg-8 mx-auto alert alert-secondary" id="rank_view">
+        <div class="show-rank-content row">
+            <div class="col-lg-8 mx-auto">
+                <h4 class="mb-0 rank-subtitle"> <b>TOP 10</b> github projects using HITS.</h4>
+                <br/>
+                <div id="rank_view">
                 {{range .Ranks}}
                     <p>{{.}}</p>
                 {{end}}
