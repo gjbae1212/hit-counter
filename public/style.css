@@ -52,7 +52,10 @@
 
 #history_view{
   min-height: 350px;
-  position:relative;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .gradient-bg-primary{
