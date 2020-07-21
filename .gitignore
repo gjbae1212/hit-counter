@@ -6,5 +6,5 @@ debug
 packrd
 script/build_env.sh
 script/production.yaml
-./production.yaml
+production.yaml
 /logs
