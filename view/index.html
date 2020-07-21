@@ -83,6 +83,13 @@
     </div>
 </nav>
 
+<!-- Notice -->
+<div class="notice">
+    <button class="close_btn"></button>
+    <div class="title">We're sorry</div>
+    <p>There was a problem of data loss.<br/> Now the problem has been fixed.</p>
+</div>
+
 <!-- Header -->
 <header class="masthead gradient-bg-primary text-white text-center">
     <div class="container">
@@ -242,6 +249,13 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqBootstrapValidation/1.3.7/jqBootstrapValidation.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/startbootstrap-freelancer/5.0.4/js/freelancer.min.js"></script>
+
+<!-- Dom Manipulate -->
+<script>
+    $(".close_btn").click(() => {
+        $(".notice").addClass("hidden")
+    })
+</script>
 
 <!-- copy and paste -->
 <script type="text/javascript">
