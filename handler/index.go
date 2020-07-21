@@ -33,7 +33,7 @@ func (h *Handler) Index(c echo.Context) error {
 		seps := strings.Split(path, "/")
 		if len(seps) == 3 && !ranksMap[path] {
 			ranksMap[path] = true
-			ranks = append(ranks, fmt.Sprintf("(%d) %s%s : (%d count)", len(ranks)+1, group, path, score.Value))
+			ranks = append(ranks, fmt.Sprintf("[%d] %s%s", len(ranks)+1, group, path))
 		}
 	}
 
