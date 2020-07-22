@@ -1,3 +1,10 @@
+/* Common Start */
+.text-align-right{
+  text-align: right;
+}
+/* Common End */
+
+
 @media (max-width: 768px) {
   .container.container-mobile-fill{
       max-width: 100%;
@@ -109,6 +116,7 @@
   display: none;
 }
 
+/* Notice Start */
 .notice{
   position: fixed;
   bottom: 10px;
@@ -155,3 +163,20 @@
     transform: none;
   }
 }
+
+a.contact_us_btn{
+  display:inline-flex;
+  border: none;
+  background: none;
+  color: #047bfe !important;
+  font-size: 14px;
+  padding: 0;
+  margin-top: 9px;
+  cursor: pointer;
+  align-items: center;
+}
+a.contact_us_btn:hover{
+  text-decoration: none;
+  color: #00356f !important;
+}
+/* Notice End */
