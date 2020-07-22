@@ -86,7 +86,7 @@
 </nav>
 
 <!-- Notice -->
-<div class="notice">
+<div class="notice hidden">
     <button class="close_btn"></button>
     <div class="title">We're sorry</div>
         <p>Unfortunately, the server running in Cloud service has happened fault unexpected on July 21, 2020.</p>
@@ -261,9 +261,19 @@
 
 <!-- Dom Manipulate -->
 <script>
+    // Local Storage Key
+    const NOTICE_CLOSED = "NOTICE_CLOSED";
+
+    // Notice
     $(".close_btn").click(() => {
         $(".notice").addClass("hidden")
+        window.localStorage.setItem(NOTICE_CLOSED, true)
     })
+
+    const onticeClosed = window.localStorage.getItem(NOTICE_CLOSED);
+    if(!onticeClosed){
+        $(".notice").removeClass("hidden")
+    }
 </script>
 
 <!-- copy and paste -->
