@@ -151,6 +151,18 @@
                         </div>
                     </div>
                     <br/>
+                    <div>
+                        <h7 class="text-center text-uppercase text-secondary mb-0">EMBED URL (NOTION)</h7><br/>
+                        <div class="text-box-container">
+                            <p class="text-box" id="embed_link">
+                                <!-- embed url-->
+                                https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fgjbae1212%2Fhit-counter
+                            </p>
+                            <button onclick="copyToClipboard('#embed_link');" class="btn copy-button">COPY</button>
+                        </div>
+                    </div>
+
+                    <br/>
                     <div class="text-center">
                         <img src="https://hits.seeyoufarm.com/api/count/keep/badge.svg?url=https%3A%2F%2Fgithub.com%2Fgjbae1212%2Fhit-counter" id="badge_show">
                     </div>
@@ -318,10 +330,12 @@
             var linkHTML = linkFormat.format(domain, incrURL);
             document.getElementById("badge_markdown").innerHTML = markdownHTML;
             document.getElementById("badge_link").innerHTML =  linkHTML;
+            document.getElementById("embed_link").innerHTML =  incrURL;
             document.getElementById("badge_show").src = keepURL;
         }catch(e) {
             document.getElementById("badge_markdown").innerHTML = "Invalid URL";
             document.getElementById("badge_link").innerHTML = "Invalid URL";
+            document.getElementById("embed_link").innerHTML = "Invalid URL";
             document.getElementById("badge_show").src = "";
         }
     }
