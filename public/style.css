@@ -36,8 +36,9 @@
 }
 
 .main-title-logo{
+  vertical-align: baseline;
   height: 150px;
-  margin-bottom: 64px;
+  margin-bottom: -30px;
 }
 
 .title-icon {
