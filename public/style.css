@@ -4,6 +4,51 @@
 }
 /* Common End */
 
+.flex-cetner{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.navbar{
+  background: #0b1219;
+}
+
+.img_background{
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+}
+
+.main-logo{
+  width: 200px;
+  height: 200px;
+  background: white;
+  margin: 0 auto 30px;
+  background-image: url(/hits-logo-primary.svg);
+}
+
+.navbar-brand{
+  width: 60px;
+  height: 60px;
+  background-image: url(/hits-logo-secondary.svg);
+}
+
+.main-title-logo{
+  vertical-align: baseline;
+  height: 150px;
+  margin-bottom: -30px;
+}
+
+.title-icon {
+  font-size: 60px;
+  margin-left: 10px;
+}
+
+.subtitle {
+  color: #ddd;
+}
 
 @media (max-width: 768px) {
   .container.container-mobile-fill{
@@ -66,9 +111,13 @@
 }
 
 .gradient-bg-primary{
-  background: rgb(24,154,188);
-  background: linear-gradient(124deg, rgba(24,154,188,1) 0%, rgba(24,188,156,1) 40%,rgba(24,188,156,1) 60%, rgba(24,188,104,1) 100%);
-  box-shadow: 0px 11px 25px 0px #bbb;
+  background: linear-gradient(124deg, rgb(0 36 45) 0%, rgb(0 76 55) 40%,rgb(0 47 38) 60%, rgb(4 31 17) 100%);
+  box-shadow: 0px 7px 7px rgba(0, 0, 0, 0.5);
+}
+
+.dark-bg{
+  background: #48615b;
+  box-shadow: 0px 7px 7px rgba(0, 0, 0, 0.5);
 }
 
 .wating-graph{
@@ -108,7 +157,7 @@
 
 .show-rank-content{
   padding: 2rem;
-  background-color: rgba(255, 255, 255, .8);
+  background-color: rgba(255, 255, 255, .9);
   min-height: 6rem;
 }
 
