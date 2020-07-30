@@ -7,7 +7,7 @@ CURRENT=`pwd`
 function deploy
 {
    test
-   make_wasm
+   make_wasm "production"
    upload_deployment_config
    gsutil cp $GCS_CONFIG_BUCKET/production.yaml $CURRENT/production.yaml
    rm $CURRENT/cloudbuild.yaml || true
@@ -18,10 +18,13 @@ function deploy
 
 function make_wasm
 {
+  local phase=$1
+  echo "WASM PHASE=$phase"
+
   # copy wasm_exec.js
   cp $(go env GOROOT)/misc/wasm/wasm_exec.js $CURRENT/public/
 
-  GOOS=js GOARCH=wasm go build -ldflags='-s -w' -o $CURRENT/view/hits.wasm $CURRENT/wasm/main.go
+  GOOS=js GOARCH=wasm go build -ldflags="-s -w -X main.phase=$phase" -o $CURRENT/view/hits.wasm $CURRENT/wasm/main.go
   gzip $CURRENT/view/hits.wasm
   mv $CURRENT/view/hits.wasm.gz $CURRENT/view/hits.wasm
 }
@@ -33,8 +36,9 @@ function upload_deployment_config
    gsutil cp $CURRENT/script/production.yaml $GCS_CONFIG_BUCKET/production.yaml
 }
 
-function test_run
+function run
 {
+   # make_wasm "local"
    set_env
    local redis=`docker ps | grep redis | wc -l`
    if [ ${redis} -eq 0 ]

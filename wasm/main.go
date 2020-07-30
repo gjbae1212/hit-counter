@@ -23,6 +23,10 @@ var (
 	defaultWS      = ""
 )
 
+var (
+	phase string
+)
+
 func parseURL(s string) (schema, host, port, path, query, fragment string, err error) {
 	if s == "" {
 		err = fmt.Errorf("[err] ParseURI empty uri")
@@ -58,17 +62,21 @@ func onClick() {
 	showGraph(value)
 }
 
+// DEPRECATED
 func onKeyUp() {
 	value := js.Global().Get("document").Call("getElementById", "badge_url").Get("value").String()
 	value = strings.TrimSpace(value)
 	generateBadge(value)
 }
 
+// DEPRECATED
 func generateBadge(value string) {
 	schema, host, _, path, _, _, err := parseURL(value)
 	markdown := ""
 	link := ""
 	show := ""
+	incrURL := ""
+	keepURL := ""
 	if err != nil || (schema != "http" && schema != "https") {
 		markdown = "INVALID URL"
 		link = "INVALID URL"
@@ -79,14 +87,15 @@ func generateBadge(value string) {
 		} else {
 			normalizeURL = fmt.Sprintf("%s://%s%s", schema, host, path)
 		}
-		incrURL := fmt.Sprintf("%s/%s?url=%s", defaultURL, incrPath, url.QueryEscape(normalizeURL))
-		keepURL := fmt.Sprintf("%s/%s?url=%s", defaultURL, keepPath, url.QueryEscape(normalizeURL))
+		incrURL = fmt.Sprintf("%s/%s?url=%s", defaultURL, incrPath, url.QueryEscape(normalizeURL))
+		keepURL = fmt.Sprintf("%s/%s?url=%s", defaultURL, keepPath, url.QueryEscape(normalizeURL))
 		markdown = fmt.Sprintf(markdownFormat, incrURL, defaultURL)
 		link = fmt.Sprintf(linkFormat, defaultURL, incrURL)
 		show = keepURL
 	}
 	js.Global().Get("document").Call("getElementById", "badge_markdown").Set("innerHTML", markdown)
 	js.Global().Get("document").Call("getElementById", "badge_link").Set("innerHTML", link)
+	js.Global().Get("document").Call("getElementById", "embed_link").Set("innerHTML", incrURL)
 	js.Global().Get("document").Call("getElementById", "badge_show").Set("src", show)
 }
 
@@ -114,6 +123,7 @@ func showGraph(value string) {
 
 func registerCallbacks() {
 	// It will be processing when a url input field will be received a event of keyboard up.
+	// DEPRECATED
 	js.Global().Set("generateBadge", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		onKeyUp()
 		return nil
@@ -178,16 +188,16 @@ func connectWebsocket() {
 }
 
 func main() {
-	println("START GO WASM")
-	// LOCAL MODE
-	//defaultDomain = "localhost:8080"
-	//defaultURL = fmt.Sprintf("http://%s", defaultDomain)
-	//defaultWS = fmt.Sprintf("ws://%s/ws", defaultDomain)
-
-	// PRODUCTION MODE
-	defaultDomain = "hits.seeyoufarm.com"
-	defaultURL = fmt.Sprintf("https://%s", defaultDomain)
-	defaultWS = fmt.Sprintf("wss://%s/ws", defaultDomain)
+	println("START GO WASM ", phase)
+	if phase == "local" {
+		defaultDomain = "localhost:8080"
+		defaultURL = fmt.Sprintf("http://%s", defaultDomain)
+		defaultWS = fmt.Sprintf("ws://%s/ws", defaultDomain)
+	} else {
+		defaultDomain = "hits.seeyoufarm.com"
+		defaultURL = fmt.Sprintf("https://%s", defaultDomain)
+		defaultWS = fmt.Sprintf("wss://%s/ws", defaultDomain)
+	}
 	registerCallbacks()
 	c := make(chan struct{}, 0)
 	<-c
