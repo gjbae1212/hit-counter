@@ -10,6 +10,7 @@ import (
 var (
 	logPath   = os.Getenv("LOG_PATH")
 	sentryDsn = os.Getenv("SENTRY_DSN")
+	phase     = os.Getenv("PHASE")
 )
 
 var (
@@ -17,7 +18,6 @@ var (
 	forceHTTPS bool
 	redisAddrs []string
 	cacheSize  int
-	phase      string
 )
 
 func init() {

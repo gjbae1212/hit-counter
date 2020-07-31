@@ -45,13 +45,14 @@ func TestSentryError(t *testing.T) {
 	tests := map[string]struct {
 		inputErr error
 	}{
-		"success": {inputErr: fmt.Errorf("[err] test")},
+		"success": {inputErr: fmt.Errorf("[err] test default")},
 	}
 
 	for _, t := range tests {
 		SentryError(t.inputErr)
 		sentry.Flush(5 * time.Second)
 	}
+	time.Sleep(2 * time.Second)
 	_ = assert
 }
 
@@ -66,12 +67,13 @@ func TestSentryErrorWithContext(t *testing.T) {
 		inputErr     error
 		inputContext echo.Context
 	}{
-		"success": {inputErr: fmt.Errorf("[err] test"), inputContext: e.NewContext(nil, nil)},
+		"success": {inputErr: fmt.Errorf("[err] test context"), inputContext: e.NewContext(nil, nil)},
 	}
 
 	for _, t := range tests {
 		SentryErrorWithContext(t.inputErr, t.inputContext, nil)
 		sentry.Flush(5 * time.Second)
 	}
+	time.Sleep(2 * time.Second)
 	_ = assert
 }

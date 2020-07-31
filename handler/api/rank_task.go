@@ -35,11 +35,11 @@ func (task *RankTask) Process(ctx context.Context) error {
 
 		// Calculate sum of visiting count for github projects based on github profile.
 		seps := strings.Split(task.Path, "/")
-		if len(seps) != 0 {
-			if _, err := task.Counter.IncreaseRankOfDaily(githubProfileSumGroup, seps[0], task.CreatedAt); err != nil {
+		if len(seps) >= 2 && seps[1] != "" {
+			if _, err := task.Counter.IncreaseRankOfDaily(githubProfileSumGroup, seps[1], task.CreatedAt); err != nil {
 				return err
 			}
-			if _, err := task.Counter.IncreaseRankOfTotal(githubProfileSumGroup, seps[0]); err != nil {
+			if _, err := task.Counter.IncreaseRankOfTotal(githubProfileSumGroup, seps[1]); err != nil {
 				return err
 			}
 		}

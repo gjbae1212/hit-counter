@@ -26,7 +26,10 @@ func main() {
 
 	// initialize sentry
 	name, _ := os.Hostname()
-	internal.InitSentry(env.GetSentryDSN(), env.GetPhase(), env.GetPhase(), name, true, env.GetDebug())
+	if err := internal.InitSentry(env.GetSentryDSN(), env.GetPhase(), env.GetPhase(),
+		name, true, env.GetDebug()); err != nil {
+		log.Println(err)
+	}
 
 	e := echo.New()
 

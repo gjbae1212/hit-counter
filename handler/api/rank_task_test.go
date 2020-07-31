@@ -33,7 +33,7 @@ func TestRankTask_Process(t *testing.T) {
 		"not_github": {input: &RankTask{
 			Counter:   h.Counter,
 			Domain:    "allan.com",
-			Path:      "aa/bb",
+			Path:      "/aa/bb",
 			CreatedAt: time.Now(),
 		}, wants: []*counter.Score{
 			nil,
@@ -50,15 +50,15 @@ func TestRankTask_Process(t *testing.T) {
 		"github-1": {input: &RankTask{
 			Counter:   h.Counter,
 			Domain:    "github.com",
-			Path:      "gjbae1212/test",
+			Path:      "/gjbae1212/test",
 			CreatedAt: time.Now(),
 		}, wants: []*counter.Score{
 			&counter.Score{
-				Name:  "gjbae1212/test",
+				Name:  "/gjbae1212/test",
 				Value: 1,
 			},
 			&counter.Score{
-				Name:  "gjbae1212/test",
+				Name:  "/gjbae1212/test",
 				Value: 1,
 			},
 			nil,
@@ -67,15 +67,15 @@ func TestRankTask_Process(t *testing.T) {
 		"github-2": {input: &RankTask{
 			Counter:   h.Counter,
 			Domain:    "github.com",
-			Path:      "gjbae1212/hoho",
+			Path:      "/gjbae1212/hoho",
 			CreatedAt: time.Now(),
 		}, wants: []*counter.Score{
 			&counter.Score{
-				Name:  "gjbae1212/hoho",
+				Name:  "/gjbae1212/hoho",
 				Value: 1,
 			},
 			&counter.Score{
-				Name:  "gjbae1212/hoho",
+				Name:  "/gjbae1212/hoho",
 				Value: 1,
 			},
 			nil,
@@ -146,6 +146,6 @@ func TestRankTask_Process(t *testing.T) {
 	assert.NoError(err)
 	assert.Len(scores, 1)
 	assert.True(cmp.Equal(&counter.Score{Name: "gjbae1212", Value: 2}, scores[0]))
-
+	spew.Dump(scores)
 
 }
