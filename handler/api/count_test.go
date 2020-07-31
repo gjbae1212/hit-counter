@@ -9,147 +9,14 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"context"
-
 	"fmt"
 
 	"github.com/alicebob/miniredis"
-	"github.com/davecgh/go-spew/spew"
-	"github.com/gjbae1212/hit-counter/counter"
 	"github.com/gjbae1212/hit-counter/handler"
-	"github.com/google/go-cmp/cmp"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestWebSocketMessage_GetMessage(t *testing.T) {
-	assert := assert.New(t)
 
-	tests := map[string]struct {
-		input string
-		want  string
-	}{"step1": {input: "hi", want: "hi"}}
-
-	for _, v := range tests {
-		wsm := &WebSocketMessage{Payload: []byte(v.input)}
-		assert.Equal(wsm.Payload, wsm.GetMessage())
-	}
-}
-
-func TestRankTask_Process(t *testing.T) {
-	assert := assert.New(t)
-
-	s, err := miniredis.Run()
-	assert.NoError(err)
-	defer s.Close()
-
-	h, err := handler.NewHandler([]string{s.Addr()})
-	assert.NoError(err)
-
-	api, err := NewHandler(h)
-	assert.NoError(err)
-
-	tests := map[string]struct {
-		input *RankTask
-		wants []*counter.Score
-	}{
-		"not_github": {input: &RankTask{
-			Counter:   h.Counter,
-			Domain:    "allan.com",
-			Path:      "aa/bb",
-			CreatedAt: time.Now(),
-		}, wants: []*counter.Score{
-			nil,
-			nil,
-			&counter.Score{
-				Name:  "allan.com",
-				Value: 1,
-			},
-			&counter.Score{
-				Name:  "allan.com",
-				Value: 1,
-			},
-		}},
-		"github": {input: &RankTask{
-			Counter:   h.Counter,
-			Domain:    "github.com",
-			Path:      "gjbae1212/test",
-			CreatedAt: time.Now(),
-		}, wants: []*counter.Score{
-			&counter.Score{
-				Name:  "gjbae1212/test",
-				Value: 1,
-			},
-			&counter.Score{
-				Name:  "gjbae1212/test",
-				Value: 1,
-			},
-			&counter.Score{
-				Name:  "github.com",
-				Value: 1,
-			},
-			&counter.Score{
-				Name:  "github.com",
-				Value: 1,
-			},
-		}},
-	}
-
-	ctx := context.Background()
-
-	test := tests["not_github"]
-	err = api.AsyncTask.AddTask(ctx, test.input)
-	assert.NoError(err)
-	time.Sleep(1 * time.Second)
-	scores, err := api.Counter.GetRankDailyByLimit(test.input.Domain, 10, time.Now())
-	assert.NoError(err)
-	assert.Len(scores, 0)
-	scores, err = api.Counter.GetRankTotalByLimit(test.input.Domain, 10)
-	assert.NoError(err)
-	assert.Len(scores, 0)
-	scores, err = api.Counter.GetRankDailyByLimit("domain", 10, time.Now())
-	assert.NoError(err)
-	assert.Len(scores, 1)
-	assert.True(cmp.Equal(test.wants[2], scores[0]))
-
-	scores, err = api.Counter.GetRankTotalByLimit("domain", 10)
-	assert.NoError(err)
-	assert.Len(scores, 1)
-	assert.True(cmp.Equal(test.wants[3], scores[0]))
-
-	test = tests["github"]
-	err = api.AsyncTask.AddTask(ctx, test.input)
-	assert.NoError(err)
-	time.Sleep(1 * time.Second)
-	scores, err = api.Counter.GetRankDailyByLimit(test.input.Domain, 10, time.Now())
-	assert.NoError(err)
-	assert.Len(scores, 1)
-	assert.True(cmp.Equal(test.wants[0], scores[0]))
-	spew.Dump(scores)
-
-	scores, err = api.Counter.GetRankTotalByLimit(test.input.Domain, 10)
-	assert.NoError(err)
-	assert.Len(scores, 1)
-	assert.True(cmp.Equal(test.wants[1], scores[0]))
-	spew.Dump(scores)
-
-	scores, err = api.Counter.GetRankDailyByLimit("domain", 10, time.Now())
-	assert.NoError(err)
-	assert.Len(scores, 2)
-	if cmp.Equal(test.wants[2], scores[0]) {
-	} else if cmp.Equal(test.wants[2], scores[1]) {
-	} else {
-		assert.NoError(fmt.Errorf("error"))
-	}
-
-	scores, err = api.Counter.GetRankTotalByLimit("domain", 10)
-	assert.NoError(err)
-	assert.Len(scores, 2)
-	if cmp.Equal(test.wants[3], scores[0]) {
-	} else if cmp.Equal(test.wants[3], scores[1]) {
-	} else {
-		assert.NoError(fmt.Errorf("error"))
-	}
-}
 
 func TestHandler_KeepCount(t *testing.T) {
 	assert := assert.New(t)

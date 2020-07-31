@@ -19,48 +19,7 @@ import (
 var (
 	badgeFormat   = " %d / %d "
 	countIdFormat = "%s%s"
-
-	domainGroup = "domain"
 )
-
-type RankTask struct {
-	Counter   counter.Counter
-	Domain    string
-	Path      string
-	CreatedAt time.Time
-}
-
-// Process is a specific method implemented Task interface in async task.
-func (task *RankTask) Process(ctx context.Context) error {
-	// If a domain is 'github.com', it is calculating ranks.
-	if task.Domain == "github.com" && task.Path != "" {
-		if _, err := task.Counter.IncreaseRankOfDaily(task.Domain, task.Path, task.CreatedAt); err != nil {
-			return err
-		}
-		if _, err := task.Counter.IncreaseRankOfTotal(task.Domain, task.Path); err != nil {
-			return err
-		}
-	}
-
-	// Calculate ranks for a domain of daily and total
-	if _, err := task.Counter.IncreaseRankOfDaily(domainGroup, task.Domain, task.CreatedAt); err != nil {
-		return err
-	}
-	if _, err := task.Counter.IncreaseRankOfTotal(domainGroup, task.Domain); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-type WebSocketMessage struct {
-	Payload []byte
-}
-
-// GetMessage is a specific method implemented Message interface in websocket.
-func (wsm *WebSocketMessage) GetMessage() []byte {
-	return wsm.Payload
-}
 
 // IncrCount is API, which it's to increase page count.
 func (h *Handler) IncrCount(c echo.Context) error {
