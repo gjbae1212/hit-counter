@@ -86,16 +86,12 @@
 </nav>
 
 <!-- Notice -->
-<div class="notice hidden">
+<div class="notice notice-slide-down">
     <button class="close_btn"></button>
-    <div class="title">We're sorry</div>
-        <p>Unfortunately, the server running in Cloud service has happened fault unexpected on July 21, 2020.</p>
-        <p>Some of the data, such as cumulative page count, was reset and was recovered it.</p>
-        <p>If you have felt your-count incorrect, contact us.</p>
-        <p>This situation will not happen in the future.</p>
-        <p>We're very sorry for the inconvenience that we have caused you.</p>
+        <p>If you feel very helpful and thankful to <b>HITS</b>,</p>
+        <p>please give a star it.</p>
     <div class="text-align-right">
-        <a href="mailto:gjbae1212@gmail.com" class="contact_us_btn">CONTACT US  <i class="material-icons">email</i></a>
+        <a href="https://github.com/gjbae1212/hit-counter" class="notice_btn">GITHUB <i class="fab fa-github"></i></a>
     </div>
 </div>
 
@@ -270,14 +266,11 @@
 
     // Notice
     $(".close_btn").click(() => {
-        $(".notice").addClass("hidden")
-        window.localStorage.setItem(NOTICE_CLOSED, true)
+        $(".notice").addClass("notice-slide-down")
     })
-
-    const onticeClosed = window.localStorage.getItem(NOTICE_CLOSED);
-    if(!onticeClosed){
-        $(".notice").removeClass("hidden")
-    }
+    setTimeout(() => {
+        $(".notice").removeClass("notice-slide-down")
+    }, 1000)
 </script>
 
 <!-- copy and paste -->

@@ -161,16 +161,12 @@
   min-height: 6rem;
 }
 
-.hidden{
-  display: none;
-}
-
 /* Notice Start */
 .notice{
   position: fixed;
   bottom: 10px;
   left: 50%;
-  transform: translate(-50%, 0);
+  transform: translate3D(-50%, 0, 0);
   width: 80%;
   max-width: 400px;
   background-color: white;
@@ -178,6 +174,11 @@
   border-radius: 20px;
   box-shadow: 0px 11px 25px 0px rgba(0, 0, 0, 0.7);
   padding: 15px 25px;
+  transition: transform 300ms;
+}
+
+.notice.notice-slide-down{
+  transform: translate3d(-50%, calc(100% + 10px), 0);
 }
 
 .notice .title{
@@ -211,21 +212,32 @@
     right: 10px;
     transform: none;
   }
+
+  .notice.notice-slide-down{
+    transform: translate3d(0, calc(100% + 10px), 0);
+  }
 }
 
-a.contact_us_btn{
+a.notice_btn{
   display:inline-flex;
   border: none;
   background: none;
   color: #047bfe !important;
-  font-size: 14px;
+  font-size: 15px;
   padding: 0;
   margin-top: 9px;
   cursor: pointer;
   align-items: center;
 }
-a.contact_us_btn:hover{
+
+a.notice_btn:hover{
   text-decoration: none;
   color: #00356f !important;
 }
+
+.notice .fa-github{
+  margin-left: 5px;
+  font-size: 24px;
+}
+
 /* Notice End */
