@@ -99,16 +99,6 @@ func TestRankTask_Process(t *testing.T) {
 			scores, err = api.Counter.GetRankTotalByLimit(t.input.Domain, 10)
 			assert.NoError(err)
 			assert.Len(scores, 0)
-
-			scores, err = api.Counter.GetRankDailyByLimit(domainGroup, 10, time.Now())
-			assert.NoError(err)
-			assert.Len(scores, 1)
-			assert.True(cmp.Equal(t.wants[2], scores[0]))
-
-			scores, err = api.Counter.GetRankTotalByLimit(domainGroup, 10)
-			assert.NoError(err)
-			assert.Len(scores, 1)
-			assert.True(cmp.Equal(t.wants[3], scores[0]))
 		case "github-1", "github-2":
 			err = api.AsyncTask.AddTask(ctx, t.input)
 			assert.NoError(err)
@@ -136,11 +126,13 @@ func TestRankTask_Process(t *testing.T) {
 	assert.NoError(err)
 	assert.Len(scores, 2)
 	assert.True(cmp.Equal(&counter.Score{Name: githubGroup, Value: 2}, scores[0]))
+	assert.True(cmp.Equal(&counter.Score{Name: "allan.com", Value: 1}, scores[1]))
 
 	scores, err = api.Counter.GetRankTotalByLimit(domainGroup, 10)
 	assert.NoError(err)
 	assert.Len(scores, 2)
 	assert.True(cmp.Equal(&counter.Score{Name: githubGroup, Value: 2}, scores[0]))
+	assert.True(cmp.Equal(&counter.Score{Name: "allan.com", Value: 1}, scores[1]))
 
 	scores, err = api.Counter.GetRankDailyByLimit(githubProfileSumGroup, 10, time.Now())
 	assert.NoError(err)
