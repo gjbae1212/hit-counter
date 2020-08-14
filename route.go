@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gjbae1212/hit-counter/handler"
 	api_handler "github.com/gjbae1212/hit-counter/handler/api"
@@ -78,7 +79,6 @@ func groupApiCount() ([]echo.MiddlewareFunc, error) {
 			if url == "" {
 				return echo.NewHTTPError(http.StatusBadRequest, "Not Found URL Query String")
 			}
-			title := hitctx.QueryParam("title")
 
 			schema, host, _, path, _, _, err := internal.ParseURL(url)
 			if err != nil {
@@ -89,10 +89,20 @@ func groupApiCount() ([]echo.MiddlewareFunc, error) {
 				return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Not Support Schema %s", schema))
 			}
 
+			// extract required parameters
+			title := hitctx.QueryParam("title")
+			titleBg := hitctx.QueryParam("title_bg")
+			countBg := hitctx.QueryParam("count_bg")
+			edgeFlat, _ := strconv.ParseBool(hitctx.QueryParam("edge_flat"))
+
 			// insert params to context.
 			hitctx.Set("host", host)
 			hitctx.Set("path", path)
 			hitctx.Set("title", title)
+			hitctx.Set("title_bg", titleBg)
+			hitctx.Set("count_bg", countBg)
+			hitctx.Set("edge_flat", edgeFlat)
+
 			return h(hitctx)
 		}
 	}

@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/cespare/xxhash"
@@ -24,30 +25,32 @@ var (
 func (h *Handler) IncrCount(c echo.Context) error {
 	hctx := c.(*handler.HitCounterContext)
 	if hctx.Get("ckid") == nil || hctx.Get("host") == nil || hctx.Get("path") == nil ||
-		hctx.Get("title") == nil {
+		hctx.Get("title") == nil || hctx.Get("title_bg") == nil || hctx.Get("count_bg") == nil ||
+		hctx.Get("edge_flat") == nil {
 		return fmt.Errorf("[err] IncrCount empty params")
 	}
 	cookie := hctx.Get("ckid").(string)
 	host := hctx.Get("host").(string)
 	path := hctx.Get("path").(string)
 	title := hctx.Get("title").(string)
+	titleBg := hctx.Get("title_bg").(string)
+	countBg := hctx.Get("count_bg").(string)
+	edgeType := hctx.Get("edge_flat").(bool)
 
 	_ = cookie
 	id := fmt.Sprintf(countIdFormat, host, path)
 	ip := c.RealIP()
 	userAgent := c.Request().UserAgent()
 
-	// If a ingress specified ip is exceeded more than 30 per 5 seconds, it might possibly abusing.
+	// If a ingress specified ip is exceeded more than 100 per 5 seconds, it might possibly abusing.
 	// so it must be limited.
 	v, ok := h.LocalCache.Get(ip)
-	if v != nil && v.(int64) > 20 {
+	if v != nil && v.(int64) > 100 {
 		daily, total, err := h.Counter.GetHitOfDailyAndTotal(id, time.Now())
 		if err != nil {
 			return err
 		}
-		return h.responseBadge(hctx, daily, total,
-			title, "#555", "#79c83d",
-			true)
+		return h.responseBadge(hctx, daily, total, title, titleBg, countBg, edgeType)
 	}
 	if !ok {
 		h.LocalCache.Set(ip, int64(1), 5*time.Second)
@@ -64,9 +67,7 @@ func (h *Handler) IncrCount(c echo.Context) error {
 		if err != nil {
 			return err
 		}
-		return h.responseBadge(hctx, daily, total,
-			title, "#555", "#79c83d",
-			true)
+		return h.responseBadge(hctx, daily, total, title, titleBg, countBg, edgeType)
 	}
 	h.LocalCache.Set(temporaryId, int64(1), 1*time.Second)
 
@@ -97,22 +98,24 @@ func (h *Handler) IncrCount(c echo.Context) error {
 	h.WebSocketBreaker.BroadCast(&WebSocketMessage{
 		Payload: []byte(fmt.Sprintf("[%s] %s", internal.TimeToString(time.Now()), id))},
 	)
-	return h.responseBadge(hctx, daily, total,
-		title, "#555", "#79c83d",
-		true)
+	return h.responseBadge(hctx, daily, total, title, titleBg, countBg, edgeType)
 }
 
 // KeepCount is API, which it is not to increase page count.
 func (h *Handler) KeepCount(c echo.Context) error {
 	hctx := c.(*handler.HitCounterContext)
 	if hctx.Get("ckid") == nil || hctx.Get("host") == nil || hctx.Get("path") == nil ||
-		hctx.Get("title") == nil {
+		hctx.Get("title") == nil || hctx.Get("title_bg") == nil || hctx.Get("count_bg") == nil ||
+		hctx.Get("edge_flat") == nil {
 		return fmt.Errorf("[err] KeepCount empty params")
 	}
 	host := hctx.Get("host").(string)
 	path := hctx.Get("path").(string)
 	cookie := hctx.Get("ckid").(string)
 	title := hctx.Get("title").(string)
+	titleBg := hctx.Get("title_bg").(string)
+	countBg := hctx.Get("count_bg").(string)
+	edgeType := hctx.Get("edge_flat").(bool)
 
 	_ = cookie
 	id := fmt.Sprintf(countIdFormat, host, path)
@@ -121,9 +124,7 @@ func (h *Handler) KeepCount(c echo.Context) error {
 		return err
 	}
 
-	return h.responseBadge(hctx, daily, total,
-		title, "#555", "#79c83d",
-		true)
+	return h.responseBadge(hctx, daily, total, title, titleBg, countBg, edgeType)
 }
 
 // DailyHitsInRecently is API, which shows a graph related daily page count.
@@ -192,7 +193,7 @@ func (h *Handler) DailyHitsInRecently(c echo.Context) error {
 }
 
 func (h *Handler) responseBadge(ctx *handler.HitCounterContext,
-	daily, total *counter.Score, titleText, titleBgColor, countBgColor string, edgeRound bool) error {
+	daily, total *counter.Score, titleText, titleBgColor, countBgColor string, edgeFlat bool) error {
 	dailyCount := int64(0)
 	totalCount := int64(0)
 	if daily != nil {
@@ -202,13 +203,25 @@ func (h *Handler) responseBadge(ctx *handler.HitCounterContext,
 		totalCount = total.Value
 	}
 
-	// create title, count text
-	if titleText == "" {
+	// create default title
+	if strings.TrimSpace(titleText) == "" {
 		titleText = "hits"
 	}
+
+	// create default title background color
+	if strings.TrimSpace(titleBgColor) == "" {
+		titleBgColor = "#555"
+	}
+
+	// create default count background color
+	if strings.TrimSpace(countBgColor) == "" {
+		countBgColor = "#79c83d"
+	}
+
+	// create count text
 	countText := fmt.Sprintf(badgeFormat, dailyCount, totalCount)
 
-	badge := internal.GenerateFlatBadge(titleText, titleBgColor, countText, countBgColor, edgeRound)
+	badge := internal.GenerateFlatBadge(titleText, titleBgColor, countText, countBgColor, edgeFlat)
 	svg, err := h.Badge.RenderFlatBadge(badge)
 	if err != nil {
 		return fmt.Errorf("[err] responseBadge %w", err)

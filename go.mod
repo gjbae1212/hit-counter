@@ -9,7 +9,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1
 	github.com/getsentry/sentry-go v0.6.1
 	github.com/gjbae1212/go-async-task v1.0.0
-	github.com/gjbae1212/go-counter-badge v1.0.0
+	github.com/gjbae1212/go-counter-badge v1.0.1
 	github.com/gjbae1212/go-redis v1.0.0
 	github.com/gjbae1212/go-ws-broadcast v1.0.0
 	github.com/gomodule/redigo v2.0.0+incompatible // indirect

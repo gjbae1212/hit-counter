@@ -3,9 +3,9 @@ package internal
 import "github.com/gjbae1212/go-counter-badge/badge"
 
 // GenerateFlatBadge makes Flat-Badge struct which is used go-counter-badge/badge.
-func GenerateFlatBadge(leftText, leftBgColor, rightText, rightBgColor string, edgeRound bool) badge.Badge {
+func GenerateFlatBadge(leftText, leftBgColor, rightText, rightBgColor string, edgeFlat bool) badge.Badge {
 	flatBadge := badge.Badge{
-		FontType:             badge.VeraSans,
+		FontType:             badge.Verdana,
 		LeftText:             leftText,
 		LeftTextColor:        "#fff",
 		LeftBackgroundColor:  leftBgColor,
@@ -13,12 +13,12 @@ func GenerateFlatBadge(leftText, leftBgColor, rightText, rightBgColor string, ed
 		RightTextColor:       "#fff",
 		RightBackgroundColor: rightBgColor,
 	}
-	if edgeRound {
-		flatBadge.XRadius = "3"
-		flatBadge.YRadius = "3"
-	} else {
+	if edgeFlat {
 		flatBadge.XRadius = "0"
 		flatBadge.YRadius = "0"
+	} else {
+		flatBadge.XRadius = "3"
+		flatBadge.YRadius = "3"
 	}
 	return flatBadge
 }

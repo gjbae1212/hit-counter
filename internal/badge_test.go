@@ -17,7 +17,7 @@ func TestGenerateFlatBadge(t *testing.T) {
 		leftBgColor  string
 		rightText    string
 		rightBgColor string
-		edgeBound    bool
+		edgeFlat     bool
 		output       badge.Badge
 	}{
 		"not-edge": {
@@ -25,25 +25,7 @@ func TestGenerateFlatBadge(t *testing.T) {
 			leftBgColor:  "#555",
 			rightText:    " 0 / 10 ",
 			rightBgColor: "#79c83d",
-			edgeBound:    false,
-			output: badge.Badge{
-				FontType:             badge.VeraSans,
-				LeftText:             "allan",
-				LeftTextColor:        "#fff",
-				LeftBackgroundColor:  "#555",
-				RightText:            " 0 / 10 ",
-				RightTextColor:       "#fff",
-				RightBackgroundColor: "#79c83d",
-				XRadius:              "0",
-				YRadius:              "0",
-			},
-		},
-		"edge": {
-			leftText:     "allan",
-			leftBgColor:  "#555",
-			rightText:    " 0 / 10 ",
-			rightBgColor: "#79c83d",
-			edgeBound:    true,
+			edgeFlat:     false,
 			output: badge.Badge{
 				FontType:             badge.VeraSans,
 				LeftText:             "allan",
@@ -56,10 +38,28 @@ func TestGenerateFlatBadge(t *testing.T) {
 				YRadius:              "3",
 			},
 		},
+		"edge": {
+			leftText:     "allan",
+			leftBgColor:  "#555",
+			rightText:    " 0 / 10 ",
+			rightBgColor: "#79c83d",
+			edgeFlat:     true,
+			output: badge.Badge{
+				FontType:             badge.VeraSans,
+				LeftText:             "allan",
+				LeftTextColor:        "#fff",
+				LeftBackgroundColor:  "#555",
+				RightText:            " 0 / 10 ",
+				RightTextColor:       "#fff",
+				RightBackgroundColor: "#79c83d",
+				XRadius:              "0",
+				YRadius:              "0",
+			},
+		},
 	}
 
 	for _, t := range tests {
-		bg := GenerateFlatBadge(t.leftText, t.leftBgColor, t.rightText, t.rightBgColor, t.edgeBound)
+		bg := GenerateFlatBadge(t.leftText, t.leftBgColor, t.rightText, t.rightBgColor, t.edgeFlat)
 		assert.True(reflect.DeepEqual(t.output, bg))
 	}
 }
