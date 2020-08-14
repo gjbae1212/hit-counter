@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0 user-scalable=no" />
+    <meta name="description" content="Easy way to know how many visitors are viewing your Github, Website, Notion.">
+    <meta name="author" content="gjbae1212@gmail.com">
+
+    <meta property="og:title" content="HITS">
+    <meta property="og:image" content="http://localhost:8080/icon.png">
+    <meta property="og:description" content="Easy way to know how many visitors are viewing your Github, Website, Notion.">
+
+    <title>HITS</title>
+    <!-- golang wasm -->
+    <script src="wasm_exec.js"></script>
+    <script>
+        if (!WebAssembly.instantiateStreaming) { // polyfill
+            WebAssembly.instantiateStreaming = async (resp, importObject) => {
+                const source = await (await resp).arrayBuffer();
+                return await WebAssembly.instantiate(source, importObject);
+            };
+        }
+
+        const go = new Go();
+        let mod, inst;
+        WebAssembly.instantiateStreaming(fetch("hits.wasm"), go.importObject).then(
+            async (result) => {
+                mod = result.module;
+                inst = result.instance;
+                await go.run(inst);
+            }).catch((err) => {
+            console.error(err);
+            let history = document.getElementById('history');
+            history.hidden = true;
+            let stream = document.getElementById('stream');
+            stream.hidden = true;
+        });
+    </script>
+
+
+    <!-- Icon Font -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Bootstrap core CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <!-- Custom fonts for this template -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+    <!-- Plugin CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css" />
+    <!-- Custom styles for this template -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/startbootstrap-freelancer/5.0.4/css/freelancer.min.css" />
+    <link rel="stylesheet" href="/style.css" type="text/css"/>
+</head>
+
+<body id="page-top">
+
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg fixed-top text-uppercase" id="mainNav">
+    <div class="container">
+        <a class="navbar-brand img_background js-scroll-trigger" href="#page-top"></a>
+        <a href="http://localhost:8080"/><img src="http://localhost:8080/api/count/incr/badge.svg?url=https%3A%2F%2Fhits.seeyoufarm.com"/></a>
+        <button class="navbar-toggler navbar-toggler-right btn btn-primary text-uppercase text-white rounded" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            Menu
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item mx-0 mx-lg-1">
+                    <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#badge">GENERATE BADGE</a>
+                </li>
+                <li class="nav-item mx-0 mx-lg-1">
+                    <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#rank">SHOW RANK</a>
+                </li>
+                <li class="nav-item mx-0 mx-lg-1">
+                    <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#history">SHOW HISTORY</a>
+                </li>
+                <li class="nav-item mx-0 mx-lg-1">
+                    <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#stream">SHOW STREAM</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Notice -->
+<div class="notice notice-slide-down">
+    <button class="close_btn"></button>
+    <p>If you feel very helpful and thankful to <b>HITS</b>,</p>
+    <p>please give a star it.</p>
+    <div class="text-align-right">
+        <a href="https://github.com/gjbae1212/hit-counter" class="notice_btn">GITHUB <i class="fab fa-github"></i></a>
+    </div>
+</div>
+
+<!-- Header -->
+<header class="masthead gradient-bg-primary text-white text-center">
+    <div class="container">
+        <h1 class="text-uppercase mb-5">START <img src="/hits-logo-secondary.svg" alt="" class="main-title-logo"></h1>
+        <h2 class="font-weight-light mb-0 subtitle">Easy way to know how many visitors are viewing your Github, Website, Notion.</h2>
+    </div>
+</header>
+
+<!-- Badge Section -->
+<section id="badge">
+    <div class="container">
+        <h2 class="text-center text-uppercase text-secondary mb-5 flex-cetner">GENERATE BADGE<i class="material-icons title-icon">link</i></h2>
+        <br/>
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <form novalidate="novalidate" onsubmit="return false;">
+                    <div class="control-group">
+                        <label class="url-label" for="badge_url">TARGET URL</label>
+                        <input class="form-control url-input" id="badge_url" type="text" placeholder="URL" required="required" data-validation-required-message="Please enter your sites or github" value="https://github.com/gjbae1212/hit-counter" onkeyup="refreshBadge()">
+                        <small class="form-text text-muted url-small">
+                            Type your URL. Then you will get generated MARKDOWN and HTML LINK.
+                        </small>
+                    </div>
+                    <br/>
+                    <br/>
+                    <div>
+                        <h7 class="text-uppercase text-secondary mb-0">MARKDOWN</h7><br/>
+                        <div class="text-box-container">
+                            <p class="text-box" id="badge_markdown">
+                                <!-- mark down-->
+                                [![Hits](http://localhost:8080/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fgjbae1212%2Fhit-counter)](http://localhost:8080)
+                            </p>
+                            <button onclick="copyToClipboard('#badge_markdown')" class="btn copy-button">COPY</button>
+                        </div>
+                        <br/>
+
+                        <div>
+                            <h7 class="text-center text-uppercase text-secondary mb-0">HTML LINK</h7><br/>
+                            <div class="text-box-container">
+                                <p class="text-box" id="badge_link">
+                                    <!-- badge link-->
+                                    &lt;a href="http://localhost:8080"/&gt;&lt;img src="http://localhost:8080/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fgjbae1212%2Fhit-counter"/&gt;&lt;/a&gt;
+                                </p>
+                                <button onclick="copyToClipboard('#badge_link');" class="btn copy-button">COPY</button>
+                            </div>
+                        </div>
+                        <br/>
+                        <div>
+                            <h7 class="text-center text-uppercase text-secondary mb-0">EMBED URL (NOTION)</h7><br/>
+                            <div class="text-box-container">
+                                <p class="text-box" id="embed_link">
+                                    <!-- embed url-->
+                                    http://localhost:8080/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fgjbae1212%2Fhit-counter
+                                </p>
+                                <button onclick="copyToClipboard('#embed_link');" class="btn copy-button">COPY</button>
+                            </div>
+                        </div>
+
+                        <br/>
+                        <div class="text-center">
+                            <img src="http://localhost:8080/api/count/keep/badge.svg?url=https%3A%2F%2Fgithub.com%2Fgjbae1212%2Fhit-counter" id="badge_show">
+                        </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Rank Section -->
+<section class="dark-bg text-white mb-0" id="rank">
+    <div class="container">
+        <h2 class="text-center text-uppercase text-white mb-5 flex-cetner">SHOW RANK<i class="material-icons title-icon">military_tech</i></h2>
+        <br/>
+        <div class="show-rank-content row">
+            <div class="col-lg-8 mx-auto">
+                <h4 class="mb-0 rank-subtitle"> <b>TOP 10</b> github projects using HITS.</h4>
+                <br/>
+                <div id="rank_view">
+                    {{range .Ranks}}
+                        <p>{{.}}</p>
+                    {{end}}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!--History Section -->
+<section id="history">
+    <div class="container">
+        <h2 class="text-center text-uppercase text-secondary mb-5 flex-cetner">SHOW HISTORY<i class="material-icons title-icon">show_chart</i></h2>
+        <br/>
+        <h4 class="text-center text-uppercase text-secondary mb-0">History of daily hits in recently 6 monthly</h4>
+        <br/>
+        <br/>
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <form novalidate="novalidate" onsubmit="return false;">
+                    <div class="control-group">
+                        <label class="url-label" for="history_url">TARGET URL</label>
+                        <input class="form-control url-input" id="history_url" type="text" placeholder="URL" required="required" data-validation-required-message="Please enter your sites or github" value="https://github.com/gjbae1212/hit-counter">
+                        <small class="form-text text-muted url-small">
+                            Type URL what you want to get the history of
+                        </small>
+                    </div>
+                    <br/><br/>
+                    <div class="text-center">
+                        <button id="history_button" class="btn btn-primary btn-lg" onclick="showGraph()">SHOW GRAPH</button>
+                    </div>
+                    <br/><br/>
+
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="container container-mobile-fill">
+        <div id="history_view">
+            <div class="wating-graph ">
+                Press <b class="text-primary">SHOW GRAPH</b>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!--Stream Section -->
+<section class="dark-bg text-white mb-0" id="stream">
+    <div class="container">
+        <h2 class="text-center text-uppercase text-white mb-5 flex-cetner">SHOW STREAM<i class="material-icons title-icon">history</i></h2>
+        <br/>
+        <h4 class="text-center text-uppercase subtitle font-weight-light">It is showing projects tracked by the HITS at this time.</h4>
+        <br/>
+        <div class="row">
+            <div class="col-lg-8 mx-auto alert alert-secondary" id="stream_view">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer text-center">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 mb-5 mb-lg-0">
+            </div>
+            <div class="col-md-4 mb-5 mb-lg-0">
+                <h4 class="text-uppercase mb-4">Powered BY</h4>
+                <p class="lead mb-0"><a href="https://github.com/gjbae1212">GJBAE1212</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+
+<!-- Bootstrap core JavaScript -->
+<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js" integrity="sha384-xrRywqdh3PHs8keKZN+8zzc5TX0GRTLCcmivcbNJWm2rs5C8PRhcEn3czEjhAO9o" crossorigin="anonymous"></script>
+
+<!-- Plugin JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqBootstrapValidation/1.3.7/jqBootstrapValidation.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/startbootstrap-freelancer/5.0.4/js/freelancer.min.js"></script>
+
+<!-- Dom Manipulate -->
+<script>
+    // Local Storage Key
+    const NOTICE_CLOSED = "NOTICE_CLOSED";
+
+    // Notice
+    $(".close_btn").click(() => {
+        $(".notice").addClass("notice-slide-down")
+    })
+    setTimeout(() => {
+        $(".notice").removeClass("notice-slide-down")
+    }, 1000)
+</script>
+
+<!-- copy and paste -->
+<script type="text/javascript">
+    let domain = "http://localhost:8080";
+    let incrFormat = "http://localhost:8080/api/count/incr/badge.svg?url=";
+    let keepFormat       = "http://localhost:8080/api/count/keep/badge.svg?url=";
+    let markdownFormat = "[![Hits]({0})]({1})";
+    let showFormat     = "<a href=\"{0}\"/><img src=\"{1}\"/></a>";
+    let linkFormat     = "&lt;a href=\"{0}\"/&gt;&lt;img src=\"{1}\"/&gt;&lt;/a&gt;";
+    String.prototype.format = function () {
+        var a = this;
+        for (var k in arguments) {
+            a = a.replace(new RegExp("\\{" + k + "\\}", 'g'), arguments[k]);
+        }
+        return a
+    }
+
+    function copyToClipboard(element) {
+        var $temp = $("<input>");
+        $("body").append($temp);
+        $temp.val($(element).text()).select();
+        document.execCommand("copy");
+        $temp.remove();
+    }
+
+    function refreshBadge() {
+        var data = document.getElementById("badge_url").value;
+        data = data.trim();
+        try {
+            var parser = new URL(data);
+            var normalizeURL = "";
+            if (parser.pathname == "" || parser.pathname == "/") {
+                normalizeURL  = parser.protocol + "//" + parser.host;
+            }else {
+                normalizeURL  = parser.protocol + "//" + parser.host + parser.pathname;
+            }
+            var escapeURL = encodeURIComponent(normalizeURL);
+            var incrURL = incrFormat +  escapeURL;
+            var keepURL = keepFormat +  escapeURL;
+            var markdownHTML = markdownFormat.format(incrURL, domain);
+            var linkHTML = linkFormat.format(domain, incrURL);
+            document.getElementById("badge_markdown").innerHTML = markdownHTML;
+            document.getElementById("badge_link").innerHTML =  linkHTML;
+            document.getElementById("embed_link").innerHTML =  incrURL;
+            document.getElementById("badge_show").src = keepURL;
+        }catch(e) {
+            document.getElementById("badge_markdown").innerHTML = "Invalid URL";
+            document.getElementById("badge_link").innerHTML = "Invalid URL";
+            document.getElementById("embed_link").innerHTML = "Invalid URL";
+            document.getElementById("badge_show").src = "";
+        }
+    }
+
+
+</script>
+</body>
+
+</html>

@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/cespare/xxhash"
-	"github.com/gjbae1212/go-badge"
 	"github.com/gjbae1212/hit-counter/counter"
 	"github.com/gjbae1212/hit-counter/handler"
 	"github.com/gjbae1212/hit-counter/internal"
@@ -46,7 +45,9 @@ func (h *Handler) IncrCount(c echo.Context) error {
 		if err != nil {
 			return err
 		}
-		return h.returnCount(hctx, daily, total, title)
+		return h.responseBadge(hctx, daily, total,
+			title, "#555", "#79c83d",
+			true)
 	}
 	if !ok {
 		h.LocalCache.Set(ip, int64(1), 5*time.Second)
@@ -63,7 +64,9 @@ func (h *Handler) IncrCount(c echo.Context) error {
 		if err != nil {
 			return err
 		}
-		return h.returnCount(hctx, daily, total, title)
+		return h.responseBadge(hctx, daily, total,
+			title, "#555", "#79c83d",
+			true)
 	}
 	h.LocalCache.Set(temporaryId, int64(1), 1*time.Second)
 
@@ -94,7 +97,9 @@ func (h *Handler) IncrCount(c echo.Context) error {
 	h.WebSocketBreaker.BroadCast(&WebSocketMessage{
 		Payload: []byte(fmt.Sprintf("[%s] %s", internal.TimeToString(time.Now()), id))},
 	)
-	return h.returnCount(hctx, daily, total, title)
+	return h.responseBadge(hctx, daily, total,
+		title, "#555", "#79c83d",
+		true)
 }
 
 // KeepCount is API, which it is not to increase page count.
@@ -116,7 +121,9 @@ func (h *Handler) KeepCount(c echo.Context) error {
 		return err
 	}
 
-	return h.returnCount(hctx, daily, total, title)
+	return h.responseBadge(hctx, daily, total,
+		title, "#555", "#79c83d",
+		true)
 }
 
 // DailyHitsInRecently is API, which shows a graph related daily page count.
@@ -184,7 +191,8 @@ func (h *Handler) DailyHitsInRecently(c echo.Context) error {
 	return hctx.String(http.StatusOK, string(buf.Bytes()))
 }
 
-func (h *Handler) returnCount(hctx *handler.HitCounterContext, daily, total *counter.Score, title string) error {
+func (h *Handler) responseBadge(ctx *handler.HitCounterContext,
+	daily, total *counter.Score, titleText, titleBgColor, countBgColor string, edgeRound bool) error {
 	dailyCount := int64(0)
 	totalCount := int64(0)
 	if daily != nil {
@@ -193,19 +201,22 @@ func (h *Handler) returnCount(hctx *handler.HitCounterContext, daily, total *cou
 	if total != nil {
 		totalCount = total.Value
 	}
-	if title == "" {
-		title = "hits"
-	}
 
-	text := fmt.Sprintf(badgeFormat, dailyCount, totalCount)
-	badge, err := badge.RenderBytes(title, text, "#79c83d")
+	// create title, count text
+	if titleText == "" {
+		titleText = "hits"
+	}
+	countText := fmt.Sprintf(badgeFormat, dailyCount, totalCount)
+
+	badge := internal.GenerateFlatBadge(titleText, titleBgColor, countText, countBgColor, edgeRound)
+	svg, err := h.Badge.RenderFlatBadge(badge)
 	if err != nil {
-		return err
+		return fmt.Errorf("[err] responseBadge %w", err)
 	}
 
-	hctx.Response().Header().Set("Content-Type", "image/svg+xml")
-	hctx.Response().Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
-	hctx.Response().Header().Set("Pragma", "no-cache")
-	hctx.Response().Header().Set("Expires", "0")
-	return hctx.String(http.StatusOK, string(badge))
+	ctx.Response().Header().Set("Content-Type", "image/svg+xml")
+	ctx.Response().Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+	ctx.Response().Header().Set("Pragma", "no-cache")
+	ctx.Response().Header().Set("Expires", "0")
+	return ctx.String(http.StatusOK, string(svg))
 }

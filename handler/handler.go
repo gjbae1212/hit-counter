@@ -7,8 +7,10 @@ import (
 	"time"
 
 	task "github.com/gjbae1212/go-async-task"
+	badge "github.com/gjbae1212/go-counter-badge/badge"
 	websocket "github.com/gjbae1212/go-ws-broadcast"
 	"github.com/gjbae1212/hit-counter/counter"
+	"github.com/gjbae1212/hit-counter/env"
 	"github.com/gjbae1212/hit-counter/internal"
 	cache "github.com/patrickmn/go-cache"
 )
@@ -19,6 +21,7 @@ type Handler struct {
 	AsyncTask        task.Keeper
 	WebSocketBreaker websocket.Breaker
 	IndexTemplate    *template.Template
+	Badge            badge.Writer
 }
 
 // NewHandler creates  handler object.
@@ -58,7 +61,18 @@ func NewHandler(redisAddrs []string) (*Handler, error) {
 	}
 
 	// template
-	indexTemplate, err := template.ParseFiles(filepath.Join(internal.GetRoot(), "view", "index.html"))
+	indexName := "index.html"
+	if env.GetPhase() == "local" {
+		indexName = "local.html"
+	}
+
+	indexTemplate, err := template.ParseFiles(filepath.Join(internal.GetRoot(), "view", indexName))
+	if err != nil {
+		return nil, fmt.Errorf("[err] NewHandler %w", err)
+	}
+
+	// badge generator
+	badgeWriter, err := badge.NewWriter()
 	if err != nil {
 		return nil, fmt.Errorf("[err] NewHandler %w", err)
 	}
@@ -69,5 +83,6 @@ func NewHandler(redisAddrs []string) (*Handler, error) {
 		AsyncTask:        asyncTask,
 		WebSocketBreaker: breaker,
 		IndexTemplate:    indexTemplate,
+		Badge:            badgeWriter,
 	}, nil
 }

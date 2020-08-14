@@ -51,7 +51,7 @@ function run
 function test
 {
    set_env
-   go test -v $(go list ./... | grep -v vendor | grep -v wasm) --count 1 -race
+   go test -v $(go list ./... | grep -v vendor | grep -v wasm) --count 1
 }
 
 function set_env

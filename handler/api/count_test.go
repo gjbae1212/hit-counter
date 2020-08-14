@@ -1,22 +1,18 @@
 package api_handler
 
 import (
+	"fmt"
 	"net/http/httptest"
 	"testing"
 	"time"
 
-	"github.com/gjbae1212/go-badge"
-
-	"github.com/labstack/echo/v4"
-
-	"fmt"
+	"github.com/gjbae1212/hit-counter/internal"
 
 	"github.com/alicebob/miniredis"
 	"github.com/gjbae1212/hit-counter/handler"
+	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 )
-
-
 
 func TestHandler_KeepCount(t *testing.T) {
 	assert := assert.New(t)
@@ -45,10 +41,12 @@ func TestHandler_KeepCount(t *testing.T) {
 	err = api.KeepCount(hctx)
 	assert.NoError(err)
 	assert.Equal(200, w.Code)
-	text := fmt.Sprintf(badgeFormat, 0, 0)
-	badge, err := badge.RenderBytes("hello", text, "#79c83d")
+
+	flatbg := internal.GenerateFlatBadge("hello",
+		"#555", fmt.Sprintf(badgeFormat, 0, 0), "#79c83d", true)
+	cmp, err := h.Badge.RenderFlatBadge(flatbg)
 	assert.NoError(err)
-	assert.Equal(string(badge), w.Body.String())
+	assert.Equal(string(cmp), w.Body.String())
 }
 
 func TestHandler_IncrCount(t *testing.T) {
@@ -83,10 +81,12 @@ func TestHandler_IncrCount(t *testing.T) {
 		err = api.IncrCount(hctx)
 		assert.NoError(err)
 		assert.Equal(200, w.Code)
-		text := fmt.Sprintf(badgeFormat, i, i)
-		badge, err := badge.RenderBytes("hits", text, "#79c83d")
+
+		flatbg := internal.GenerateFlatBadge("hits",
+			"#555", fmt.Sprintf(badgeFormat, i, i), "#79c83d", true)
+		cmp, err := h.Badge.RenderFlatBadge(flatbg)
 		assert.NoError(err)
-		assert.Equal(string(badge), w.Body.String())
+		assert.Equal(string(cmp), w.Body.String())
 	}
 	time.Sleep(1 * time.Second)
 	scores, err := api.Counter.GetRankDailyByLimit("github.com", 10, time.Now())
