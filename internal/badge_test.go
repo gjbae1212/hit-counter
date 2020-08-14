@@ -27,7 +27,7 @@ func TestGenerateFlatBadge(t *testing.T) {
 			rightBgColor: "#79c83d",
 			edgeFlat:     false,
 			output: badge.Badge{
-				FontType:             badge.VeraSans,
+				FontType:             badge.Verdana,
 				LeftText:             "allan",
 				LeftTextColor:        "#fff",
 				LeftBackgroundColor:  "#555",
@@ -45,7 +45,7 @@ func TestGenerateFlatBadge(t *testing.T) {
 			rightBgColor: "#79c83d",
 			edgeFlat:     true,
 			output: badge.Badge{
-				FontType:             badge.VeraSans,
+				FontType:             badge.Verdana,
 				LeftText:             "allan",
 				LeftTextColor:        "#fff",
 				LeftBackgroundColor:  "#555",
