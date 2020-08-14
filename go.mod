@@ -9,7 +9,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1
 	github.com/getsentry/sentry-go v0.6.1
 	github.com/gjbae1212/go-async-task v1.0.0
-	github.com/gjbae1212/go-badge v1.0.1
+	github.com/gjbae1212/go-counter-badge v1.0.0
 	github.com/gjbae1212/go-redis v1.0.0
 	github.com/gjbae1212/go-ws-broadcast v1.0.0
 	github.com/gomodule/redigo v2.0.0+incompatible // indirect
@@ -20,5 +20,4 @@ require (
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/stretchr/testify v1.6.1
 	github.com/wcharczuk/go-chart v2.0.1+incompatible
-	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
 )
