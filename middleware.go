@@ -180,7 +180,9 @@ func middlewareChain() ([]echo.MiddlewareFunc, error) {
 				rest := stop.Sub(start)
 				extraLog["latency"] = strconv.FormatInt(int64(rest), 10)
 				extraLog["latency_human"] = rest.String()
-				//hitctx.Logger().Infoj(extraLog)
+				if env.GetPhase() == "local" {
+					hitctx.Logger().Infoj(extraLog)
+				}
 			}
 			return nil
 		}
