@@ -156,7 +156,10 @@ func middlewareChain() ([]echo.MiddlewareFunc, error) {
 				code := http.StatusInternalServerError
 				if he, ok := err.(*echo.HTTPError); ok {
 					code = he.Code
+				} else if hitctx.Response().Status >= 400 {
+					code = hitctx.Response().Status
 				}
+
 				extraLog := hitctx.ValueContext("extra_log").(map[string]interface{})
 				extraLog["status"] = code
 				extraLog["error"] = fmt.Sprintf("%v\n", err)
@@ -177,7 +180,7 @@ func middlewareChain() ([]echo.MiddlewareFunc, error) {
 				rest := stop.Sub(start)
 				extraLog["latency"] = strconv.FormatInt(int64(rest), 10)
 				extraLog["latency_human"] = rest.String()
-				hitctx.Logger().Infoj(extraLog)
+				//hitctx.Logger().Infoj(extraLog)
 			}
 			return nil
 		}
