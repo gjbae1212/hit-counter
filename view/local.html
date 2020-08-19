@@ -188,8 +188,7 @@
                     <div class="text-box-container">
                         <p class="text-box" id="badge_link">
                             <!-- badge link-->
-                            &lt;a href="http://localhost:8080"/&gt;&lt;img
-                            src="http://localhost:8080/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fgjbae1212%2Fhit-counter"/&gt;&lt;/a&gt;
+                            &lt;a href="http://localhost:8080"&gt;&lt;img src="http://localhost:8080/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fgjbae1212%2Fhit-counter"/&gt;&lt;/a&gt;
                         </p>
                         <button onclick="copyToClipboard('#badge_link');" class="btn copy-button">COPY</button>
                     </div>
@@ -328,8 +327,8 @@
     let incrFormat = "http://localhost:8080/api/count/incr/badge.svg";
     let keepFormat       = "http://localhost:8080/api/count/keep/badge.svg";
     let markdownFormat = "[![Hits]({0})]({1})";
-    let showFormat     = "<a href=\"{0}\"/><img src=\"{1}\"/></a>";
-    let linkFormat     = "&lt;a href=\"{0}\"/&gt;&lt;img src=\"{1}\"/&gt;&lt;/a&gt;";
+    let showFormat     = "<a href=\"{0}\"><img src=\"{1}\"/></a>";
+    let linkFormat     = "&lt;a href=\"{0}\"&gt;&lt;img src=\"{1}\"/&gt;&lt;/a&gt;";
 
     // options for image of badge.
     let countBgColor = "#79C83D";
