@@ -1,4 +1,4 @@
-FROM golang:1.14.7-alpine AS builder
+FROM golang:1.15-alpine AS builder
 
 WORKDIR /go/src/github.com/gjbae1212/hit-counter
 

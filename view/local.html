@@ -53,6 +53,9 @@
     <!-- Custom styles for this template -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/startbootstrap-freelancer/5.0.4/css/freelancer.min.css" />
     <link rel="stylesheet" href="/style.css" type="text/css"/>
+    <!-- Pickr -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/nano.min.css"/> <!-- 'nano' theme -->
+    <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.es5.min.js"></script>
 </head>
 
 <body id="page-top">
@@ -108,56 +111,101 @@
     <div class="container">
         <h2 class="text-center text-uppercase text-secondary mb-5 flex-cetner">GENERATE BADGE<i class="material-icons title-icon">link</i></h2>
         <br/>
+
         <div class="row">
             <div class="col-lg-8 mx-auto">
                 <form novalidate="novalidate" onsubmit="return false;">
                     <div class="control-group">
                         <label class="url-label" for="badge_url">TARGET URL</label>
-                        <input class="form-control url-input" id="badge_url" type="text" placeholder="URL" required="required" data-validation-required-message="Please enter your sites or github" value="https://github.com/gjbae1212/hit-counter" onkeyup="refreshBadge()">
+                        <input class="form-control url-input" id="badge_url" type="text" placeholder="URL"
+                               required="required" data-validation-required-message="Please enter your sites or github"
+                               value="https://github.com/gjbae1212/hit-counter" onkeyup="refreshBadge()">
                         <small class="form-text text-muted url-small">
                             Type your URL. Then you will get generated MARKDOWN and HTML LINK.
                         </small>
                     </div>
-                    <br/>
-                    <br/>
-                    <div>
-                        <h7 class="text-uppercase text-secondary mb-0">MARKDOWN</h7><br/>
-                        <div class="text-box-container">
-                            <p class="text-box" id="badge_markdown">
-                                <!-- mark down-->
-                                [![Hits](http://localhost:8080/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fgjbae1212%2Fhit-counter)](http://localhost:8080)
-                            </p>
-                            <button onclick="copyToClipboard('#badge_markdown')" class="btn copy-button">COPY</button>
-                        </div>
-                        <br/>
-
-                        <div>
-                            <h7 class="text-center text-uppercase text-secondary mb-0">HTML LINK</h7><br/>
-                            <div class="text-box-container">
-                                <p class="text-box" id="badge_link">
-                                    <!-- badge link-->
-                                    &lt;a href="http://localhost:8080"/&gt;&lt;img src="http://localhost:8080/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fgjbae1212%2Fhit-counter"/&gt;&lt;/a&gt;
-                                </p>
-                                <button onclick="copyToClipboard('#badge_link');" class="btn copy-button">COPY</button>
-                            </div>
-                        </div>
-                        <br/>
-                        <div>
-                            <h7 class="text-center text-uppercase text-secondary mb-0">EMBED URL (NOTION)</h7><br/>
-                            <div class="text-box-container">
-                                <p class="text-box" id="embed_link">
-                                    <!-- embed url-->
-                                    http://localhost:8080/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fgjbae1212%2Fhit-counter
-                                </p>
-                                <button onclick="copyToClipboard('#embed_link');" class="btn copy-button">COPY</button>
-                            </div>
-                        </div>
-
-                        <br/>
-                        <div class="text-center">
-                            <img src="http://localhost:8080/api/count/keep/badge.svg?url=https%3A%2F%2Fgithub.com%2Fgjbae1212%2Fhit-counter" id="badge_show">
-                        </div>
                 </form>
+            </div>
+        </div>
+        <br/>
+
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <label class="url-label" for="">OPTIONS</label>
+            </div>
+        </div>
+        <div class="row justify-content-center  mb-3">
+            <div class="col-lg-4 input-group">
+                <div class="input-group-prepend">
+                    <label for="" class="input-group-text">BORDER</label>
+                </div>
+                <select id="badge_edge_flat" class="custom-select" onchange="refreshBadge()">
+                    <option value="true">FLAT</option>
+                    <option value="false" selected>ROUND</option>
+                </select>
+            </div>
+            <div class="col-lg-4 input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">TITLE</span>
+                </div>
+                <input type="text" id="badge_title" class="form-control" value="hits" onkeyup="refreshBadge()">
+            </div>
+        </div>
+
+        <div class="row justify-content-center mb-4">
+            <div class="col-lg-4 input-group d-flex align-items-center">
+                <div class="input-group-prepend">
+                    <span class="input-group-text mr-5">TITLE BG COLOR</span>
+                </div>
+                <span class="title-bg-color-picker"></span>
+            </div>
+            <div class="col-lg-4 input-group d-flex align-items-center">
+                <div class="input-group-prepend">
+                    <span class="input-group-text mr-5">COUNT BG COLOR</span>
+                </div>
+                <span class="count-bg-color-picker"></span>
+            </div>
+        </div>
+
+        <div class="text-center mb-5">
+            <img src="http://localhost:8080/api/count/keep/badge.svg?url=https%3A%2F%2Fgithub.com%2Fgjbae1212%2Fhit-counter" id="badge_show">
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <h7 class="text-uppercase text-secondary mb-0">MARKDOWN</h7><br />
+                <div class="text-box-container">
+                    <p class="text-box" id="badge_markdown">
+                        <!-- mark down-->
+                        [![Hits](http://localhost:8080/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fgjbae1212%2Fhit-counter)](http://localhost:8080)
+                    </p>
+                    <button onclick="copyToClipboard('#badge_markdown')" class="btn copy-button">COPY</button>
+                </div>
+                <br />
+
+                <div>
+                    <h7 class="text-center text-uppercase text-secondary mb-0">HTML LINK</h7><br />
+                    <div class="text-box-container">
+                        <p class="text-box" id="badge_link">
+                            <!-- badge link-->
+                            &lt;a href="http://localhost:8080"&gt;&lt;img src="http://localhost:8080/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fgjbae1212%2Fhit-counter"/&gt;&lt;/a&gt;
+                        </p>
+                        <button onclick="copyToClipboard('#badge_link');" class="btn copy-button">COPY</button>
+                    </div>
+                </div>
+                <br />
+                <div>
+                    <h7 class="text-center text-uppercase text-secondary mb-0">EMBED URL (NOTION)</h7><br />
+                    <div class="text-box-container">
+                        <p class="text-box" id="embed_link">
+                            <!-- embed url-->
+                            http://localhost:8080/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fgjbae1212%2Fhit-counter
+                        </p>
+                        <button onclick="copyToClipboard('#embed_link');" class="btn copy-button">COPY</button>
+                    </div>
+                </div>
+
+                <br/>
             </div>
         </div>
     </div>
@@ -276,11 +324,16 @@
 <!-- copy and paste -->
 <script type="text/javascript">
     let domain = "http://localhost:8080";
-    let incrFormat = "http://localhost:8080/api/count/incr/badge.svg?url=";
-    let keepFormat       = "http://localhost:8080/api/count/keep/badge.svg?url=";
+    let incrFormat = "http://localhost:8080/api/count/incr/badge.svg";
+    let keepFormat       = "http://localhost:8080/api/count/keep/badge.svg";
     let markdownFormat = "[![Hits]({0})]({1})";
-    let showFormat     = "<a href=\"{0}\"/><img src=\"{1}\"/></a>";
-    let linkFormat     = "&lt;a href=\"{0}\"/&gt;&lt;img src=\"{1}\"/&gt;&lt;/a&gt;";
+    let showFormat     = "<a href=\"{0}\"><img src=\"{1}\"/></a>";
+    let linkFormat     = "&lt;a href=\"{0}\"&gt;&lt;img src=\"{1}\"/&gt;&lt;/a&gt;";
+
+    // options for image of badge.
+    let countBgColor = "#79C83D";
+    let titleBgColor = "#555555";
+
     String.prototype.format = function () {
         var a = this;
         for (var k in arguments) {
@@ -308,9 +361,14 @@
             }else {
                 normalizeURL  = parser.protocol + "//" + parser.host + parser.pathname;
             }
-            var escapeURL = encodeURIComponent(normalizeURL);
-            var incrURL = incrFormat +  escapeURL;
-            var keepURL = keepFormat +  escapeURL;
+            parser.searchParams.set("url", normalizeURL);
+            parser.searchParams.set("count_bg", countBgColor);
+            parser.searchParams.set("title_bg", titleBgColor);
+            parser.searchParams.set("title", document.getElementById("badge_title").value);
+            parser.searchParams.set("edge_flat", document.getElementById("badge_edge_flat").value);
+
+            var incrURL = incrFormat +  parser.search;
+            var keepURL = keepFormat +  parser.search;
             var markdownHTML = markdownFormat.format(incrURL, domain);
             var linkHTML = linkFormat.format(domain, incrURL);
             document.getElementById("badge_markdown").innerHTML = markdownHTML;
@@ -325,7 +383,46 @@
         }
     }
 
+    // pickr
+    const pickrOption = {
+        theme: "nano",
+        defaultRepresentation: 'HEX',
 
+        components: {
+            // Main components
+            preview: true,
+            hue: true,
+            opacity: false,
+            // Input / output Options
+            interaction: {
+                input: true,
+                cancel: true,
+                clear: false,
+                save: true,
+            }
+        }
+    }
+
+    // picker events
+    let titlePickr = Pickr.create(Object.assign({el: ".title-bg-color-picker", default: titleBgColor}, pickrOption));
+    let countPickr = Pickr.create(Object.assign({el: ".count-bg-color-picker", default: countBgColor}, pickrOption));
+
+    titlePickr.on("save", (color) => {
+        titleBgColor = color.toHEXA().toString();
+        refreshBadge();
+        titlePickr.hide();
+    });
+    titlePickr.on("cancel", (color) => {
+        titlePickr.hide();
+    });
+    countPickr.on("save", (color) => {
+        countBgColor = color.toHEXA().toString();;
+        refreshBadge();
+        countPickr.hide();
+    });
+    countPickr.on("cancel", (color) => {
+        countPickr.hide();
+    });
 </script>
 </body>
 
