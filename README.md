@@ -1,6 +1,6 @@
 # HITS
 
-![Hits](https://storage.googleapis.com/hit-counter/hits.png)
+![Hits](https://storage.googleapis.com/hit-counter/main.png)
 A simple way to see how many people have visited your website or github project.
 <p align="center">
 <a href="https://circleci.com/gh/gjbae1212/hit-counter"><img src="https://circleci.com/gh/gjbae1212/hit-counter.svg?style=svg"></a>
@@ -11,76 +11,34 @@ A simple way to see how many people have visited your website or github project.
 
 ## Overview
 
-[HITS](https://hits.seeyoufarm.com) provides Badge of SVG having format whether script or markdown.
+[HITS](https://hits.seeyoufarm.com) provides the SVG badge presented **title** and **daily/total** page count.
 
-If you will be put Badge on either your website or Github project, the paging count is increased Badge count when people do visit its site.    
+If you will be put the badge on either website or github or notion and so on, Paging count is calculated when people do visit it.    
 
-And Badge involves paging count on both a day(from GMT) and a total(all).
+Badge includes a day(from GMT) and a total(all) page count.
 
-[HITS](https://hits.seeyoufarm.com) will show Github projects of highest paging count.(TOP 10)
+[HITS](https://hits.seeyoufarm.com) can show github projects with highest paging count.(TOP 10)
 
-And then [HITS](https://hits.seeyoufarm.com) show currently visiting projects by users, using Websocket. 
+[HITS](https://hits.seeyoufarm.com) can show realtime visiting projects using Websocket. 
 
-[HITS](https://hits.seeyoufarm.com) made by gjbae1212 using golang, currently serving from google cloud.
+[HITS](https://hits.seeyoufarm.com) have made by gjbae1212@gmail.com using golang, wasm, html, and so on, currently serving from google cloud platform.
  
 ## How to use
 ### How to generate a svg of badge 
-You will generate Badge from edit form of url input in [HITS](https://hits.seeyoufarm.com/#badge).
+You can generate badge through [HITS](https://hits.seeyoufarm.com/#badge).
 
-![Hits](https://storage.googleapis.com/hit-counter/generate.png)
-
-Or you could generate a badge by directly writing markdown or html.
-```
-# markdown
-![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url={your-website or github-project})]
-
-# html
-<img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url={your-website or github-project}" alt="Hits" />
-```
-
-#### If you would like to only represent Badge, not to increase paging count, Edit as below url.
-```
-# markdown
-![Hits](https://hits.seeyoufarm.com/api/count/keep/badge.svg?url={your-website or github-project})]
-
-# html
-<img src="https://hits.seeyoufarm.com/api/count/keep/badge.svg?url={your-website or github-project}" alt="Hits" />
-```
- 
-#### If you'd like to change Badge title
-Additional query string *title={your-change-badge-name}*
-```
-# example (increase)
-![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url={your-website or github-project}&title={your-change-badge-name})]
-
-# example (not increase)
-![Hits](https://hits.seeyoufarm.com/api/count/keep/badge.svg?url={your-website or github-project}&title={your-change-badge-name})]
-```
+![Hits](https://storage.googleapis.com/hit-counter/gen.png)
 
 ## Features
 - Support daily and total badge  
+- Support badge with customize style
 - Show a graph of your site about daily count of histories in recently 6 month
 - Show ranks about github projects.
-- Show stream which count of hits is counting in real time.
-
-## How to run your machine
-#### If you'd like to run HITS to your machine
-- Install [redis](https://redis.io).
-- Set environment ```export REDIS_ADDRS=REDIS_URL(ex: localhost:6379)```
-- Exec ```$ go build && ./hit-counter```
-##### Of course you should modify a little codes associated URL(as hits.seeyoufarm.com) in view/index.html and wasm/main.go 
+- Show realtime stream.
       
 ## ETC
-[HITS](https://hits.seeyoufarm.com) will increase paging count when getting a badge api is requested.
-
-It will only be to increase paging count in DB(redis), but something as request information(ip, header, ... and so on) don't store in DB(redis).
-
-For only protect abusing increasing a massive of request, part of request information(ip,user-agent) do convert to a value of hashing saved in local-cache and it is deleted after elapsed time.
- 
-## Inspiration
-This project was inspired by [brentvollebregt](https://github.com/brentvollebregt/hit-counter) and [dwyl](https://github.com/dwyl/hits-nodejs/).
-
-Added additional features like daily-count, rank, and so on.
- 
+[HITS](https://hits.seeyoufarm.com) is calculated page count without store sensitive information(ip, header, ... and so on).  
+For protect abuse by massive requests, parts of request information are converted to hashing data in local-cache, and it deletes after the elapsed time.
+  
 ## LICENSE
 This project is following The GPL V3.0.
