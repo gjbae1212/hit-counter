@@ -22,7 +22,7 @@ function throttle(fn, duration) {
 }
 
 function runServer() {
-	spawnSync(path.join(__dirname, "make_wasm \"local\""))
+	spawnSync("bash", [path.join(__dirname, "./build.sh"), "make_wasm", "local"]);
 	spawnSync("go build", { stdio: "inherit", env: { ...process.env, ...env } });
 	return spawn(path.join(__dirname, "..","hit-counter"), ["-tls=0", "-addr=:8080"], {
 		stdio: "inherit",
