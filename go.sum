@@ -53,8 +53,8 @@ github.com/gjbae1212/consistent v1.0.1 h1:mYBI9M7UujTeo5QB4zcHE+iDK6sYo56OuA6nVv
 github.com/gjbae1212/consistent v1.0.1/go.mod h1:APu6u3VuMKdRfj+pR8TtjcDe1HV+v689Gz4JypgUnwQ=
 github.com/gjbae1212/go-async-task v1.0.0 h1:8vIOsHD+espwtJ64vqzV4pu6mO6wAzC1Yh4XFlvKRMk=
 github.com/gjbae1212/go-async-task v1.0.0/go.mod h1:iJkiQB0frPYURW/rAWg15pWd146gQtEu9y5eAtGHYNI=
-github.com/gjbae1212/go-counter-badge v1.2.0 h1:hf8ELH7/Nc2rVmQWSoY5z3+ZJ6RrBJPnaLSrqm0akwk=
-github.com/gjbae1212/go-counter-badge v1.2.0/go.mod h1:z7RpcHzDjMzvwADg5N7mAHeyCJY54hHDMcAtaxOGl/w=
+github.com/gjbae1212/go-counter-badge v1.2.3 h1:DMsWH5rBH7gJNmYhAngSPRReIisk1cREk0uEb4PyNcg=
+github.com/gjbae1212/go-counter-badge v1.2.3/go.mod h1:z7RpcHzDjMzvwADg5N7mAHeyCJY54hHDMcAtaxOGl/w=
 github.com/gjbae1212/go-redis v1.0.0 h1:L42hToNQzrMj6yZwm7Nv3Uow4s5kvv1B2BvvzZXKlHE=
 github.com/gjbae1212/go-redis v1.0.0/go.mod h1:F4m5j41vI40/pNDA1j+YvahKVfeTokHo/CDhs1ehNXs=
 github.com/gjbae1212/go-ws-broadcast v1.0.0 h1:u/9kZhe43kLJzEhRZ3cXSa59TtoxtWeeoLEvoAj2eLc=

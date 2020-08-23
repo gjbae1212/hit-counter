@@ -40,6 +40,10 @@ func AddRoute(e *echo.Echo, redisAddrs []string) error {
 	// main
 	e.GET("/", h.Index)
 
+	// icon
+	e.GET("/icon/all.json", h.IconAll)
+	e.GET("/icon/:icon", h.Icon)
+
 	// health check
 	e.GET("/healthcheck", h.HealthCheck)
 

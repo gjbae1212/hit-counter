@@ -15,6 +15,11 @@ import (
 	cache "github.com/patrickmn/go-cache"
 )
 
+var (
+	iconsMap  map[string]badge.Icon
+	iconsList []map[string]string
+)
+
 type Handler struct {
 	Counter          counter.Counter
 	LocalCache       *cache.Cache
@@ -23,6 +28,7 @@ type Handler struct {
 	IndexTemplate    *template.Template
 	Badge            badge.Writer
 	Icons            map[string]badge.Icon
+	IconsList        []map[string]string
 }
 
 // NewHandler creates  handler object.
@@ -78,9 +84,6 @@ func NewHandler(redisAddrs []string) (*Handler, error) {
 		return nil, fmt.Errorf("[err] NewHandler %w", err)
 	}
 
-	// get badge icons.
-	icons := badge.GetIconsMap()
-
 	return &Handler{
 		LocalCache:       localCache,
 		Counter:          ctr,
@@ -88,6 +91,23 @@ func NewHandler(redisAddrs []string) (*Handler, error) {
 		WebSocketBreaker: breaker,
 		IndexTemplate:    indexTemplate,
 		Badge:            badgeWriter,
-		Icons:            icons,
+		Icons:            iconsMap,
+		IconsList:        iconsList,
 	}, nil
+}
+
+func init() {
+	iconsMap = badge.GetIconsMap()
+	iconsList = make([]map[string]string, 0, len(iconsMap))
+
+	for k, _ := range iconsMap {
+		j := make(map[string]string, 2)
+		j["name"] = k
+		if env.GetPhase() == "local" {
+			j["url"] = fmt.Sprintf("http://localhost:8080/icon/%s", k)
+		} else {
+			j["url"] = fmt.Sprintf("https://hits.seeyoufarm.com/icon/%s", k)
+		}
+		iconsList = append(iconsList, j)
+	}
 }
