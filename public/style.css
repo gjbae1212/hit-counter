@@ -206,6 +206,12 @@
   background: #eee;
 }
 
+@media (max-width: 576px){
+  .icon-selector-container {
+    order: -1;
+  }
+}
+
 /* Badge End */
 
 /* Notice Start */
