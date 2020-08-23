@@ -103,11 +103,7 @@ func init() {
 	for k, _ := range iconsMap {
 		j := make(map[string]string, 2)
 		j["name"] = k
-		if env.GetPhase() == "local" {
-			j["url"] = fmt.Sprintf("http://localhost:8080/icon/%s", k)
-		} else {
-			j["url"] = fmt.Sprintf("https://hits.seeyoufarm.com/icon/%s", k)
-		}
+		j["url"] = fmt.Sprintf("/icon/%s", k)
 		iconsList = append(iconsList, j)
 	}
 }
