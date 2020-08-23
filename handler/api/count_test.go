@@ -44,8 +44,10 @@ func TestHandler_KeepCount(t *testing.T) {
 	defaultCtx.Set("title_bg", " ")
 	defaultCtx.Set("count_bg", " ")
 	defaultCtx.Set("edge_flat", true)
+	defaultCtx.Set("icon", "")
+	defaultCtx.Set("icon_color", "")
 
-	defaultOutput, err := h.Badge.RenderFlatBadge(internal.GenerateFlatBadge("hits",
+	defaultOutput, err := h.Badge.RenderFlatBadge(internal.GenerateBadge("hits",
 		"#555", fmt.Sprintf(badgeFormat, 0, 0), "#79c83d", true))
 	assert.NoError(err)
 
@@ -60,7 +62,10 @@ func TestHandler_KeepCount(t *testing.T) {
 	titleCtx.Set("title_bg", "")
 	titleCtx.Set("count_bg", "")
 	titleCtx.Set("edge_flat", true)
-	titleOutput, err := h.Badge.RenderFlatBadge(internal.GenerateFlatBadge(" hello ",
+	titleCtx.Set("icon", "")
+	titleCtx.Set("icon_color", "")
+
+	titleOutput, err := h.Badge.RenderFlatBadge(internal.GenerateBadge(" hello ",
 		"#555", fmt.Sprintf(badgeFormat, 0, 0), "#79c83d", true))
 	assert.NoError(err)
 
@@ -75,7 +80,10 @@ func TestHandler_KeepCount(t *testing.T) {
 	bgColorCtx.Set("title_bg", "#111")
 	bgColorCtx.Set("count_bg", "#222")
 	bgColorCtx.Set("edge_flat", true)
-	bgColorOutput, err := h.Badge.RenderFlatBadge(internal.GenerateFlatBadge("hits",
+	bgColorCtx.Set("icon", "")
+	bgColorCtx.Set("icon_color", "")
+
+	bgColorOutput, err := h.Badge.RenderFlatBadge(internal.GenerateBadge("hits",
 		"#111", fmt.Sprintf(badgeFormat, 0, 0), "#222", true))
 	assert.NoError(err)
 
@@ -90,8 +98,47 @@ func TestHandler_KeepCount(t *testing.T) {
 	edgeCtx.Set("title_bg", "")
 	edgeCtx.Set("count_bg", "")
 	edgeCtx.Set("edge_flat", false)
-	edgeCtxOutput, err := h.Badge.RenderFlatBadge(internal.GenerateFlatBadge("hits",
+	edgeCtx.Set("icon", "")
+	edgeCtx.Set("icon_color", "")
+
+	edgeCtxOutput, err := h.Badge.RenderFlatBadge(internal.GenerateBadge("hits",
 		"#555", fmt.Sprintf(badgeFormat, 0, 0), "#79c83d", false))
+	assert.NoError(err)
+
+	// icon
+	iconR := httptest.NewRequest("GET", "http://localhost:8080", nil)
+	iconW := httptest.NewRecorder()
+	iconCtx := &handler.HitCounterContext{Context: e.NewContext(iconR, iconW)}
+	iconCtx.Set("ckid", "test")
+	iconCtx.Set("host", "github.com")
+	iconCtx.Set("path", "gjbae1212/hit-counter")
+	iconCtx.Set("title", "")
+	iconCtx.Set("title_bg", "")
+	iconCtx.Set("count_bg", "")
+	iconCtx.Set("edge_flat", false)
+	iconCtx.Set("icon", "a-frame.svg")
+	iconCtx.Set("icon_color", "")
+
+	iconCtxOutput, err := h.Badge.RenderIconBadge(internal.GenerateBadge("hits",
+		"#555", fmt.Sprintf(badgeFormat, 0, 0), "#79c83d", false), "a-frame.svg", "")
+	assert.NoError(err)
+
+	// icon with color
+	iconWithColorR := httptest.NewRequest("GET", "http://localhost:8080", nil)
+	iconWithColorW := httptest.NewRecorder()
+	iconWithColorCtx := &handler.HitCounterContext{Context: e.NewContext(iconWithColorR, iconWithColorW)}
+	iconWithColorCtx.Set("ckid", "test")
+	iconWithColorCtx.Set("host", "github.com")
+	iconWithColorCtx.Set("path", "gjbae1212/hit-counter")
+	iconWithColorCtx.Set("title", "")
+	iconWithColorCtx.Set("title_bg", "")
+	iconWithColorCtx.Set("count_bg", "")
+	iconWithColorCtx.Set("edge_flat", false)
+	iconWithColorCtx.Set("icon", "a-frame.svg")
+	iconWithColorCtx.Set("icon_color", "#aaaaaa")
+
+	iconWithColorCtxOutput, err := h.Badge.RenderIconBadge(internal.GenerateBadge("hits",
+		"#555", fmt.Sprintf(badgeFormat, 0, 0), "#79c83d", false), "a-frame.svg", "#aaaaaa")
 	assert.NoError(err)
 
 	tests := map[string]struct {
@@ -123,6 +170,16 @@ func TestHandler_KeepCount(t *testing.T) {
 			input:  edgeCtx,
 			w:      edgeW,
 			output: string(edgeCtxOutput),
+		},
+		"icon": {
+			input:  iconCtx,
+			w:      iconW,
+			output: string(iconCtxOutput),
+		},
+		"icon-with-color": {
+			input:  iconWithColorCtx,
+			w:      iconWithColorW,
+			output: string(iconWithColorCtxOutput),
 		},
 	}
 
@@ -166,8 +223,10 @@ func TestHandler_IncrCount(t *testing.T) {
 	defaultCtx.Set("title_bg", " ")
 	defaultCtx.Set("count_bg", " ")
 	defaultCtx.Set("edge_flat", true)
+	defaultCtx.Set("icon", "")
+	defaultCtx.Set("icon_color", "")
 
-	defaultOutput, err := h.Badge.RenderFlatBadge(internal.GenerateFlatBadge("hits",
+	defaultOutput, err := h.Badge.RenderFlatBadge(internal.GenerateBadge("hits",
 		"#555", fmt.Sprintf(badgeFormat, 1, 1), "#79c83d", true))
 	assert.NoError(err)
 
@@ -182,7 +241,10 @@ func TestHandler_IncrCount(t *testing.T) {
 	titleCtx.Set("title_bg", "")
 	titleCtx.Set("count_bg", "")
 	titleCtx.Set("edge_flat", true)
-	titleOutput, err := h.Badge.RenderFlatBadge(internal.GenerateFlatBadge(" hello ",
+	titleCtx.Set("icon", "")
+	titleCtx.Set("icon_color", "")
+
+	titleOutput, err := h.Badge.RenderFlatBadge(internal.GenerateBadge(" hello ",
 		"#555", fmt.Sprintf(badgeFormat, 1, 1), "#79c83d", true))
 	assert.NoError(err)
 
@@ -197,7 +259,10 @@ func TestHandler_IncrCount(t *testing.T) {
 	bgColorCtx.Set("title_bg", "#111")
 	bgColorCtx.Set("count_bg", "#222")
 	bgColorCtx.Set("edge_flat", true)
-	bgColorOutput, err := h.Badge.RenderFlatBadge(internal.GenerateFlatBadge("hits",
+	bgColorCtx.Set("icon", "")
+	bgColorCtx.Set("icon_color", "")
+
+	bgColorOutput, err := h.Badge.RenderFlatBadge(internal.GenerateBadge("hits",
 		"#111", fmt.Sprintf(badgeFormat, 1, 1), "#222", true))
 	assert.NoError(err)
 
@@ -212,7 +277,10 @@ func TestHandler_IncrCount(t *testing.T) {
 	edgeCtx.Set("title_bg", "")
 	edgeCtx.Set("count_bg", "")
 	edgeCtx.Set("edge_flat", false)
-	edgeCtxOutput, err := h.Badge.RenderFlatBadge(internal.GenerateFlatBadge("hits",
+	edgeCtx.Set("icon", "")
+	edgeCtx.Set("icon_color", "")
+
+	edgeCtxOutput, err := h.Badge.RenderFlatBadge(internal.GenerateBadge("hits",
 		"#555", fmt.Sprintf(badgeFormat, 1, 1), "#79c83d", false))
 	assert.NoError(err)
 
@@ -270,6 +338,9 @@ func TestHandler_IncrCount(t *testing.T) {
 		hctx.Set("title_bg", "")
 		hctx.Set("count_bg", "")
 		hctx.Set("edge_flat", false)
+		hctx.Set("icon", "")
+		hctx.Set("icon_color", "")
+
 		err = api.IncrCount(hctx)
 		assert.NoError(err)
 		assert.Equal(200, w.Code)

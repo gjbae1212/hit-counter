@@ -94,6 +94,8 @@ func groupApiCount() ([]echo.MiddlewareFunc, error) {
 			titleBg := hitctx.QueryParam("title_bg")
 			countBg := hitctx.QueryParam("count_bg")
 			edgeFlat, _ := strconv.ParseBool(hitctx.QueryParam("edge_flat"))
+			icon := hitctx.QueryParam("icon")
+			iconColor := hitctx.QueryParam("icon_color")
 
 			// insert params to context.
 			hitctx.Set("host", host)
@@ -102,6 +104,8 @@ func groupApiCount() ([]echo.MiddlewareFunc, error) {
 			hitctx.Set("title_bg", titleBg)
 			hitctx.Set("count_bg", countBg)
 			hitctx.Set("edge_flat", edgeFlat)
+			hitctx.Set("icon", icon)
+			hitctx.Set("icon_color", iconColor)
 
 			return h(hitctx)
 		}

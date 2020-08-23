@@ -26,7 +26,7 @@ func (h *Handler) IncrCount(c echo.Context) error {
 	hctx := c.(*handler.HitCounterContext)
 	if hctx.Get("ckid") == nil || hctx.Get("host") == nil || hctx.Get("path") == nil ||
 		hctx.Get("title") == nil || hctx.Get("title_bg") == nil || hctx.Get("count_bg") == nil ||
-		hctx.Get("edge_flat") == nil {
+		hctx.Get("edge_flat") == nil || hctx.Get("icon") == nil || hctx.Get("icon_color") == nil {
 		return fmt.Errorf("[err] IncrCount empty params")
 	}
 	cookie := hctx.Get("ckid").(string)
@@ -36,6 +36,8 @@ func (h *Handler) IncrCount(c echo.Context) error {
 	titleBg := hctx.Get("title_bg").(string)
 	countBg := hctx.Get("count_bg").(string)
 	edgeType := hctx.Get("edge_flat").(bool)
+	icon := hctx.Get("icon").(string)
+	iconColor := hctx.Get("icon_color").(string)
 
 	_ = cookie
 	id := fmt.Sprintf(countIdFormat, host, path)
@@ -50,7 +52,8 @@ func (h *Handler) IncrCount(c echo.Context) error {
 		if err != nil {
 			return err
 		}
-		return h.responseBadge(hctx, daily, total, title, titleBg, countBg, edgeType)
+		return h.responseBadge(hctx, daily, total, title, titleBg,
+			countBg, edgeType, icon, iconColor)
 	}
 	if !ok {
 		h.LocalCache.Set(ip, int64(1), 5*time.Second)
@@ -67,7 +70,8 @@ func (h *Handler) IncrCount(c echo.Context) error {
 		if err != nil {
 			return err
 		}
-		return h.responseBadge(hctx, daily, total, title, titleBg, countBg, edgeType)
+		return h.responseBadge(hctx, daily, total, title, titleBg,
+			countBg, edgeType, icon, iconColor)
 	}
 	h.LocalCache.Set(temporaryId, int64(1), 1*time.Second)
 
@@ -98,7 +102,8 @@ func (h *Handler) IncrCount(c echo.Context) error {
 	h.WebSocketBreaker.BroadCast(&WebSocketMessage{
 		Payload: []byte(fmt.Sprintf("[%s] %s", internal.TimeToString(time.Now()), id))},
 	)
-	return h.responseBadge(hctx, daily, total, title, titleBg, countBg, edgeType)
+	return h.responseBadge(hctx, daily, total, title, titleBg,
+		countBg, edgeType, icon, iconColor)
 }
 
 // KeepCount is API, which it is not to increase page count.
@@ -106,7 +111,7 @@ func (h *Handler) KeepCount(c echo.Context) error {
 	hctx := c.(*handler.HitCounterContext)
 	if hctx.Get("ckid") == nil || hctx.Get("host") == nil || hctx.Get("path") == nil ||
 		hctx.Get("title") == nil || hctx.Get("title_bg") == nil || hctx.Get("count_bg") == nil ||
-		hctx.Get("edge_flat") == nil {
+		hctx.Get("edge_flat") == nil || hctx.Get("icon") == nil || hctx.Get("icon_color") == nil {
 		return fmt.Errorf("[err] KeepCount empty params")
 	}
 	host := hctx.Get("host").(string)
@@ -116,6 +121,8 @@ func (h *Handler) KeepCount(c echo.Context) error {
 	titleBg := hctx.Get("title_bg").(string)
 	countBg := hctx.Get("count_bg").(string)
 	edgeType := hctx.Get("edge_flat").(bool)
+	icon := hctx.Get("icon").(string)
+	iconColor := hctx.Get("icon_color").(string)
 
 	_ = cookie
 	id := fmt.Sprintf(countIdFormat, host, path)
@@ -124,7 +131,8 @@ func (h *Handler) KeepCount(c echo.Context) error {
 		return err
 	}
 
-	return h.responseBadge(hctx, daily, total, title, titleBg, countBg, edgeType)
+	return h.responseBadge(hctx, daily, total, title, titleBg,
+		countBg, edgeType, icon, iconColor)
 }
 
 // DailyHitsInRecently is API, which shows a graph related daily page count.
@@ -193,7 +201,8 @@ func (h *Handler) DailyHitsInRecently(c echo.Context) error {
 }
 
 func (h *Handler) responseBadge(ctx *handler.HitCounterContext,
-	daily, total *counter.Score, titleText, titleBgColor, countBgColor string, edgeFlat bool) error {
+	daily, total *counter.Score, titleText, titleBgColor, countBgColor string, edgeFlat bool,
+	icon, iconColor string) error {
 	dailyCount := int64(0)
 	totalCount := int64(0)
 	if daily != nil {
@@ -221,10 +230,20 @@ func (h *Handler) responseBadge(ctx *handler.HitCounterContext,
 	// create count text
 	countText := fmt.Sprintf(badgeFormat, dailyCount, totalCount)
 
-	badge := internal.GenerateFlatBadge(titleText, titleBgColor, countText, countBgColor, edgeFlat)
-	svg, err := h.Badge.RenderFlatBadge(badge)
-	if err != nil {
-		return fmt.Errorf("[err] responseBadge %w", err)
+	// create badge
+	var svg []byte
+	var err error
+	badge := internal.GenerateBadge(titleText, titleBgColor, countText, countBgColor, edgeFlat)
+	if _, ok := h.Icons[icon]; !ok {
+		svg, err = h.Badge.RenderFlatBadge(badge)
+		if err != nil {
+			return fmt.Errorf("[err] responseBadge %w", err)
+		}
+	} else {
+		svg, err = h.Badge.RenderIconBadge(badge, icon, iconColor)
+		if err != nil {
+			return fmt.Errorf("[err] responseBadge %w", err)
+		}
 	}
 
 	ctx.Response().Header().Set("Content-Type", "image/svg+xml")

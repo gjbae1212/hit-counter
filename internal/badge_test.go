@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGenerateFlatBadge(t *testing.T) {
+func TestGenerateBadge(t *testing.T) {
 	assert := assert.New(t)
 
 	tests := map[string]struct {
@@ -59,7 +59,7 @@ func TestGenerateFlatBadge(t *testing.T) {
 	}
 
 	for _, t := range tests {
-		bg := GenerateFlatBadge(t.leftText, t.leftBgColor, t.rightText, t.rightBgColor, t.edgeFlat)
+		bg := GenerateBadge(t.leftText, t.leftBgColor, t.rightText, t.rightBgColor, t.edgeFlat)
 		assert.True(reflect.DeepEqual(t.output, bg))
 	}
 }

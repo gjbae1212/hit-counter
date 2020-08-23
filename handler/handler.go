@@ -22,6 +22,7 @@ type Handler struct {
 	WebSocketBreaker websocket.Breaker
 	IndexTemplate    *template.Template
 	Badge            badge.Writer
+	Icons            map[string]badge.Icon
 }
 
 // NewHandler creates  handler object.
@@ -77,6 +78,9 @@ func NewHandler(redisAddrs []string) (*Handler, error) {
 		return nil, fmt.Errorf("[err] NewHandler %w", err)
 	}
 
+	// get badge icons.
+	icons := badge.GetIconsMap()
+
 	return &Handler{
 		LocalCache:       localCache,
 		Counter:          ctr,
@@ -84,5 +88,6 @@ func NewHandler(redisAddrs []string) (*Handler, error) {
 		WebSocketBreaker: breaker,
 		IndexTemplate:    indexTemplate,
 		Badge:            badgeWriter,
+		Icons:            icons,
 	}, nil
 }

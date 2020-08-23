@@ -2,8 +2,8 @@ package internal
 
 import "github.com/gjbae1212/go-counter-badge/badge"
 
-// GenerateFlatBadge makes Flat-Badge struct which is used go-counter-badge/badge.
-func GenerateFlatBadge(leftText, leftBgColor, rightText, rightBgColor string, edgeFlat bool) badge.Badge {
+// GenerateBadge makes Flat-Badge struct which is used go-counter-badge/badge.
+func GenerateBadge(leftText, leftBgColor, rightText, rightBgColor string, edgeFlat bool) badge.Badge {
 	flatBadge := badge.Badge{
 		FontType:             badge.Verdana,
 		LeftText:             leftText,
