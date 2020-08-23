@@ -1,14 +1,12 @@
 package handler
 
 import (
-	"bytes"
-	"net/http"
-
 	"github.com/labstack/echo/v4"
 )
 
 // IconAll returns icon list.
 func (h *Handler) IconAll(c echo.Context) error {
+	c.Response().Header().Set("Cache-Control", "max-age=3600, public")
 	return c.JSON(200, h.IconsList)
 }
 
@@ -19,6 +17,8 @@ func (h *Handler) Icon(c echo.Context) error {
 	if !ok {
 		return c.NoContent(404)
 	} else {
-		return c.Stream(http.StatusOK, "image/svg+xml", bytes.NewReader(svg.Origin))
+		c.Response().Header().Set("Content-Type", "image/svg+xml")
+		c.Response().Header().Set("Cache-Control", "max-age=3600, public")
+		return c.String(200, string(svg.Origin))
 	}
 }
