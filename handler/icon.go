@@ -1,6 +1,9 @@
 package handler
 
 import (
+	"bytes"
+	"net/http"
+
 	"github.com/labstack/echo/v4"
 )
 
@@ -16,6 +19,6 @@ func (h *Handler) Icon(c echo.Context) error {
 	if !ok {
 		return c.NoContent(404)
 	} else {
-		return c.String(200, string(svg.Origin))
+		return c.Stream(http.StatusOK, "image/svg+xml", bytes.NewReader(svg.Origin))
 	}
 }
