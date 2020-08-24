@@ -64,7 +64,7 @@
 <nav class="navbar navbar-expand-lg fixed-top text-uppercase" id="mainNav">
     <div class="container">
         <a class="navbar-brand img_background js-scroll-trigger" href="#page-top"></a>
-        <a href="https://hits.seeyoufarm.com"/><img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fhits.seeyoufarm.com"/></a>
+        <a href="https://hits.seeyoufarm.com"><img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fhits.seeyoufarm.com"/></a>
         <button class="navbar-toggler navbar-toggler-right btn btn-primary text-uppercase text-white rounded" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
             Menu
             <i class="fas fa-bars"></i>
@@ -140,6 +140,29 @@
                 </label>
             </div>
         </div>
+
+        <div class="text-center mb-4">
+            <img src="/api/count/keep/badge.svg?url=https%3A%2F%2Fgithub.com%2Fgjbae1212%2Fhit-counter" id="badge_show">
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-4 col-sm-6 input-group mb-3 d-flex align-items-center icon-selector-container">
+                <button id="icon-selector-btn" type="button" class="btn btn-outline-secondary mr-4">+ Add Icon</button>
+                <div class="icon-selector shadow-lg hidden">
+                    <div class="icon-search-input-container">
+                        <input id="search-icon-input" type="text" class="form-control" placeholder="search">
+                    </div>
+                    <ul class="icon-search-list">
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-4 col-sm-6 input-group mb-3 d-flex align-items-center">
+                <div class="input-group-prepend">
+                    <span class="input-group-text mr-5">ICON COLOR</span>
+                </div>
+                <span class="icon-color-picker"></span>
+            </div>
+        </div>
         <div class="row justify-content-center">
             <div class="col-lg-4 input-group mb-3">
                 <div class="input-group-prepend">
@@ -158,7 +181,7 @@
             </div>
         </div>
 
-        <div class="row justify-content-center mb-4">
+        <div class="row justify-content-center mb-5">
             <div class="col-lg-4 input-group mb-3 d-flex align-items-center">
                 <div class="input-group-prepend">
                     <span class="input-group-text mr-5">TITLE BG COLOR</span>
@@ -171,10 +194,6 @@
                 </div>
                 <span class="count-bg-color-picker"></span>
             </div>
-        </div>
-
-        <div class="text-center mb-5">
-            <img src="https://hits.seeyoufarm.com/api/count/keep/badge.svg?url=https%3A%2F%2Fgithub.com%2Fgjbae1212%2Fhit-counter" id="badge_show">
         </div>
 
         <div class="row">
@@ -339,6 +358,8 @@
     // options for image of badge.
     let countBgColor = "#79C83D";
     let titleBgColor = "#555555";
+    let iconName = "";
+    let iconColor = "#E7E7E7";
 
     String.prototype.format = function () {
         var a = this;
@@ -370,6 +391,8 @@
             parser.searchParams.set("url", normalizeURL);
             parser.searchParams.set("count_bg", countBgColor);
             parser.searchParams.set("title_bg", titleBgColor);
+            parser.searchParams.set("icon", iconName);
+            parser.searchParams.set("icon_color", iconColor);
             parser.searchParams.set("title", document.getElementById("badge_title").value);
             parser.searchParams.set("edge_flat", document.getElementById("badge_edge_flat").value);
 
@@ -412,6 +435,7 @@
     // picker events
     let titlePickr = Pickr.create(Object.assign({el: ".title-bg-color-picker", default: titleBgColor}, pickrOption));
     let countPickr = Pickr.create(Object.assign({el: ".count-bg-color-picker", default: countBgColor}, pickrOption));
+    let iconPickr = Pickr.create(Object.assign({el: ".icon-color-picker", default: iconColor}, pickrOption));
 
     titlePickr.on("save", (color) => {
         titleBgColor = color.toHEXA().toString();
@@ -421,6 +445,7 @@
     titlePickr.on("cancel", (color) => {
         titlePickr.hide();
     });
+
     countPickr.on("save", (color) => {
         countBgColor = color.toHEXA().toString();;
         refreshBadge();
@@ -429,6 +454,74 @@
     countPickr.on("cancel", (color) => {
         countPickr.hide();
     });
+
+    iconPickr.on("save", (color) => {
+        iconColor = color.toHEXA().toString();;
+        refreshBadge();
+        iconPickr.hide();
+    });
+    iconPickr.on("cancel", (color) => {
+        iconPickr.hide();
+    });
+
+    // Icon Selector Start
+    let iconListPromise;
+
+    $("#icon-selector-btn").click(() => {
+        $(".icon-selector").removeClass("hidden");
+        fetchIconList().then(iconItems => {
+            setIconItems(iconItems)
+        })
+
+        const clickHandler = function(event){
+            if(!$(".icon-selector")[0].contains(event.target) && !$("#icon-selector-btn")[0].contains(event.target)){
+                closeIconSelector();
+                document.removeEventListener("click", clickHandler)
+            }
+        }
+        document.addEventListener("click", clickHandler)
+    })
+
+    $("#search-icon-input").keyup((e) => {
+        const inputValue = $("#search-icon-input").val();
+        fetchIconList()
+            .then(iconItems => iconItems.filter(iconItem => iconItem.name.indexOf(inputValue) !== -1))
+            .then(iconItems => {
+                setIconItems(iconItems)
+            })
+    });
+
+    function fetchIconList(){
+        if(!iconListPromise){
+            iconListPromise = fetch(`/icon/all.json`)
+                .then(res => res.json())
+        }
+        return iconListPromise
+    }
+
+    function addIconItem(iconItem, $container){
+        const $newIconItem = $(`<li class="icon-search-item"><img src="${iconItem.url}" loading="lazy" onClick=""/></li>`)
+        $newIconItem.click(function(){
+            iconName = iconItem.name;
+            refreshBadge();
+            closeIconSelector();
+        })
+        $container.append($newIconItem);
+    }
+
+    function setIconItems(iconItems){
+        const $iconList = $(".icon-search-list");
+        $iconList.empty();
+        iconItems.forEach(iconItem => {
+            addIconItem(iconItem, $iconList);
+        })
+    }
+
+    function closeIconSelector(){
+        $("#search-icon-input").val("");
+        $(".icon-selector").addClass("hidden");
+    }
+    // Icon Selector End
 </script>
 </body>
 

@@ -64,7 +64,7 @@
 <nav class="navbar navbar-expand-lg fixed-top text-uppercase" id="mainNav">
     <div class="container">
         <a class="navbar-brand img_background js-scroll-trigger" href="#page-top"></a>
-        <a href="http://localhost:8080"/><img src="http://localhost:8080/api/count/incr/badge.svg?url=https%3A%2F%2Fhits.seeyoufarm.com"/></a>
+        <a href="http://localhost:8080"><img src="http://localhost:8080/api/count/incr/badge.svg?url=https%3A%2F%2Fhits.seeyoufarm.com"/></a>
         <button class="navbar-toggler navbar-toggler-right btn btn-primary text-uppercase text-white rounded" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
             Menu
             <i class="fas fa-bars"></i>
@@ -146,12 +146,6 @@
         </div>
 
         <div class="row justify-content-center">
-            <div class="col-lg-4 col-sm-6 input-group mb-3 d-flex align-items-center">
-                <div class="input-group-prepend">
-                    <span class="input-group-text mr-5">ICON COLOR</span>
-                </div>
-                <span class="icon-color-picker"></span>
-            </div>
             <div class="col-lg-4 col-sm-6 input-group mb-3 d-flex align-items-center icon-selector-container">
                 <button id="icon-selector-btn" type="button" class="btn btn-outline-secondary mr-4">+ Add Icon</button>
                 <div class="icon-selector shadow-lg hidden">
@@ -161,6 +155,12 @@
                     <ul class="icon-search-list">
                     </ul>
                 </div>
+            </div>
+            <div class="col-lg-4 col-sm-6 input-group mb-3 d-flex align-items-center">
+                <div class="input-group-prepend">
+                    <span class="input-group-text mr-5">ICON COLOR</span>
+                </div>
+                <span class="icon-color-picker"></span>
             </div>
         </div>
         <div class="row justify-content-center">
@@ -445,7 +445,7 @@
     titlePickr.on("cancel", (color) => {
         titlePickr.hide();
     });
-    
+
     countPickr.on("save", (color) => {
         countBgColor = color.toHEXA().toString();;
         refreshBadge();
@@ -454,7 +454,7 @@
     countPickr.on("cancel", (color) => {
         countPickr.hide();
     });
-    
+
     iconPickr.on("save", (color) => {
         iconColor = color.toHEXA().toString();;
         refreshBadge();
