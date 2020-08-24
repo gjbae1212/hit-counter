@@ -169,6 +169,15 @@
 
 /* Badge End */
 
+/* History Start */
+
+.graph_img{
+  width: 100%;
+  max-width: 800px;
+}
+
+/* History End */
+
 /* Notice Start */
 .notice{
   position: fixed;

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/base64"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -112,11 +113,12 @@ func showGraph(value string) {
 			}
 			defer res.Body.Close()
 			body, err := ioutil.ReadAll(res.Body)
+			encodedBody := base64.StdEncoding.EncodeToString(body)
 			if err != nil {
 				js.Global().Get("document").Call("getElementById", "history_view").Set("innerHTML", "Error")
 				return
 			}
-			js.Global().Get("document").Call("getElementById", "history_view").Set("innerHTML", string(body))
+			js.Global().Get("document").Call("getElementById", "history_view").Set("innerHTML", "<img src=\"data:image/svg+xml;base64,"+encodedBody+"\"></div>")
 		}(value)
 	}
 }
