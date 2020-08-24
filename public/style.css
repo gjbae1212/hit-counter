@@ -2,6 +2,10 @@
 .text-align-right{
   text-align: right;
 }
+
+.hidden{
+  display: none !important;
+}
 /* Common End */
 
 .flex-cetner{
@@ -165,6 +169,47 @@
 
 .badge-options-title{
   line-height: 100%;
+}
+
+.icon-selector{
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  top: calc(100% + 5px);
+  width: 260px;
+  height: 400px;
+  z-index: 1;
+  background: #fff;
+  border-radius: 5px;
+}
+
+.icon-selector .icon-search-input-container{
+  padding: 10px;
+}
+
+.icon-search-list{
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 0;
+  margin: 0;
+}
+
+.icon-search-item{
+  display:inline-block;
+  width: 25%;
+  height: 62px;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.icon-search-item:hover{
+  background: #eee;
+}
+
+@media (max-width: 576px){
+  .icon-selector-container {
+    order: -1;
+  }
 }
 
 /* Badge End */
