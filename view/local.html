@@ -149,6 +149,9 @@
             <div class="col-lg-4 col-sm-6 input-group mb-3 d-flex align-items-center icon-selector-container">
                 <button id="icon-selector-btn" type="button" class="btn btn-outline-secondary mr-4">+ Add Icon</button>
                 <div class="icon-selector shadow-lg hidden">
+                    <div class="icon-search-input-container">
+                        <input id="search-icon-input" type="text" class="form-control" placeholder="search">
+                    </div>
                     <ul class="icon-search-list">
                     </ul>
                 </div>
@@ -479,6 +482,15 @@
         document.addEventListener("click", clickHandler)
     })
 
+    $("#search-icon-input").keyup((e) => {
+        const inputValue = $("#search-icon-input").val();
+        fetchIconList()
+            .then(iconItems => iconItems.filter(iconItem => iconItem.name.indexOf(inputValue) !== -1))
+            .then(iconItems => {
+                setIconItems(iconItems)
+            })
+    });
+
     function fetchIconList(){
         if(!iconListPromise){
             iconListPromise = fetch(`/icon/all.json`)
@@ -506,6 +518,7 @@
     }
 
     function closeIconSelector(){
+        $("#search-icon-input").val("");
         $(".icon-selector").addClass("hidden");
     }
     // Icon Selector End
