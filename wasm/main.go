@@ -118,7 +118,7 @@ func showGraph(value string) {
 				js.Global().Get("document").Call("getElementById", "history_view").Set("innerHTML", "Error")
 				return
 			}
-			js.Global().Get("document").Call("getElementById", "history_view").Set("innerHTML", "<img src=\"data:image/svg+xml;base64,"+encodedBody+"\"></div>")
+			js.Global().Get("document").Call("getElementById", "history_view").Set("innerHTML", "<img class=\"graph_img\" src=\"data:image/svg+xml;base64,"+encodedBody+"\"></div>")
 		}(value)
 	}
 }
