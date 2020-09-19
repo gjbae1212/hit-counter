@@ -118,6 +118,7 @@
 #history_view{
   min-height: 350px;
   position: relative;
+  padding: 35px 10px;
   display: flex;
   justify-content: center;
   align-items: center;
