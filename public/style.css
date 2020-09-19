@@ -6,6 +6,14 @@
 .hidden{
   display: none !important;
 }
+
+.text-secondary-light{
+  color: #6f7d8c;
+}
+
+.section{
+  padding: 6rem 0 9rem;
+}
 /* Common End */
 
 .flex-cetner{
@@ -62,7 +70,7 @@
 }
 
 @media (min-width: 576px){
-  .show-rank-content{
+  .show-rank-content, .stream-view-content{
     border-radius: 0.4rem;
     box-shadow: 0px 11px 25px 0px rgba(0, 0, 0, 0.3);
   }
@@ -113,15 +121,16 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  border: 1px solid #bbb;
+  border-radius: 5px;
 }
 
 .gradient-bg-primary{
   background: url(./background.svg) center/cover no-repeat ;
 }
 
-.dark-bg{
-  background: #48615b;
-  box-shadow: 0px 7px 7px rgba(0, 0, 0, 0.5);
+.secondary-bg{
+  background: #E8ECF7;
 }
 
 .wating-graph{
@@ -131,7 +140,6 @@
   display:flex;
   justify-content: center;
   align-items: center;
-  background-color: rgba(0, 0, 0, .1);
   height: 100%;
   width: 100%;
   color: #888;
@@ -159,10 +167,11 @@
   letter-spacing: 0.15rem;
 }
 
-.show-rank-content{
+.show-rank-content, .stream-view-content{
   padding: 2rem;
   background-color: rgba(255, 255, 255, .9);
   min-height: 6rem;
+  color: black;
 }
 
 /* Badge Start */
