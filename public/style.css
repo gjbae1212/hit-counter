@@ -63,6 +63,10 @@
   line-height: 1.6;
 }
 
+.github-btn {
+  margin-top: 20px;
+}
+
 @media (max-width: 768px) {
   .container.container-mobile-fill{
       max-width: 100%;
