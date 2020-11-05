@@ -115,6 +115,16 @@
   overflow: auto;
 }
 
+.wating-stream{
+  display: none;
+}
+
+.wating-stream:only-child{
+  display: block;
+  color: #555;
+  letter-spacing: 2px;
+}
+
 #history_view{
   min-height: 350px;
   position: relative;
