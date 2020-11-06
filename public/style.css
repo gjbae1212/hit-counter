@@ -63,6 +63,10 @@
   line-height: 1.6;
 }
 
+.github-btn {
+  margin-top: 20px;
+}
+
 @media (max-width: 768px) {
   .container.container-mobile-fill{
       max-width: 100%;
@@ -111,8 +115,18 @@
 }
 
 #stream_view{
-  max-height: 500px;
+  height: 500px;
   overflow: auto;
+}
+
+.wating-stream{
+  display: none;
+}
+
+.wating-stream:only-child{
+  display: block;
+  color: #555;
+  letter-spacing: 2px;
 }
 
 #history_view{
