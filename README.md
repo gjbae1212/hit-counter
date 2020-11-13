@@ -13,7 +13,7 @@ A simple way to see how many people have visited your website or GitHub repo.
 
 [HITS](https://hits.seeyoufarm.com) provides the SVG badge presented **title** and **daily/total** page count.
 
-If you embed the badge on either website or GitHub or Notion, every page hit will be counted from visitors.
+If you embed the badge on either website or GitHub or Notion, every page request (page hit) will be counted.
 
 The badge includes per day (from GMT) and the total (all) page count.
 
