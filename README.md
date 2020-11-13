@@ -21,7 +21,7 @@ The badge includes per day (from GMT) and the total (all) page count.
 
 [HITS](https://hits.seeyoufarm.com) shows real-time page hits (using Websocket) of every project  or site that is using this service. 
 
-[HITS](https://hits.seeyoufarm.com) was made by gjbae1212@gmail.com using golang, wasm, html, currently serving from google cloud platform.
+[HITS](https://hits.seeyoufarm.com) was made by gjbae1212@gmail.com using Golang, WebAssembly (Wasm), HTML, currently serving from Google Cloud platform.
  
 ## How To Use
 ### How To Generate The Badge 
