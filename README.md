@@ -42,4 +42,4 @@ You generate the badge through [HITS](https://hits.seeyoufarm.com/#badge).
 To protect from abuse by massive requests, parts of request information are converted to hashing data in local-cache, and it deletes after the elapsed time.
   
 ## LICENSE
-This project is licensed underl GPL V3.0.
+This project is licensed under GPL V3.0.
