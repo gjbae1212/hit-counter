@@ -17,9 +17,9 @@ If you embed the badge on either website or GitHub or Notion, every page hit wil
 
 The badge includes per day (from GMT) and the total (all) page count.
 
-[HITS](https://hits.seeyoufarm.com) also shows the GitHub projects with highest visitors. (TOP 10)
+[HITS](https://hits.seeyoufarm.com) also shows the GitHub projects with the highest visitors. (TOP 10)
 
-[HITS](https://hits.seeyoufarm.com) shows realtime visiting projects using Websocket. 
+[HITS](https://hits.seeyoufarm.com) shows real-time page hits (using Websocket) of every project  or site that is using this service. 
 
 [HITS](https://hits.seeyoufarm.com) was made by gjbae1212@gmail.com using golang, wasm, html, currently serving from google cloud platform.
  
@@ -35,7 +35,7 @@ You generate the badge through [HITS](https://hits.seeyoufarm.com/#badge).
 - Support badge free icon (https://simpleicons.org) 
 - Show a graph of your site about daily count of histories in recently 6 month
 - Show ranks about github projects.
-- Show realtime stream.
+- Show real-time stream.
       
 ## ETC
 [HITS](https://hits.seeyoufarm.com) counts every page hit without storing sensitive information (IP, headers, etc.).  
