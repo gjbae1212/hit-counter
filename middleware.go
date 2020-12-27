@@ -115,6 +115,8 @@ func middlewarePreChain() ([]echo.MiddlewareFunc, error) {
 					Expires:  time.Now().Add(24 * time.Hour),
 					Path:     "/",
 					HttpOnly: true,
+					Secure:   true,
+					SameSite: http.SameSiteNoneMode,
 				}
 				hitctx.SetCookie(cookie)
 			}
