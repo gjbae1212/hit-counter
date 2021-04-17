@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"html/template"
 	"path/filepath"
+	"runtime"
 	"time"
 
 	task "github.com/gjbae1212/go-async-task"
@@ -12,6 +13,7 @@ import (
 	"github.com/gjbae1212/hit-counter/counter"
 	"github.com/gjbae1212/hit-counter/env"
 	"github.com/gjbae1212/hit-counter/internal"
+	"github.com/go-redis/redis/v8"
 	cache "github.com/patrickmn/go-cache"
 )
 
@@ -32,14 +34,23 @@ type Handler struct {
 }
 
 // NewHandler creates  handler object.
-func NewHandler(redisAddrs []string) (*Handler, error) {
-	if len(redisAddrs) == 0 {
+func NewHandler(redisAddr string) (*Handler, error) {
+	if redisAddr == "" {
 		return nil, fmt.Errorf("[err] NewHandler %w", internal.ErrorEmptyParams)
 	}
 
 	// create local cache
 	localCache := cache.New(24*time.Hour, 10*time.Minute)
-	ctr, err := counter.NewCounter(counter.WithRedisOption(redisAddrs))
+
+	redisClient := redis.NewClient(&redis.Options{
+		Addr:         redisAddr,
+		Password:     "",
+		DB:           0,
+		MaxRetries:   1,
+		MinIdleConns: runtime.NumCPU() * 3,
+		PoolSize:     runtime.NumCPU() * 10,
+	})
+	ctr, err := counter.NewCounter(counter.WithRedisClient(redisClient))
 	if err != nil {
 		return nil, fmt.Errorf("[err] NewHandler %w", err)
 	}

@@ -58,7 +58,7 @@ func main() {
 	}
 
 	// add route
-	if err := AddRoute(e, env.GetRedisAddrs()); err != nil {
+	if err := AddRoute(e, env.GetRedisAddrs()[0]); err != nil {
 		log.Panic(err)
 	}
 

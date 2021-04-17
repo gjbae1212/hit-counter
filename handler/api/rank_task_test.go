@@ -5,7 +5,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/alicebob/miniredis"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/gjbae1212/hit-counter/counter"
 	"github.com/gjbae1212/hit-counter/handler"
@@ -15,12 +14,9 @@ import (
 
 func TestRankTask_Process(t *testing.T) {
 	assert := assert.New(t)
+	defer mockRedis.FlushAll()
 
-	s, err := miniredis.Run()
-	assert.NoError(err)
-	defer s.Close()
-
-	h, err := handler.NewHandler([]string{s.Addr()})
+	h, err := handler.NewHandler(mockRedis.Addr())
 	assert.NoError(err)
 
 	api, err := NewHandler(h)
@@ -92,11 +88,11 @@ func TestRankTask_Process(t *testing.T) {
 			assert.NoError(err)
 			time.Sleep(1 * time.Second)
 
-			scores, err := api.Counter.GetRankDailyByLimit(t.input.Domain, 10, time.Now())
+			scores, err := api.Counter.GetRankDailyByLimit(context.Background(), t.input.Domain, 10, time.Now())
 			assert.NoError(err)
 			assert.Len(scores, 0)
 
-			scores, err = api.Counter.GetRankTotalByLimit(t.input.Domain, 10)
+			scores, err = api.Counter.GetRankTotalByLimit(context.Background(), t.input.Domain, 10)
 			assert.NoError(err)
 			assert.Len(scores, 0)
 		case "github-1", "github-2":
@@ -104,13 +100,13 @@ func TestRankTask_Process(t *testing.T) {
 			assert.NoError(err)
 			time.Sleep(1 * time.Second)
 
-			scores, err := api.Counter.GetRankDailyByLimit(githubGroup, 10, time.Now())
+			scores, err := api.Counter.GetRankDailyByLimit(context.Background(), githubGroup, 10, time.Now())
 			assert.NoError(err)
 
 			if len(scores) == 1 {
 				assert.True(cmp.Equal(t.wants[0], scores[0]))
 				spew.Dump(scores)
-				scores, err = api.Counter.GetRankTotalByLimit(githubGroup, 10)
+				scores, err = api.Counter.GetRankTotalByLimit(context.Background(), githubGroup, 10)
 				assert.NoError(err)
 				assert.Len(scores, 1)
 				assert.True(cmp.Equal(t.wants[1], scores[0]))
@@ -122,19 +118,19 @@ func TestRankTask_Process(t *testing.T) {
 	}
 
 	// [TEST] github.com domain, profile
-	scores, err := api.Counter.GetRankDailyByLimit(domainGroup, 10, time.Now())
+	scores, err := api.Counter.GetRankDailyByLimit(context.Background(), domainGroup, 10, time.Now())
 	assert.NoError(err)
 	assert.Len(scores, 2)
 	assert.True(cmp.Equal(&counter.Score{Name: githubGroup, Value: 2}, scores[0]))
 	assert.True(cmp.Equal(&counter.Score{Name: "allan.com", Value: 1}, scores[1]))
 
-	scores, err = api.Counter.GetRankTotalByLimit(domainGroup, 10)
+	scores, err = api.Counter.GetRankTotalByLimit(context.Background(), domainGroup, 10)
 	assert.NoError(err)
 	assert.Len(scores, 2)
 	assert.True(cmp.Equal(&counter.Score{Name: githubGroup, Value: 2}, scores[0]))
 	assert.True(cmp.Equal(&counter.Score{Name: "allan.com", Value: 1}, scores[1]))
 
-	scores, err = api.Counter.GetRankDailyByLimit(githubProfileSumGroup, 10, time.Now())
+	scores, err = api.Counter.GetRankDailyByLimit(context.Background(), githubProfileSumGroup, 10, time.Now())
 	assert.NoError(err)
 	assert.Len(scores, 1)
 	assert.True(cmp.Equal(&counter.Score{Name: "gjbae1212", Value: 2}, scores[0]))

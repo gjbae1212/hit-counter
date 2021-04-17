@@ -15,14 +15,14 @@ import (
 
 func TestHandler_IconAll(t *testing.T) {
 	assert := assert.New(t)
+	defer mockRedis.FlushAll()
 
 	e := echo.New()
-
 	s, err := miniredis.Run()
 	assert.NoError(err)
 	defer s.Close()
 
-	h, err := NewHandler([]string{s.Addr()})
+	h, err := NewHandler(s.Addr())
 	assert.NoError(err)
 
 	tests := map[string]struct {
@@ -51,13 +51,10 @@ func TestHandler_IconAll(t *testing.T) {
 
 func TestHandler_Icon(t *testing.T) {
 	assert := assert.New(t)
+	defer mockRedis.FlushAll()
+
 	e := echo.New()
-
-	s, err := miniredis.Run()
-	assert.NoError(err)
-	defer s.Close()
-
-	h, err := NewHandler([]string{s.Addr()})
+	h, err := NewHandler(mockRedis.Addr())
 	assert.NoError(err)
 
 	tests := map[string]struct {

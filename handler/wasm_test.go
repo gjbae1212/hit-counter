@@ -5,7 +5,6 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/alicebob/miniredis"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 )
@@ -14,12 +13,7 @@ func TestHandler_Wasm(t *testing.T) {
 	assert := assert.New(t)
 
 	e := echo.New()
-
-	s, err := miniredis.Run()
-	assert.NoError(err)
-	defer s.Close()
-
-	h, err := NewHandler([]string{s.Addr()})
+	h, err := NewHandler(mockRedis.Addr())
 	assert.NoError(err)
 
 	r := httptest.NewRequest("GET", "http://localhost:8080", nil)

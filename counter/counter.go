@@ -1,10 +1,10 @@
 package counter
 
 import (
-	"fmt"
+	"context"
 	"time"
 
-	redis "github.com/gjbae1212/go-redis"
+	"github.com/go-redis/redis/v8"
 )
 
 var (
@@ -13,20 +13,20 @@ var (
 
 type (
 	Counter interface {
-		IncreaseHitOfDaily(id string, t time.Time) (*Score, error)
-		IncreaseHitOfTotal(id string) (*Score, error)
-		GetHitOfDaily(id string, t time.Time) (*Score, error)
-		GetHitOfTotal(id string) (*Score, error)
-		GetHitOfDailyAndTotal(id string, t time.Time) (daily *Score, total *Score, err error)
-		IncreaseRankOfDaily(group, id string, t time.Time) (*Score, error)
-		IncreaseRankOfTotal(group, id string) (*Score, error)
-		GetRankDailyByLimit(group string, limit int, t time.Time) ([]*Score, error)
-		GetRankTotalByLimit(group string, limit int) ([]*Score, error)
-		GetHitOfDailyByRange(id string, timeRange []time.Time) (scores []*Score, err error)
+		IncreaseHitOfDaily(ctx context.Context, id string, t time.Time) (*Score, error)
+		IncreaseHitOfTotal(ctx context.Context, id string) (*Score, error)
+		GetHitOfDaily(ctx context.Context, id string, t time.Time) (*Score, error)
+		GetHitOfTotal(ctx context.Context, id string) (*Score, error)
+		GetHitOfDailyAndTotal(ctx context.Context, id string, t time.Time) (daily *Score, total *Score, err error)
+		IncreaseRankOfDaily(ctx context.Context, group, id string, t time.Time) (*Score, error)
+		IncreaseRankOfTotal(ctx context.Context, group, id string) (*Score, error)
+		GetRankDailyByLimit(ctx context.Context, group string, limit int, t time.Time) ([]*Score, error)
+		GetRankTotalByLimit(ctx context.Context, group string, limit int) ([]*Score, error)
+		GetHitOfDailyByRange(ctx context.Context, id string, timeRange []time.Time) (scores []*Score, err error)
 	}
 
 	db struct {
-		redis redis.Manager
+		redisClient *redis.Client
 	}
 )
 
@@ -39,20 +39,18 @@ type Score struct {
 // NewCounter returns an object implemented counter interface.
 func NewCounter(opts ...Option) (Counter, error) {
 	c := &db{}
-	// inject config
 	for _, opt := range opts {
-		if err := opt.apply(c); err != nil {
-			return nil, fmt.Errorf("[err] NewCounter %w", err)
-		}
+		opt.apply(c)
 	}
 
-	// if a redis doesn't exist, a default redis will be set up to have `localhost:6379`.
-	if c.redis == nil {
-		rs, err := redis.NewManager([]string{"localhost:6379"})
-		if err != nil {
-			return nil, fmt.Errorf("[err] NewCounter %w", err)
-		}
-		c.redis = rs
+	// if redis client doesn't exist, a default redis will be set up to have `localhost:6379`.
+	if c.redisClient == nil {
+		c.redisClient = redis.NewClient(&redis.Options{
+			Addr:       "localhost:6379",
+			Password:   "",
+			DB:         0,
+			MaxRetries: 1,
+		})
 	}
 	return Counter(c), nil
 }

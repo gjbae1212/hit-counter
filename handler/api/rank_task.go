@@ -26,30 +26,30 @@ func (task *RankTask) Process(ctx context.Context) error {
 	// If a domain is 'github.com', it is calculating ranks.
 	if task.Domain == githubGroup && task.Path != "" {
 		// Calculate visiting count based on github.com.
-		if _, err := task.Counter.IncreaseRankOfDaily(githubGroup, task.Path, task.CreatedAt); err != nil {
+		if _, err := task.Counter.IncreaseRankOfDaily(ctx, githubGroup, task.Path, task.CreatedAt); err != nil {
 			return err
 		}
-		if _, err := task.Counter.IncreaseRankOfTotal(githubGroup, task.Path); err != nil {
+		if _, err := task.Counter.IncreaseRankOfTotal(ctx, githubGroup, task.Path); err != nil {
 			return err
 		}
 
 		// Calculate sum of visiting count for github projects based on github profile.
 		seps := strings.Split(task.Path, "/")
 		if len(seps) >= 2 && seps[1] != "" {
-			if _, err := task.Counter.IncreaseRankOfDaily(githubProfileSumGroup, seps[1], task.CreatedAt); err != nil {
+			if _, err := task.Counter.IncreaseRankOfDaily(ctx, githubProfileSumGroup, seps[1], task.CreatedAt); err != nil {
 				return err
 			}
-			if _, err := task.Counter.IncreaseRankOfTotal(githubProfileSumGroup, seps[1]); err != nil {
+			if _, err := task.Counter.IncreaseRankOfTotal(ctx, githubProfileSumGroup, seps[1]); err != nil {
 				return err
 			}
 		}
 	}
 
 	// Calculate visiting count for daily and total.
-	if _, err := task.Counter.IncreaseRankOfDaily(domainGroup, task.Domain, task.CreatedAt); err != nil {
+	if _, err := task.Counter.IncreaseRankOfDaily(ctx, domainGroup, task.Domain, task.CreatedAt); err != nil {
 		return err
 	}
-	if _, err := task.Counter.IncreaseRankOfTotal(domainGroup, task.Domain); err != nil {
+	if _, err := task.Counter.IncreaseRankOfTotal(ctx, domainGroup, task.Domain); err != nil {
 		return err
 	}
 

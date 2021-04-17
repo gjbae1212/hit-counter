@@ -1,10 +1,11 @@
 package main
 
 import (
-	"github.com/gjbae1212/hit-counter/handler"
 	"log"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/gjbae1212/hit-counter/handler"
 
 	"github.com/alicebob/miniredis"
 	echo "github.com/labstack/echo/v4"
@@ -13,14 +14,14 @@ import (
 
 func TestAddRoute(t *testing.T) {
 	assert := assert.New(t)
-	err := AddRoute(nil, nil)
+	err := AddRoute(nil, "")
 	assert.Error(err)
 
 	s, err := miniredis.Run()
 	assert.NoError(err)
 	defer s.Close()
 
-	err = AddRoute(echo.New(), []string{s.Addr()})
+	err = AddRoute(echo.New(), s.Addr())
 	assert.NoError(err)
 }
 

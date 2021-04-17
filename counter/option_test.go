@@ -3,20 +3,24 @@ package counter
 import (
 	"testing"
 
-	"github.com/alicebob/miniredis"
+	"github.com/go-redis/redis/v8"
+
 	"github.com/stretchr/testify/assert"
 )
 
-func TestWithRedisOption(t *testing.T) {
+func TestWithRedisClient(t *testing.T) {
 	assert := assert.New(t)
 
-	s, err := miniredis.Run()
-	assert.NoError(err)
-	defer s.Close()
+	tests := map[string]struct {
+		client *redis.Client
+	}{
+		"success": {client: mockClient},
+	}
 
-	d := &db{}
-	opt := WithRedisOption([]string{s.Addr()})
-	err = opt.apply(d)
-	assert.NoError(err)
-	assert.NotNil(d.redis)
+	for _, t := range tests {
+		opt := WithRedisClient(t.client)
+		c := &db{}
+		opt(c)
+		assert.Equal(c.redisClient, t.client)
+	}
 }

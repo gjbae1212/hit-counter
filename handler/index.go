@@ -12,7 +12,7 @@ import (
 // Index is API for main page.
 func (h *Handler) Index(c echo.Context) error {
 	group := "github.com"
-	scores, err := h.Counter.GetRankTotalByLimit(group, 20)
+	scores, err := h.Counter.GetRankTotalByLimit(c.Request().Context(), group, 20)
 	if err != nil {
 		return err
 	}

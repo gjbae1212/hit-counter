@@ -1,35 +1,32 @@
 package handler
 
 import (
+	"context"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
 
-	"github.com/alicebob/miniredis"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestHandler_Index(t *testing.T) {
 	assert := assert.New(t)
+	defer mockRedis.FlushAll()
+
 
 	e := echo.New()
-
-	s, err := miniredis.Run()
-	assert.NoError(err)
-	defer s.Close()
-
-	h, err := NewHandler([]string{s.Addr()})
+	h, err := NewHandler(mockRedis.Addr())
 	assert.NoError(err)
 
-	_, err = h.Counter.IncreaseRankOfTotal("github.com", "/gjbae1212/hit-counter/")
+	ctx := context.Background()
+	_, err = h.Counter.IncreaseRankOfTotal(ctx, "github.com", "/gjbae1212/hit-counter/")
 	assert.NoError(err)
-	_, err = h.Counter.IncreaseRankOfTotal("github.com", "/gjbae1212/helloworld")
+	_, err = h.Counter.IncreaseRankOfTotal(ctx, "github.com", "/gjbae1212/helloworld")
 	assert.NoError(err)
-
-	_, err = h.Counter.IncreaseRankOfTotal("github.com", "/gjbae1212/power/dfdsfhtp(s///sdfsdf)")
+	_, err = h.Counter.IncreaseRankOfTotal(ctx, "github.com", "/gjbae1212/power/dfdsfhtp(s///sdfsdf)")
 	assert.NoError(err)
 
 	tests := map[string]struct {

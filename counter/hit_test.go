@@ -1,12 +1,12 @@
 package counter
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"testing"
 	"time"
 
-	"github.com/alicebob/miniredis"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/gjbae1212/hit-counter/internal"
 	"github.com/google/go-cmp/cmp"
@@ -15,20 +15,18 @@ import (
 
 func TestDb_IncreaseHitOfDaily(t *testing.T) {
 	assert := assert.New(t)
+	defer mockRedis.FlushAll()
 
-	s, err := miniredis.Run()
-	assert.NoError(err)
-	defer s.Close()
-
-	counter, err := NewCounter(WithRedisOption([]string{s.Addr()}))
+	ctx := context.Background()
+	counter, err := NewCounter(WithRedisClient(mockClient))
 	assert.NoError(err)
 
-	_, err = counter.IncreaseHitOfDaily("", time.Time{})
+	_, err = counter.IncreaseHitOfDaily(ctx, "", time.Time{})
 	assert.Error(err)
 
 	now := time.Now()
 	for i := 0; i < 2; i++ {
-		count, err := counter.IncreaseHitOfDaily("test", now)
+		count, err := counter.IncreaseHitOfDaily(ctx, "test", now)
 		assert.NoError(err)
 		assert.Equal(i+1, int(count.Value))
 	}
@@ -36,61 +34,59 @@ func TestDb_IncreaseHitOfDaily(t *testing.T) {
 	daily := internal.TimeToDailyStringFormat(now)
 	key := fmt.Sprintf(hitDailyFormat, daily, "test")
 	log.Println(key)
-	v, err := counter.(*db).redis.Do("GET", key)
+
+	v, err := counter.(*db).redisClient.Get(ctx, key).Result()
 	assert.NoError(err)
-	assert.Equal("2", string(v.([]byte)))
+	assert.Equal("2", v)
 }
 
 func TestDb_IncreaseHitOfTotal(t *testing.T) {
 	assert := assert.New(t)
-	s, err := miniredis.Run()
-	assert.NoError(err)
-	defer s.Close()
+	defer mockRedis.FlushAll()
 
-	counter, err := NewCounter(WithRedisOption([]string{s.Addr()}))
+	ctx := context.Background()
+	counter, err := NewCounter(WithRedisClient(mockClient))
 	assert.NoError(err)
 
-	_, err = counter.IncreaseHitOfTotal("")
+	_, err = counter.IncreaseHitOfTotal(ctx, "")
 	assert.Error(err)
 
 	for i := 0; i < 2; i++ {
-		count, err := counter.IncreaseHitOfTotal("test")
+		count, err := counter.IncreaseHitOfTotal(ctx, "test")
 		assert.NoError(err)
 		assert.Equal(i+1, int(count.Value))
 	}
 
 	key := fmt.Sprintf(hitTotalFormat, "test")
 	log.Println(key)
-	v, err := counter.(*db).redis.Do("GET", key)
+	v, err := counter.(*db).redisClient.Get(ctx, key).Result()
 	assert.NoError(err)
-	assert.Equal("2", string(v.([]byte)))
+	assert.Equal("2", v)
 }
 
 func TestDb_GetHitOfDaily(t *testing.T) {
 	assert := assert.New(t)
-	s, err := miniredis.Run()
-	assert.NoError(err)
-	defer s.Close()
+	defer mockRedis.FlushAll()
 
-	counter, err := NewCounter(WithRedisOption([]string{s.Addr()}))
+	ctx := context.Background()
+	counter, err := NewCounter(WithRedisClient(mockClient))
 	assert.NoError(err)
 
 	now := time.Now()
-
-	_, err = counter.GetHitOfDaily("", time.Time{})
+	_, err = counter.GetHitOfDaily(ctx, "", time.Time{})
 	assert.Error(err)
 
-	v, err := counter.GetHitOfDaily("empty", now)
+	v, err := counter.GetHitOfDaily(ctx, "empty", now)
 	assert.NoError(err)
 	assert.Nil(v)
 
 	for i := 0; i < 1000; i++ {
-		count, err := counter.IncreaseHitOfDaily("test", now)
+		count, err := counter.IncreaseHitOfDaily(ctx, "test", now)
 		assert.NoError(err)
 		assert.Equal(i+1, int(count.Value))
 	}
 
-	v, err = counter.GetHitOfDaily("test", now)
+	v, err = counter.GetHitOfDaily(ctx, "test", now)
 	assert.NoError(err)
 	assert.Equal(1000, int(v.Value))
 	assert.Equal(fmt.Sprintf(hitDailyFormat, internal.TimeToDailyStringFormat(now), "test"), v.Name)
@@ -98,28 +94,26 @@ func TestDb_GetHitOfDaily(t *testing.T) {
 
 func TestDb_GetHitOfTotal(t *testing.T) {
 	assert := assert.New(t)
+	defer mockRedis.FlushAll()
 
-	s, err := miniredis.Run()
-	assert.NoError(err)
-	defer s.Close()
-
-	counter, err := NewCounter(WithRedisOption([]string{s.Addr()}))
+	ctx := context.Background()
+	counter, err := NewCounter(WithRedisClient(mockClient))
 	assert.NoError(err)
 
-	_, err = counter.GetHitOfTotal("")
+	_, err = counter.GetHitOfTotal(ctx, "")
 	assert.Error(err)
 
-	v, err := counter.GetHitOfTotal("empty")
+	v, err := counter.GetHitOfTotal(ctx, "empty")
 	assert.NoError(err)
 	assert.Nil(v)
 
 	for i := 0; i < 1000; i++ {
-		count, err := counter.IncreaseHitOfTotal("test")
+		count, err := counter.IncreaseHitOfTotal(ctx, "test")
 		assert.NoError(err)
 		assert.Equal(i+1, int(count.Value))
 	}
 
-	v, err = counter.GetHitOfTotal("test")
+	v, err = counter.GetHitOfTotal(ctx, "test")
 	assert.NoError(err)
 	assert.Equal(1000, int(v.Value))
 	assert.Equal(fmt.Sprintf(hitTotalFormat, "test"), v.Name)
@@ -127,12 +121,10 @@ func TestDb_GetHitOfTotal(t *testing.T) {
 
 func TestDb_GetHitOfDailyAndTotal(t *testing.T) {
 	assert := assert.New(t)
+	defer mockRedis.FlushAll()
 
-	s, err := miniredis.Run()
-	assert.NoError(err)
-	defer s.Close()
-
-	counter, err := NewCounter(WithRedisOption([]string{s.Addr()}))
+	ctx := context.Background()
+	counter, err := NewCounter(WithRedisClient(mockClient))
 	assert.NoError(err)
 
 	id := "allan"
@@ -151,48 +143,48 @@ func TestDb_GetHitOfDailyAndTotal(t *testing.T) {
 	}
 
 	test := tests["error1"]
-	_, _, err = counter.GetHitOfDailyAndTotal(test.inputs[0].(string), test.inputs[1].(time.Time))
+	_, _, err = counter.GetHitOfDailyAndTotal(ctx, test.inputs[0].(string), test.inputs[1].(time.Time))
 	assert.Error(err)
 	test = tests["error2"]
-	_, _, err = counter.GetHitOfDailyAndTotal(test.inputs[0].(string), test.inputs[1].(time.Time))
+	_, _, err = counter.GetHitOfDailyAndTotal(ctx, test.inputs[0].(string), test.inputs[1].(time.Time))
 	assert.Error(err)
 
 	test = tests["empty"]
-	daily, total, err := counter.GetHitOfDailyAndTotal(test.inputs[0].(string), test.inputs[1].(time.Time))
+	daily, total, err := counter.GetHitOfDailyAndTotal(ctx, test.inputs[0].(string), test.inputs[1].(time.Time))
 	assert.NoError(err)
 	assert.Equal(test.wants[0], daily)
 	assert.Equal(test.wants[1], total)
 
 	for i := 0; i < 10; i++ {
-		_, err := counter.IncreaseHitOfTotal("onlytotal")
+		_, err := counter.IncreaseHitOfTotal(ctx, "onlytotal")
 		assert.NoError(err)
 	}
 	test = tests["onlytotal"]
-	daily, total, err = counter.GetHitOfDailyAndTotal(test.inputs[0].(string), test.inputs[1].(time.Time))
+	daily, total, err = counter.GetHitOfDailyAndTotal(ctx, test.inputs[0].(string), test.inputs[1].(time.Time))
 	assert.NoError(err)
 	assert.True(cmp.Equal(test.wants[0], daily))
 	assert.True(cmp.Equal(test.wants[1], total))
 
 	for i := 0; i < 10; i++ {
-		_, err := counter.IncreaseHitOfDaily("onlydaily", now)
+		_, err := counter.IncreaseHitOfDaily(ctx, "onlydaily", now)
 		assert.NoError(err)
 	}
 
 	test = tests["onlydaily"]
-	daily, total, err = counter.GetHitOfDailyAndTotal(test.inputs[0].(string), test.inputs[1].(time.Time))
+	daily, total, err = counter.GetHitOfDailyAndTotal(ctx, test.inputs[0].(string), test.inputs[1].(time.Time))
 	assert.NoError(err)
 	assert.True(cmp.Equal(test.wants[0], daily))
 	assert.True(cmp.Equal(test.wants[1], total))
 
 	for i := 0; i < 10; i++ {
-		_, err := counter.IncreaseHitOfDaily("both", now)
+		_, err := counter.IncreaseHitOfDaily(ctx, "both", now)
 		assert.NoError(err)
-		_, err = counter.IncreaseHitOfTotal("both")
+		_, err = counter.IncreaseHitOfTotal(ctx, "both")
 		assert.NoError(err)
 	}
 
 	test = tests["both"]
-	daily, total, err = counter.GetHitOfDailyAndTotal(test.inputs[0].(string), test.inputs[1].(time.Time))
+	daily, total, err = counter.GetHitOfDailyAndTotal(ctx, test.inputs[0].(string), test.inputs[1].(time.Time))
 	assert.NoError(err)
 	assert.True(cmp.Equal(test.wants[0], daily))
 	assert.True(cmp.Equal(test.wants[1], total))
@@ -200,18 +192,16 @@ func TestDb_GetHitOfDailyAndTotal(t *testing.T) {
 
 func TestDb_GetHitOfDailyByRange(t *testing.T) {
 	assert := assert.New(t)
+	defer mockRedis.FlushAll()
 
-	s, err := miniredis.Run()
-	assert.NoError(err)
-	defer s.Close()
-
-	counter, err := NewCounter(WithRedisOption([]string{s.Addr()}))
+	ctx := context.Background()
+	counter, err := NewCounter(WithRedisClient(mockClient))
 	assert.NoError(err)
 
-	_, err = counter.GetHitOfDailyByRange("", []time.Time{})
+	_, err = counter.GetHitOfDailyByRange(ctx, "", []time.Time{})
 	assert.Error(err)
 
-	scores, err := counter.GetHitOfDailyByRange("test.com", []time.Time{time.Now(), time.Now().Add(-1 * 24 * time.Hour)})
+	scores, err := counter.GetHitOfDailyByRange(ctx, "test.com", []time.Time{time.Now(), time.Now().Add(-1 * 24 * time.Hour)})
 	assert.NoError(err)
 	assert.Len(scores, 2)
 	for _, s := range scores {
@@ -223,12 +213,12 @@ func TestDb_GetHitOfDailyByRange(t *testing.T) {
 	now := time.Now()
 	for now.Unix() > prev.Unix() {
 		timeRange = append(timeRange, prev)
-		_, err := counter.IncreaseHitOfDaily("test.com", prev)
+		_, err := counter.IncreaseHitOfDaily(ctx, "test.com", prev)
 		assert.NoError(err)
 		prev = prev.Add(24 * time.Hour)
 	}
 
-	scores, err = counter.GetHitOfDailyByRange("test.com", timeRange)
+	scores, err = counter.GetHitOfDailyByRange(ctx, "test.com", timeRange)
 	assert.NoError(err)
 	assert.Len(scores, 30)
 	spew.Dump(scores)

@@ -1,27 +1,23 @@
 package api_handler
 
 import (
+	"context"
 	"fmt"
 	"net/http/httptest"
 	"testing"
 	"time"
 
-	"github.com/gjbae1212/hit-counter/internal"
-
-	"github.com/alicebob/miniredis"
 	"github.com/gjbae1212/hit-counter/handler"
+	"github.com/gjbae1212/hit-counter/internal"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestHandler_KeepCount(t *testing.T) {
 	assert := assert.New(t)
+	defer mockRedis.FlushAll()
 
-	s, err := miniredis.Run()
-	assert.NoError(err)
-	defer s.Close()
-
-	h, err := handler.NewHandler([]string{s.Addr()})
+	h, err := handler.NewHandler(mockRedis.Addr())
 	assert.NoError(err)
 
 	api, err := NewHandler(h)
@@ -195,12 +191,9 @@ func TestHandler_KeepCount(t *testing.T) {
 
 func TestHandler_IncrCount(t *testing.T) {
 	assert := assert.New(t)
+	defer mockRedis.FlushAll()
 
-	s, err := miniredis.Run()
-	assert.NoError(err)
-	defer s.Close()
-
-	h, err := handler.NewHandler([]string{s.Addr()})
+	h, err := handler.NewHandler(mockRedis.Addr())
 	assert.NoError(err)
 
 	api, err := NewHandler(h)
@@ -347,15 +340,15 @@ func TestHandler_IncrCount(t *testing.T) {
 	}
 
 	time.Sleep(3 * time.Second)
-	scores, err := api.Counter.GetRankDailyByLimit("github.com", 10, time.Now())
+	scores, err := api.Counter.GetRankDailyByLimit(context.Background(), "github.com", 10, time.Now())
 	assert.NoError(err)
 	assert.Len(scores, 5)
 	assert.Equal(int64(10), scores[0].Value)
-	scores, err = api.Counter.GetRankTotalByLimit("github.com", 10)
+	scores, err = api.Counter.GetRankTotalByLimit(context.Background(), "github.com", 10)
 	assert.NoError(err)
 	assert.Len(scores, 5)
 	assert.Equal(int64(10), scores[0].Value)
-	scores, err = api.Counter.GetRankTotalByLimit("domain", 10)
+	scores, err = api.Counter.GetRankTotalByLimit(context.Background(), "domain", 10)
 	assert.NoError(err)
 	assert.Len(scores, 1)
 	assert.Equal(int64(14), scores[0].Value)

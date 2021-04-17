@@ -11,12 +11,12 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func AddRoute(e *echo.Echo, redisAddrs []string) error {
+func AddRoute(e *echo.Echo, redisAddr string) error {
 	if e == nil {
 		return fmt.Errorf("[Err] AddRoute empty params")
 	}
 
-	h, err := handler.NewHandler(redisAddrs)
+	h, err := handler.NewHandler(redisAddr)
 	if err != nil {
 		return fmt.Errorf("[err] AddRoute %w", err)
 	}

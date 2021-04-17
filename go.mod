@@ -12,12 +12,13 @@ require (
 	github.com/gjbae1212/go-counter-badge v1.2.3
 	github.com/gjbae1212/go-redis v1.0.0
 	github.com/gjbae1212/go-ws-broadcast v1.0.0
+	github.com/go-redis/redis/v8 v8.8.2
 	github.com/gomodule/redigo v2.0.0+incompatible // indirect
-	github.com/google/go-cmp v0.5.0
+	github.com/google/go-cmp v0.5.5
 	github.com/goware/urlx v0.3.1
 	github.com/labstack/echo/v4 v4.1.16
 	github.com/labstack/gommon v0.3.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
-	github.com/stretchr/testify v1.6.1
+	github.com/stretchr/testify v1.7.0
 	github.com/wcharczuk/go-chart v2.0.1+incompatible
 )
