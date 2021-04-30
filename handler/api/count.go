@@ -146,9 +146,10 @@ func (h *Handler) DailyHitsInRecently(c echo.Context) error {
 	cookie := hctx.Get("ckid").(string)
 	_ = cookie
 
+	// show between 2 month.
 	var dateRange []time.Time
 	now := time.Now()
-	prev := time.Now().Add(-180 * 24 * time.Hour)
+	prev := time.Now().Add(-60 * 24 * time.Hour)
 	for now.Unix() >= prev.Unix() {
 		dateRange = append(dateRange, prev)
 		prev = prev.Add(24 * time.Hour)

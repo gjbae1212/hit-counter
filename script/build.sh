@@ -56,6 +56,7 @@ function test
 
 function set_env
 {
+   ulimit -n 1000
    if [ -e $CURRENT/script/build_env.sh ]; then
      source $CURRENT/script/build_env.sh
    fi

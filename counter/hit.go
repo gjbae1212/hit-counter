@@ -22,14 +22,20 @@ func (d *db) IncreaseHitOfDaily(ctx context.Context, id string, t time.Time) (*S
 		return nil, fmt.Errorf("[err] IncreaseHitOfDaily  %w", internal.ErrorEmptyParams)
 	}
 
+	pipe := d.redisClient.Pipeline()
 	daily := internal.TimeToDailyStringFormat(t)
 	key := fmt.Sprintf(hitDailyFormat, daily, id)
-	v, err := d.redisClient.Incr(ctx, key).Result()
-	if err != nil {
+
+	// expire 2 month.
+	incrResult := pipe.Incr(ctx, key)
+	pipe.Expire(ctx, key, time.Hour*24*60)
+
+	if _, err := pipe.Exec(ctx); err != nil {
 		return nil, fmt.Errorf("[err] IncreaseHitOfDaily %w", err)
 	}
 
-	return &Score{Name: key, Value: v}, nil
+	incr, _ := incrResult.Result()
+	return &Score{Name: key, Value: incr}, nil
 }
 
 // IncreaseHitOfTotal increases accumulate count.

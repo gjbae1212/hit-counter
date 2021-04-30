@@ -21,15 +21,21 @@ func (d *db) IncreaseRankOfDaily(ctx context.Context, group, id string, t time.T
 		return nil, fmt.Errorf("[err] IncreaseRankOfDaily %w", internal.ErrorEmptyParams)
 	}
 
+	pipe := d.redisClient.Pipeline()
+
 	daily := internal.TimeToDailyStringFormat(t)
 	key := fmt.Sprintf(rankDailyFormat, daily, group)
 
-	v, err := d.redisClient.ZIncrBy(ctx, key, 1, id).Result()
-	if err != nil {
+	// expire 2 month.
+	incrResult := pipe.ZIncrBy(ctx, key, 1, id)
+	pipe.Expire(ctx, key, time.Hour*24*60)
+
+	if _, err := pipe.Exec(ctx); err != nil {
 		return nil, fmt.Errorf("[err] IncreaseRankOfDaily %w", err)
 	}
 
-	return &Score{Name: id, Value: int64(v)}, nil
+	incr, _ := incrResult.Result()
+	return &Score{Name: id, Value: int64(incr)}, nil
 }
 
 // IncreaseRankOfTotal increases accumulate rank score.
