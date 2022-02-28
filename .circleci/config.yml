@@ -1,25 +1,37 @@
-version: 2
 jobs:
-  build:
+  test:
     working_directory: /go/src/github.com/gjbae1212/hit-counter
-
-    branches:
-          only:
-            - master
-
     docker:
-    - image: golang:1.14
-
+      - image: circleci/golang:1.17
     environment:
       GOPATH: /go
-
     steps:
-    - checkout
+      - checkout
+      - setup_remote_docker:
+          version: 20.10.2
+          docker_layer_caching: false
+      - run:
+          name: Install Git lfs
+          command: |
+            sudo apt-get install git-lfs
+            git lfs install
+      - run:
+          name: Pull Git lfs
+          command: git lfs pull
+      - run:
+          name: Unit Test
+          environment:
+          command: bash script/build.sh test
 
-    - run: go mod download
-
-    - run:
-        name: RUN UNIT TEST
-        environment:
-          GO111MODULE: "on"
-        command: bash script/build.sh test
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - test:
+          filters:
+            branches:
+              only:
+                - /feature.*/
+                - develop
+                - master
+                - production
