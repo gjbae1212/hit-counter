@@ -5,9 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/go-redis/redis/v8"
-
 	"github.com/gjbae1212/hit-counter/internal"
+	"github.com/go-redis/redis/v8"
 )
 
 var (
@@ -16,7 +15,7 @@ var (
 )
 
 // IncreaseRankOfDaily increases daily rank score.
-func (d *db) IncreaseRankOfDaily(ctx context.Context, group, id string, t time.Time) (*Score, error) {
+func (d *db) IncreaseRankOfDaily(ctx context.Context, group, id string, t time.Time, ttl time.Duration) (*Score, error) {
 	if group == "" || id == "" || t.IsZero() {
 		return nil, fmt.Errorf("[err] IncreaseRankOfDaily %w", internal.ErrorEmptyParams)
 	}
@@ -26,9 +25,9 @@ func (d *db) IncreaseRankOfDaily(ctx context.Context, group, id string, t time.T
 	daily := internal.TimeToDailyStringFormat(t)
 	key := fmt.Sprintf(rankDailyFormat, daily, group)
 
-	// expire 2 month.
 	incrResult := pipe.ZIncrBy(ctx, key, 1, id)
-	pipe.Expire(ctx, key, time.Hour*24*60)
+	// set expired.
+	pipe.Expire(ctx, key, ttl)
 
 	if _, err := pipe.Exec(ctx); err != nil {
 		return nil, fmt.Errorf("[err] IncreaseRankOfDaily %w", err)

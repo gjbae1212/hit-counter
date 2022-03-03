@@ -21,12 +21,12 @@ func TestDb_IncreaseHitOfDaily(t *testing.T) {
 	counter, err := NewCounter(WithRedisClient(mockClient))
 	assert.NoError(err)
 
-	_, err = counter.IncreaseHitOfDaily(ctx, "", time.Time{})
+	_, err = counter.IncreaseHitOfDaily(ctx, "", time.Time{}, time.Minute)
 	assert.Error(err)
 
 	now := time.Now()
 	for i := 0; i < 2; i++ {
-		count, err := counter.IncreaseHitOfDaily(ctx, "test", now)
+		count, err := counter.IncreaseHitOfDaily(ctx, "test", now, time.Minute)
 		assert.NoError(err)
 		assert.Equal(i+1, int(count.Value))
 	}
@@ -81,7 +81,7 @@ func TestDb_GetHitOfDaily(t *testing.T) {
 	assert.Nil(v)
 
 	for i := 0; i < 1000; i++ {
-		count, err := counter.IncreaseHitOfDaily(ctx, "test", now)
+		count, err := counter.IncreaseHitOfDaily(ctx, "test", now, time.Minute)
 		assert.NoError(err)
 		assert.Equal(i+1, int(count.Value))
 	}
@@ -166,7 +166,7 @@ func TestDb_GetHitOfDailyAndTotal(t *testing.T) {
 	assert.True(cmp.Equal(test.wants[1], total))
 
 	for i := 0; i < 10; i++ {
-		_, err := counter.IncreaseHitOfDaily(ctx, "onlydaily", now)
+		_, err := counter.IncreaseHitOfDaily(ctx, "onlydaily", now, time.Minute)
 		assert.NoError(err)
 	}
 
@@ -177,7 +177,7 @@ func TestDb_GetHitOfDailyAndTotal(t *testing.T) {
 	assert.True(cmp.Equal(test.wants[1], total))
 
 	for i := 0; i < 10; i++ {
-		_, err := counter.IncreaseHitOfDaily(ctx, "both", now)
+		_, err := counter.IncreaseHitOfDaily(ctx, "both", now, time.Minute)
 		assert.NoError(err)
 		_, err = counter.IncreaseHitOfTotal(ctx, "both")
 		assert.NoError(err)
@@ -213,7 +213,7 @@ func TestDb_GetHitOfDailyByRange(t *testing.T) {
 	now := time.Now()
 	for now.Unix() > prev.Unix() {
 		timeRange = append(timeRange, prev)
-		_, err := counter.IncreaseHitOfDaily(ctx, "test.com", prev)
+		_, err := counter.IncreaseHitOfDaily(ctx, "test.com", prev, time.Minute)
 		assert.NoError(err)
 		prev = prev.Add(24 * time.Hour)
 	}

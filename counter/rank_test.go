@@ -19,7 +19,7 @@ func TestDb_IncreaseRankOfDaily(t *testing.T) {
 	assert.NoError(err)
 
 	now := time.Now()
-	_, err = counter.IncreaseRankOfDaily(ctx, "", "", time.Time{})
+	_, err = counter.IncreaseRankOfDaily(ctx, "", "", time.Time{}, time.Minute)
 	assert.Error(err)
 
 	group := "github.com"
@@ -28,7 +28,7 @@ func TestDb_IncreaseRankOfDaily(t *testing.T) {
 
 	for i := 0; i < 1000; i++ {
 		rnd := rand.Int() % 4
-		v, err := counter.IncreaseRankOfDaily(ctx, group, ids[rnd], now)
+		v, err := counter.IncreaseRankOfDaily(ctx, group, ids[rnd], now, time.Minute)
 		assert.NoError(err)
 		assert.Equal(ids[rnd], v.Name)
 		assert.Equal(values[rnd]+1, v.Value)
@@ -76,7 +76,7 @@ func TestDb_GetRankDailyByLimit(t *testing.T) {
 
 	for i := 0; i < 1000; i++ {
 		rnd := rand.Int() % 4
-		v, err := counter.IncreaseRankOfDaily(ctx, group, ids[rnd], now)
+		v, err := counter.IncreaseRankOfDaily(ctx, group, ids[rnd], now, time.Minute)
 		assert.NoError(err)
 		assert.Equal(ids[rnd], v.Name)
 		assert.Equal(values[rnd]+1, v.Value)

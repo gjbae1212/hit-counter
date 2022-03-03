@@ -38,13 +38,24 @@ func (h *Handler) IncrCount(c echo.Context) error {
 	edgeType := hctx.Get("edge_flat").(bool)
 	icon := hctx.Get("icon").(string)
 	iconColor := hctx.Get("icon_color").(string)
-
 	_ = cookie
+
 	id := fmt.Sprintf(countIdFormat, host, path)
 	ip := c.RealIP()
 	userAgent := c.Request().UserAgent()
 
-	// If a ingress specified ip is exceeded more than 100 per 5 seconds, it might possibly abusing.
+	// check that host or id is blacklist or not.
+	for _, v := range []string{host, id} {
+		isBlacklist, err := h.Limiter.IsBlackList(hctx.Request().Context(), v)
+		if err != nil {
+			return err
+		}
+		if isBlacklist {
+			return hctx.String(http.StatusNotFound, "")
+		}
+	}
+
+	// If an ingress specified ip is exceeded more than 100 per 5 seconds, it might possibly abusing.
 	// so it must be limited.
 	v, ok := h.LocalCache.Get(ip)
 	if v != nil && v.(int64) > 100 {
@@ -75,11 +86,25 @@ func (h *Handler) IncrCount(c echo.Context) error {
 	}
 	h.LocalCache.Set(temporaryId, int64(1), 1*time.Second)
 
-	daily, err := h.Counter.IncreaseHitOfDaily(c.Request().Context(), id, time.Now())
+	dailyHitTTL := time.Hour * 24 * 30 // default daily hits 30 days.
+	// change daily hit ttl when this case is limited to save to cache.
+	for _, v := range []string{host, id} {
+		cacheLimit, err := h.Limiter.IsCacheLimit(hctx.Request().Context(), v)
+		if err != nil {
+			return err
+		}
+		if cacheLimit {
+			dailyHitTTL = time.Hour * 24
+			break
+		}
+	}
+
+	// increase hit count daily.
+	daily, err := h.Counter.IncreaseHitOfDaily(c.Request().Context(), id, time.Now(), dailyHitTTL)
 	if err != nil {
 		return err
 	}
-
+	// increase hit count totally.
 	total, err := h.Counter.IncreaseHitOfTotal(c.Request().Context(), id)
 	if err != nil {
 		return err
@@ -89,6 +114,7 @@ func (h *Handler) IncrCount(c echo.Context) error {
 	timectx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
+	// add task to async queue.
 	if err := h.AsyncTask.AddTask(timectx, &RankTask{
 		Counter:   h.Counter,
 		Domain:    host,
@@ -146,10 +172,10 @@ func (h *Handler) DailyHitsInRecently(c echo.Context) error {
 	cookie := hctx.Get("ckid").(string)
 	_ = cookie
 
-	// show between 2 month.
+	// show between 1 month.
 	var dateRange []time.Time
 	now := time.Now()
-	prev := time.Now().Add(-60 * 24 * time.Hour)
+	prev := time.Now().Add(-30 * 24 * time.Hour)
 	for now.Unix() >= prev.Unix() {
 		dateRange = append(dateRange, prev)
 		prev = prev.Add(24 * time.Hour)

@@ -6,9 +6,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/go-redis/redis/v8"
-
 	"github.com/gjbae1212/hit-counter/internal"
+	"github.com/go-redis/redis/v8"
 )
 
 var (
@@ -17,7 +16,7 @@ var (
 )
 
 // IncreaseHitOfDaily increases daily count.
-func (d *db) IncreaseHitOfDaily(ctx context.Context, id string, t time.Time) (*Score, error) {
+func (d *db) IncreaseHitOfDaily(ctx context.Context, id string, t time.Time, ttl time.Duration) (*Score, error) {
 	if id == "" || t.IsZero() {
 		return nil, fmt.Errorf("[err] IncreaseHitOfDaily  %w", internal.ErrorEmptyParams)
 	}
@@ -26,9 +25,9 @@ func (d *db) IncreaseHitOfDaily(ctx context.Context, id string, t time.Time) (*S
 	daily := internal.TimeToDailyStringFormat(t)
 	key := fmt.Sprintf(hitDailyFormat, daily, id)
 
-	// expire 2 month.
 	incrResult := pipe.Incr(ctx, key)
-	pipe.Expire(ctx, key, time.Hour*24*60)
+	// set expired.
+	pipe.Expire(ctx, key, ttl)
 
 	if _, err := pipe.Exec(ctx); err != nil {
 		return nil, fmt.Errorf("[err] IncreaseHitOfDaily %w", err)

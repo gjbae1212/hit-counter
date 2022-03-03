@@ -1,8 +1,6 @@
-FROM golang:1.16.3-alpine AS builder
+FROM golang:1.17.7-alpine AS builder
 
 WORKDIR /go/src/github.com/gjbae1212/hit-counter
-
-RUN go env -w GO111MODULE="on"
 
 # copy go.mod go.sum
 COPY ./go.mod ./go.sum ./

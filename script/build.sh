@@ -51,7 +51,7 @@ function run
 function test
 {
    set_env
-   go test -v $(go list ./... | grep -v vendor | grep -v wasm) --count 1
+   go test -v $(go list ./... | grep -v vendor | grep -v wasm) --count 1 -timeout 120s
 }
 
 function set_env

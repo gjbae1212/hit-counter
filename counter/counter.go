@@ -13,12 +13,12 @@ var (
 
 type (
 	Counter interface {
-		IncreaseHitOfDaily(ctx context.Context, id string, t time.Time) (*Score, error)
+		IncreaseHitOfDaily(ctx context.Context, id string, t time.Time, ttl time.Duration) (*Score, error)
 		IncreaseHitOfTotal(ctx context.Context, id string) (*Score, error)
 		GetHitOfDaily(ctx context.Context, id string, t time.Time) (*Score, error)
 		GetHitOfTotal(ctx context.Context, id string) (*Score, error)
 		GetHitOfDailyAndTotal(ctx context.Context, id string, t time.Time) (daily *Score, total *Score, err error)
-		IncreaseRankOfDaily(ctx context.Context, group, id string, t time.Time) (*Score, error)
+		IncreaseRankOfDaily(ctx context.Context, group, id string, t time.Time, ttl time.Duration) (*Score, error)
 		IncreaseRankOfTotal(ctx context.Context, group, id string) (*Score, error)
 		GetRankDailyByLimit(ctx context.Context, group string, limit int, t time.Time) ([]*Score, error)
 		GetRankTotalByLimit(ctx context.Context, group string, limit int) ([]*Score, error)

@@ -13,6 +13,7 @@ import (
 	"github.com/gjbae1212/hit-counter/counter"
 	"github.com/gjbae1212/hit-counter/env"
 	"github.com/gjbae1212/hit-counter/internal"
+	"github.com/gjbae1212/hit-counter/limiter"
 	"github.com/go-redis/redis/v8"
 	cache "github.com/patrickmn/go-cache"
 )
@@ -24,6 +25,7 @@ var (
 
 type Handler struct {
 	Counter          counter.Counter
+	Limiter          limiter.Limiter
 	LocalCache       *cache.Cache
 	AsyncTask        task.Keeper
 	WebSocketBreaker websocket.Breaker
@@ -42,6 +44,7 @@ func NewHandler(redisAddr string) (*Handler, error) {
 	// create local cache
 	localCache := cache.New(24*time.Hour, 10*time.Minute)
 
+	// create redis-client.
 	redisClient := redis.NewClient(&redis.Options{
 		Addr:         redisAddr,
 		Password:     "",
@@ -50,7 +53,15 @@ func NewHandler(redisAddr string) (*Handler, error) {
 		MinIdleConns: runtime.NumCPU() * 3,
 		PoolSize:     runtime.NumCPU() * 10,
 	})
+
+	// create counter interface.
 	ctr, err := counter.NewCounter(counter.WithRedisClient(redisClient))
+	if err != nil {
+		return nil, fmt.Errorf("[err] NewHandler %w", err)
+	}
+
+	// create limiter interface.
+	ltr, err := limiter.NewLimiter(limiter.WithRedisClient(redisClient))
 	if err != nil {
 		return nil, fmt.Errorf("[err] NewHandler %w", err)
 	}
@@ -98,6 +109,7 @@ func NewHandler(redisAddr string) (*Handler, error) {
 	return &Handler{
 		LocalCache:       localCache,
 		Counter:          ctr,
+		Limiter:          ltr,
 		AsyncTask:        asyncTask,
 		WebSocketBreaker: breaker,
 		IndexTemplate:    indexTemplate,
