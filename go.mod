@@ -15,8 +15,8 @@ require (
 	github.com/go-redis/redis/v8 v8.8.2
 	github.com/google/go-cmp v0.5.5
 	github.com/goware/urlx v0.3.1
-	github.com/labstack/echo/v4 v4.2.2
-	github.com/labstack/gommon v0.3.0
+	github.com/labstack/echo/v4 v4.9.0
+	github.com/labstack/gommon v0.3.1
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/stretchr/testify v1.7.0
 	github.com/wcharczuk/go-chart v2.0.1+incompatible
