@@ -168,7 +168,7 @@ func connectWebsocket() {
 	}))
 	ws.Call("addEventListener", "message", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		p := js.Global().Get("document").Call("createElement", "p")
-		p.Set("innerHTML", args[0].Get("data"))
+		p.Set("textContent", args[0].Get("data"))
 		js.Global().Get("document").Call("getElementById", "stream_view").Call("prepend", p)
 		return nil
 	}))
