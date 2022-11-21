@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"html"
 	"net/http"
 	"strings"
 	"time"
@@ -172,7 +173,7 @@ func (h *Handler) DailyHitsInRecently(c echo.Context) error {
 	graph := chart.Chart{
 		Width:      650,
 		Height:     300,
-		Title:      fmt.Sprintf("%s", id),
+		Title:      html.EscapeString(fmt.Sprintf("%s", id)),
 		TitleStyle: chart.StyleShow(),
 		XAxis: chart.XAxis{
 			Name:  "date",
@@ -197,6 +198,8 @@ func (h *Handler) DailyHitsInRecently(c echo.Context) error {
 
 	buf := new(bytes.Buffer)
 	hctx.Response().Header().Set("Content-Type", chart.ContentTypeSVG)
+	// The graph SVG uses inline styles.
+	hctx.Response().Header().Set("Content-Security-Policy", "default-src 'none'; style-src 'unsafe-inline'")
 	graph.Render(chart.SVG, buf)
 	return hctx.String(http.StatusOK, string(buf.Bytes()))
 }
@@ -248,6 +251,7 @@ func (h *Handler) responseBadge(ctx *handler.HitCounterContext,
 	}
 
 	ctx.Response().Header().Set("Content-Type", "image/svg+xml")
+	ctx.Response().Header().Set("Content-Security-Policy", "default-src 'none';")
 	ctx.Response().Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
 	ctx.Response().Header().Set("Pragma", "no-cache")
 	ctx.Response().Header().Set("Expires", "0")
