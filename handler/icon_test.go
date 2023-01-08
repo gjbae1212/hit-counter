@@ -8,7 +8,6 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/alicebob/miniredis"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 )
@@ -18,11 +17,7 @@ func TestHandler_IconAll(t *testing.T) {
 	defer mockRedis.FlushAll()
 
 	e := echo.New()
-	s, err := miniredis.Run()
-	assert.NoError(err)
-	defer s.Close()
-
-	h, err := NewHandler(s.Addr())
+	h, err := NewHandler(mockRedis.Addr())
 	assert.NoError(err)
 
 	tests := map[string]struct {

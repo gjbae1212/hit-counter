@@ -1,27 +1,15 @@
-package handler
+package main
 
 import (
 	"os"
 	"testing"
 
 	"github.com/alicebob/miniredis"
-	"github.com/stretchr/testify/assert"
 )
 
 var (
 	mockRedis *miniredis.Miniredis
 )
-
-func TestNewHandler(t *testing.T) {
-	assert := assert.New(t)
-	defer mockRedis.FlushAll()
-
-	_, err := NewHandler("")
-	assert.Error(err)
-
-	_, err = NewHandler(mockRedis.Addr())
-	assert.NoError(err)
-}
 
 func TestMain(m *testing.M) {
 	var err error

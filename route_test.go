@@ -1,13 +1,10 @@
 package main
 
 import (
-	"log"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/gjbae1212/hit-counter/handler"
-
-	"github.com/alicebob/miniredis"
 	echo "github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 )
@@ -17,11 +14,7 @@ func TestAddRoute(t *testing.T) {
 	err := AddRoute(nil, "")
 	assert.Error(err)
 
-	s, err := miniredis.Run()
-	assert.NoError(err)
-	defer s.Close()
-
-	err = AddRoute(echo.New(), s.Addr())
+	err = AddRoute(echo.New(), mockRedis.Addr())
 	assert.NoError(err)
 }
 
@@ -30,7 +23,6 @@ func TestGroup(t *testing.T) {
 	e := echo.New()
 
 	mockHandler := func(c echo.Context) error {
-		log.Println("call????")
 		return nil
 	}
 

@@ -1,6 +1,6 @@
 module github.com/gjbae1212/hit-counter
 
-go 1.17
+go 1.18
 
 require (
 	github.com/alicebob/miniredis v2.5.0+incompatible
