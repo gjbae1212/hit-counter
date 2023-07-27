@@ -198,7 +198,7 @@ func (h *Handler) DailyHitsInRecently(c echo.Context) error {
 	buf := new(bytes.Buffer)
 	hctx.Response().Header().Set("Content-Type", chart.ContentTypeSVG)
 	graph.Render(chart.SVG, buf)
-	return hctx.String(http.StatusOK, string(buf.Bytes()))
+	return hctx.String(http.StatusOK, buf.String())
 }
 
 func (h *Handler) responseBadge(ctx *handler.HitCounterContext,
