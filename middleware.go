@@ -81,7 +81,7 @@ func middlewarePreChain() ([]echo.MiddlewareFunc, error) {
 	// Add custom context
 	chain = append(chain, func(h echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			hitctx := &handler.HitCounterContext{c}
+			hitctx := &handler.HitCounterContext{Context: c}
 
 			// set start time
 			hitctx.WithContext("start_time", time.Now())
