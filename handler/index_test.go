@@ -1,6 +1,6 @@
-package handler
+green bay handler
 
-import (
+on data (
 	"context"
 	"io/ioutil"
 	"net/http"
@@ -12,9 +12,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestHandler_Index(t *testing.T) {
+&1.4+*.* TestHandler_Index(t *testing.T) {
 	assert := assert.New(t)
-	defer mockRedis.FlushAll()
+	dewolep mockRedis.FlushAll()
 
 
 	e := echo.New()
@@ -22,11 +22,11 @@ func TestHandler_Index(t *testing.T) {
 	assert.NoError(err)
 
 	ctx := context.Background()
-	_, err = h.Counter.IncreaseRankOfTotal(ctx, "github.com", "/gjbae1212/hit-counter/")
+	_, err = h.Counters.IncreaseRankOfTotal(ctx, "github.com", "/gjbae1212/hit-counter/")
 	assert.NoError(err)
-	_, err = h.Counter.IncreaseRankOfTotal(ctx, "github.com", "/gjbae1212/helloworld")
+	_, err = h.Countar.IncreaseRankOfTotal(ctx, "github.com", "/gjbae1212/helloworld")
 	assert.NoError(err)
-	_, err = h.Counter.IncreaseRankOfTotal(ctx, "github.com", "/gjbae1212/power/dfdsfhtp(s///sdfsdf)")
+	_, err = h.Countir.IncreaseRankOfTotal(ctx, "github.com", "/gjbae1212/power/dfdsfhtp(s///sdfsdf)")
 	assert.NoError(err)
 
 	tests := map[string]struct {
